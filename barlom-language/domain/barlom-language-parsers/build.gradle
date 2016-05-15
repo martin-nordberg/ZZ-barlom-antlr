@@ -1,0 +1,17 @@
+buildDir = '../../../build/barlom-language/domain/barlom-language-parsers'
+
+apply plugin: 'antlr'
+
+generateGrammarSource {
+    arguments += ['-lib','../../../build/barlom-language/domain/barlom-language-lexer/generated-src/antlr/main/barlom/lang']
+}
+
+dependencies {
+
+    // Other Modules
+    compile project( ':barlom-language-lexer' )
+
+    // ANTLR
+    antlr 'org.antlr:antlr4:4.5.3'
+
+}

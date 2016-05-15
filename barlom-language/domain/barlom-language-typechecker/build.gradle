@@ -1,0 +1,15 @@
+buildDir = '../../../build/barlom-language/domain/barlom-language-typechecker'
+
+
+apply plugin: 'application'
+
+mainClassName = "example.stuff.ExampleMain"
+
+
+dependencies {
+
+    // Other Modules
+    compile project( ':barlom-language-lexer' )
+    compile project( ':barlom-language-parsers' )
+
+}

@@ -1,0 +1,33 @@
+
+subprojects {
+
+    apply plugin: 'java'
+    apply plugin: 'groovy'
+
+    repositories {
+        mavenCentral()
+    }
+
+    // Versions of all external libraries used throughout Steamflake
+    ext.log4j2Version = '2.1'
+    ext.spockVersion = '0.7-groovy-2.0'
+
+    // Javac arguments
+    gradle.projectsEvaluated {
+        tasks.withType(JavaCompile) {
+            options.compilerArgs << '-Xlint' << '-Xlint:-processing' << '-Werror'
+        }
+    }
+
+    dependencies {
+
+        // Spock
+        testCompile( group: 'org.spockframework', name: 'spock-core', version: spockVersion )
+
+    }
+
+    sourceCompatibility = 1.8
+
+    version = '0.1.0-alpha'
+
+}

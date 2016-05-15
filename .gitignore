@@ -1,0 +1,10 @@
+build
+out
+target
+
+.directory
+.gradle
+
+*.tokens
+
+ 

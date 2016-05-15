@@ -1,0 +1,13 @@
+buildDir = '../../../build/barlom-language/domain/barlom-language-lexer'
+
+apply plugin: 'antlr'
+
+dependencies {
+
+    // Other Modules
+    //compile project( ':barlom-utilities' )
+
+    // ANTLR
+    antlr 'org.antlr:antlr4:4.5.3'
+
+}

@@ -1,0 +1,20 @@
+
+rootProject.name = 'barlom'
+
+
+include 'barlom-language/domain/barlom-language-lexer'
+rootProject.children.find {
+    it.name == 'barlom-language/domain/barlom-language-lexer'
+}.name = 'barlom-language-lexer'
+
+include 'barlom-language/domain/barlom-language-parsers'
+rootProject.children.find {
+    it.name == 'barlom-language/domain/barlom-language-parsers'
+}.name = 'barlom-language-parsers'
+
+include 'barlom-language/domain/barlom-language-typechecker'
+rootProject.children.find {
+    it.name == 'barlom-language/domain/barlom-language-typechecker'
+}.name = 'barlom-language-typechecker'
+
+
