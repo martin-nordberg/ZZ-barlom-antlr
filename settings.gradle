@@ -12,9 +12,5 @@ rootProject.children.find {
     it.name == 'barlom-language/domain/barlom-language-parsers'
 }.name = 'barlom-language-parsers'
 
-include 'barlom-language/domain/barlom-language-typechecker'
-rootProject.children.find {
-    it.name == 'barlom-language/domain/barlom-language-typechecker'
-}.name = 'barlom-language-typechecker'
 
 

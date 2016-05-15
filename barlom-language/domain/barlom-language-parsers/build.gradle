@@ -3,7 +3,7 @@ buildDir = '../../../build/barlom-language/domain/barlom-language-parsers'
 apply plugin: 'antlr'
 
 generateGrammarSource {
-    arguments += ['-lib','../../../build/barlom-language/domain/barlom-language-lexer/generated-src/antlr/main/barlom/lang']
+    arguments += ['-lib','../../../build/barlom-language/domain/barlom-language-lexer/generated-src/antlr/main/barlom/lexer']
 }
 
 dependencies {
