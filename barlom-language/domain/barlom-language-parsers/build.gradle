@@ -1,9 +1,19 @@
+
 buildDir = '../../../build/barlom-language/domain/barlom-language-parsers'
 
 apply plugin: 'antlr'
 
+// Copy the tokens file to the parser src folder in order to make use of IDE tools
+task copyTokensFile(type: Copy, dependsOn: ':barlom-language-lexer:generateGrammarSource') {
+    from '../../../build/barlom-language/domain/barlom-language-lexer/generated-src/antlr/main/barlom/lexer'
+    into './src/main/antlr/barlom/parsers'
+    include '*.tokens'
+}
+
+
 generateGrammarSource {
     arguments += ['-lib','../../../build/barlom-language/domain/barlom-language-lexer/generated-src/antlr/main/barlom/lexer']
+    dependsOn += 'copyTokensFile'
 }
 
 dependencies {
@@ -15,3 +25,5 @@ dependencies {
     antlr 'org.antlr:antlr4:4.5.3'
 
 }
+
+

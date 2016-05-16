@@ -10,6 +10,8 @@ options {
   tokenVocab=BarlomLexer;
 }
 
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 parse : compilationUnit;
 
@@ -18,7 +20,17 @@ parse : compilationUnit;
 
 
 compilationUnit
-    : packageDeclaration /* TODO: importDeclaration* */ packageContent+
+    : packageDeclaration importDeclarations packagedElements
+    ;
+
+
+constantDeclaration
+    : LET Identifier ASSIGN expression SEMICOLON
+    ;
+
+
+expression
+    : StringLiteral
     ;
 
 
@@ -27,9 +39,23 @@ functionDeclaration
     ;
 
 
-packageContent
-    : functionDeclaration
+importDeclaration
+    : IMPORT qualifiedIdentifier SEMICOLON
+    ;
+
+importDeclarations
+    : importDeclaration*
+    ;
+
+
+packagedElement
+    : constantDeclaration
+    | functionDeclaration
     // TODO: more alternatives ...
+    ;
+
+packagedElements
+    : packagedElement+
     ;
 
 
@@ -41,4 +67,7 @@ packageDeclaration
 qualifiedIdentifier
     : Identifier ( DOT Identifier )*
     ;
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
 

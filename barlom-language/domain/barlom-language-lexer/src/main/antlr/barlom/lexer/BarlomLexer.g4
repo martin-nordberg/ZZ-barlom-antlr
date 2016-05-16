@@ -10,6 +10,7 @@ lexer grammar BarlomLexer;
 // --------
 
 FUNCTION : 'function';
+IMPORT : 'import';
 LET : 'let';
 PACKAGE : 'package';
 

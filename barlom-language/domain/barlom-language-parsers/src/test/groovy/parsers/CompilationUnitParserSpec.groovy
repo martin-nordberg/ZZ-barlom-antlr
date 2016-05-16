@@ -17,17 +17,50 @@ class CompilationUnitParserSpec
         BarlomLexer lexer = new BarlomLexer(inStream);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         CompilationUnitParser parser = new CompilationUnitParser(tokens);
-        CompilationUnitParser.CompilationUnitContext context = parser.compilationUnit();
-
-        if ( context.getChildCount() != expectedChildCount ) {
-            return "Actual child count: " + context.getChildCount();
-        }
+        CompilationUnitParser.ParseContext context = parser.parse();
 
         if ( parser.getNumberOfSyntaxErrors() != 0 ) {
             return "Parse errors occurred";
         }
 
+        if ( context.getChild(0).getChildCount() != expectedChildCount ) {
+            return "Actual child count: " + context.getChild(0).getChildCount();
+        }
+
         return "Successful parse";
+    }
+
+    def "A compilation unit parser parses a constant."() {
+
+        given:
+        def code = '''
+        package p1.p2;
+
+        import p1.p3.Example;
+
+        let x = "a string";
+    ''';
+
+        expect:
+        parse( code, 3 ) == "Successful parse";
+    }
+
+    def "A compilation unit parser parses a constant and a function."() {
+
+        given:
+        def code = '''
+        package p1.p2;
+
+        import p1.p3.Example;
+
+        let x = "a string";
+
+        function doNothing() {
+        }
+    ''';
+
+        expect:
+        parse( code, 3 ) == "Successful parse";
     }
 
     def "A compilation unit parser parses a simple empty function."() {
@@ -36,12 +69,14 @@ class CompilationUnitParserSpec
         def code = '''
         package p1.p2;
 
+        import p1.p3.Example;
+
         function doNothing() {
         }
     ''';
 
         expect:
-        parse( code, 2 ) == "Successful parse";
+        parse( code, 3 ) == "Successful parse";
     }
 
 
