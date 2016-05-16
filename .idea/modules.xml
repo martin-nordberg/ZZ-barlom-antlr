@@ -4,7 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/barlom.iml" filepath="$PROJECT_DIR$/.idea/modules/barlom.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/barlom-language/domain/barlom-language-lexer/barlom-language-lexer.iml" filepath="$PROJECT_DIR$/.idea/modules/barlom-language/domain/barlom-language-lexer/barlom-language-lexer.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/barlom-language/domain/barlom-language-parsers/barlom-language-parsers.iml" filepath="$PROJECT_DIR$/.idea/modules/barlom-language/domain/barlom-language-parsers/barlom-language-parsers.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/barlom-language/domain/barlom-language-parser/barlom-language-parser.iml" filepath="$PROJECT_DIR$/.idea/modules/barlom-language/domain/barlom-language-parser/barlom-language-parser.iml" />
     </modules>
   </component>
 </project>

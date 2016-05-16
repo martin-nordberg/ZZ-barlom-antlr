@@ -1,0 +1,17 @@
+
+package sample.one;
+
+class Sample(                           ` This is a sample class.
+                                        ` It does some interesting stuff.
+    _a : String,                            ` The first input field of the class. It's private.
+    b : Int32                               ` Another input field. It's public.
+) extends Example
+  implements Interface {
+
+  function m1(                          ` The first method of the class.
+    x : String                              ` It takes one input.
+  ) {
+
+  }
+
+}

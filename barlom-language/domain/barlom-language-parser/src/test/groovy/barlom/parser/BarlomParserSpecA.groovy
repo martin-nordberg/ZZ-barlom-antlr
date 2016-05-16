@@ -1,30 +1,34 @@
-package parsers
+package barlom.parser
 
 import barlom.lexer.BarlomLexer
-import barlom.parsers.CompilationUnitParser
 import org.antlr.v4.runtime.ANTLRInputStream
 import org.antlr.v4.runtime.CommonTokenStream
 import spock.lang.Specification
+
 /**
  * Specification for parsing a compilation unit.
  */
-class CompilationUnitParserSpec
+class BarlomParserSpecA
     extends Specification {
 
-    def static String parse( String code, expectedChildCount ) {
+    def static String parse( String code, int expectedPackagedElementCount ) {
 
         ANTLRInputStream inStream = new ANTLRInputStream(code);
         BarlomLexer lexer = new BarlomLexer(inStream);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
-        CompilationUnitParser parser = new CompilationUnitParser(tokens);
-        CompilationUnitParser.ParseContext context = parser.parse();
+        BarlomParser parser = new BarlomParser(tokens);
+        BarlomParser.ParseContext context = parser.parse();
 
         if ( parser.getNumberOfSyntaxErrors() != 0 ) {
             return "Parse errors occurred";
         }
 
-        if ( context.getChild(0).getChildCount() != expectedChildCount ) {
+        if ( context.getChild(0).getChildCount() != 4 ) {
             return "Actual child count: " + context.getChild(0).getChildCount();
+        }
+
+        if ( context.getChild(0).getChild(2).getChildCount() != expectedPackagedElementCount ) {
+            return "Actual packaged element count: " + context.getChild(0).getChild(2).getChildCount();
         }
 
         return "Successful parse";
@@ -42,7 +46,7 @@ class CompilationUnitParserSpec
     ''';
 
         expect:
-        parse( code, 3 ) == "Successful parse";
+        parse( code, 1 ) == "Successful parse";
     }
 
     def "A compilation unit parser parses a constant and a function."() {
@@ -60,7 +64,7 @@ class CompilationUnitParserSpec
     ''';
 
         expect:
-        parse( code, 3 ) == "Successful parse";
+        parse( code, 2 ) == "Successful parse";
     }
 
     def "A compilation unit parser parses a simple empty function."() {
@@ -69,14 +73,12 @@ class CompilationUnitParserSpec
         def code = '''
         package p1.p2;
 
-        import p1.p3.Example;
-
         function doNothing() {
         }
     ''';
 
         expect:
-        parse( code, 3 ) == "Successful parse";
+        parse( code, 1 ) == "Successful parse";
     }
 
 

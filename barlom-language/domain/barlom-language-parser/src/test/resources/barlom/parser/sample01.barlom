@@ -1,0 +1,10 @@
+
+package sample.one;
+
+let x = "example";
+
+function f() {
+
+}
+
+let y = "another";

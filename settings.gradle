@@ -7,10 +7,10 @@ rootProject.children.find {
     it.name == 'barlom-language/domain/barlom-language-lexer'
 }.name = 'barlom-language-lexer'
 
-include 'barlom-language/domain/barlom-language-parsers'
+include 'barlom-language/domain/barlom-language-parser'
 rootProject.children.find {
-    it.name == 'barlom-language/domain/barlom-language-parsers'
-}.name = 'barlom-language-parsers'
+    it.name == 'barlom-language/domain/barlom-language-parser'
+}.name = 'barlom-language-parser'
 
 
 
