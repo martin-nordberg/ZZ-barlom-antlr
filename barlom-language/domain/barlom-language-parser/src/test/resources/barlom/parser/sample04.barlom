@@ -1,0 +1,28 @@
+
+package sample.one;
+
+
+
+
+class Sample2(
+    a : String : `The first input field of the class. It's private.`,
+    b : Int32 : public : mutable : `Another input field. It's public and mutable - bad.`
+) : Example( a ) & AnInterface & AnotherInterface
+  : `This is a sample class.`
+  : details( `It does some interesting stuff.
+              Like show how to display code.` )
+{
+
+  delegate inner : AnInterface = AnImplementation( a );
+
+  state s : MyState;
+
+}
+
+function Sample2.method1(
+  x : String : `It takes one input.`
+) : "The first method of the class."
+{
+
+}
+

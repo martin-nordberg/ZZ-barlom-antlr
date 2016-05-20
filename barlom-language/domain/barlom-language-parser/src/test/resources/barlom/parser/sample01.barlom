@@ -1,10 +1,10 @@
 
 package sample.one;
 
-let x = "example";
+constant x = "example";
 
 function f() {
 
 }
 
-let y = "another";
+constant y = "another";

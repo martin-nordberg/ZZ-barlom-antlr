@@ -1,0 +1,40 @@
+
+
+package sample.constants;
+
+// String literals
+
+const text1 = "sample";
+
+"A summary-annotated string literal constant"
+constant text2 = "example";
+
+
+// Integer literals (zero)
+
+constant int0 = 0;
+
+constant int1 = 0x0000;
+
+constant int2 = 0b0000_0000;
+
+
+// Integer literals (non-zero)
+
+constant int3 = 123_456;
+
+constant int4 = 0b1010101000011;
+
+constant int5 = 0xABCD_ef01;
+
+
+// Integer literals (long)
+
+constant int6 = 123456789L;
+
+constant int6 = 0xCAFE_BABE_1234_0000l;
+
+constant int7 = 2L;
+
+
+

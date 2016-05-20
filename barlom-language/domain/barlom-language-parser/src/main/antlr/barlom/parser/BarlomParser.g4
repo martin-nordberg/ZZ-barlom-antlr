@@ -20,7 +20,6 @@ parse : compilationUnit;
 // COMPILATION UNIT
 //-------------------------------------------------------------------------------------------------
 
-
 compilationUnit
     : packageDeclaration importDeclarations packagedElements EOF
     ;
@@ -36,7 +35,8 @@ importDeclarations
 
 
 packagedElement
-    : constantDeclaration
+    : classDeclaration
+    | constantDeclaration
     | functionDeclaration
     // TODO: more alternatives ...
     ;
@@ -51,13 +51,31 @@ packageDeclaration
     ;
 
 
+//-------------------------------------------------------------------------------------------------
+// ANNOTATIONS
+//-------------------------------------------------------------------------------------------------
+
+annotation
+    : StringLiteral
+    | LcIdentifier
+    ;
+
+leadingAnnotations
+    : ( annotation ) *
+    ;
+
+trailingAnnotations
+    : ( COLON annotation ) *
+    | typeDeclaration
+    ;
 
 //-------------------------------------------------------------------------------------------------
 // FUNCTIONS
 //-------------------------------------------------------------------------------------------------
 
 functionDeclaration
-    : FUNCTION LcIdentifier LPAREN /*TODO: parameters*/ RPAREN LBRACE /*TODO: statements*/ RBRACE
+    : leadingAnnotations FUNCTION LcIdentifier LPAREN arguments RPAREN trailingAnnotations
+      LBRACE /*TODO: statements*/ RBRACE
     ;
 
 
@@ -65,14 +83,54 @@ functionDeclaration
 // CLASSES
 //-------------------------------------------------------------------------------------------------
 
+classDeclaration
+    : CLASS UcIdentifier LPAREN arguments RPAREN
+      extendsDeclaration implementsDeclaration LBRACE
+      classMembers
+      RBRACE
+    ;
+
+classMember
+    : constantDeclaration
+    | functionDeclaration
+    ;
+
+classMembers
+    : classMember *
+    ;
+
+extendsDeclaration
+    : EXTENDS typeDeclaration LPAREN parameters RPAREN
+    | /*nothing*/
+    ;
+
+implementsDeclaration
+    : IMPLEMENTS typeDeclaration ( COMMA typeDeclaration ) *
+    | /*nothing*/
+    ;
+
 
 //-------------------------------------------------------------------------------------------------
 // EXPRESSIONS
 //-------------------------------------------------------------------------------------------------
 
 expression
-    : StringLiteral
+    : literal
     // TODO: more alternatives ...
+    ;
+
+literal
+	:	IntegerLiteral
+//	|	FloatingPointLiteral
+//	|	BooleanLiteral
+//	|	CharacterLiteral
+	|	StringLiteral
+//	|	NullLiteral
+	;
+
+parameters
+    : expression ( COMMA expression ) *
+    | /*nothing*/
     ;
 
 
@@ -80,14 +138,28 @@ expression
 // VARIABLES
 //-------------------------------------------------------------------------------------------------
 
+argument
+    : LcIdentifier ( COLON typeDeclaration ) ?
+    ;
+
+arguments
+    : argument ( COMMA argument ) *
+    | /*nothing*/
+    ;
+
 constantDeclaration
-    : LET LcIdentifier ASSIGN expression SEMICOLON
+    : leadingAnnotations CONSTANT LcIdentifier trailingAnnotations ASSIGN expression SEMICOLON
     ;
 
 
 //-------------------------------------------------------------------------------------------------
 // TYPE DECLARATIONS
 //-------------------------------------------------------------------------------------------------
+
+typeDeclaration
+    : UcIdentifier
+    // TODO: closure-like generics
+    ;
 
 
 //-------------------------------------------------------------------------------------------------

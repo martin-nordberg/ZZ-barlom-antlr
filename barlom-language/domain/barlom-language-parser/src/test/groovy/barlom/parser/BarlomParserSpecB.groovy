@@ -21,7 +21,7 @@ class BarlomParserSpecB
         parser.parse();
 
         if ( parser.getNumberOfSyntaxErrors() != 0 ) {
-            return "Parse errors occurred";
+            return "Parse errors occurred in " + fileName;
         }
 
         return "Successful parse";
@@ -34,6 +34,7 @@ class BarlomParserSpecB
 
         where:
         fileName | parseResult
+        "literals.barlom" | "Successful parse"
         "sample01.barlom" | "Successful parse"
 
     }

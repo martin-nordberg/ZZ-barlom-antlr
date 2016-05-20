@@ -1,17 +1,59 @@
 
 package sample.one;
 
-class Sample(                           ` This is a sample class.
-                                        ` It does some interesting stuff.
-    _a : String,                            ` The first input field of the class. It's private.
-    b : Int32                               ` Another input field. It's public.
-) extends Example
-  implements Interface {
+class Sample(                                   ## This is a sample class.
+                                                ## It does some interesting stuff.
+    _a : String,                                    ## The first input field of the class. It's private.
+    b : Int32                                       ## Another input field. It's public.
+) extends Example( _a )
+  implements AnInterface, AnotherInterface {
 
-  function m1(                          ` The first method of the class.
-    x : String                              ` It takes one input.
+  function m1(                                  ## The first method of the class.
+    x : String                                      ## It takes one input.
   ) {
 
   }
 
 }
+
+
+# This is a sample class.
+# It does some interesting stuff.
+class Sample2(
+    # The first input field of the class. It's private.
+    a : String,
+    # Another input field. It's public and mutable - bad.
+    b : Int32 : public : mutable
+) : Example( a ) & AnInterface & AnotherInterface {
+
+  delegate inner : AnInterface = AnImplementation( this.a );
+
+  state s : MyState;
+
+  # The first method of the class.
+  function m1(
+    # It takes one input.
+    x : String
+  ) {
+
+  }
+
+}
+
+# This is a sample class.                               # class Sample2(
+# It does some interesting stuff.                       #
+# The first input field of the class. It's private.     #   a : String,
+# Another input field. It's public and mutable - bad.   #   b : Int32 : public : mutable
+#                                                       # ) : Example( a ) & AnInterface & AnotherInterface {
+#                                                       #
+#                                                       #   delegate inner : AnInterface = AnImplementation( this.a );
+#                                                       #
+#                                                       #   state s : MyState;
+#                                                       #
+# The first method of the class.                        #   function m1(
+# It takes one input.                                   #     x : String
+#                                                       #   ) {
+#                                                       #
+#                                                       #   }
+#                                                       #
+#                                                       # }

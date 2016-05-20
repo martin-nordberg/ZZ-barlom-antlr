@@ -11,6 +11,7 @@ lexer grammar BarlomLexer;
 //-------------------------------------------------------------------------------------------------
 
 CLASS : 'class';
+CONSTANT : 'const' ( 'ant' ) ?;
 DELEGATES : 'delegates';
 ENUMERATION : 'enumeration';
 EXTENDS : 'extends';
@@ -18,10 +19,9 @@ FUNCTION : 'function';
 IMPLEMENTS : 'implements';
 IMPORT : 'import';
 INTERFACE : 'interface';
-LET : 'let';
 METHOD : 'method';
 PACKAGE : 'package';
-VARIABLE : 'variable';
+VARIABLE : 'var' ( 'iable' ) ?;
 
 
 //-------------------------------------------------------------------------------------------------
@@ -113,7 +113,7 @@ IdentifierSubsequentChar
     ;
 
 LcIdentifier
-    : LcIdentifierFirstChar IdentifierSubsequentChar*
+    : LcIdentifierFirstChar IdentifierSubsequentChar *
     ;
 
 fragment
@@ -123,7 +123,7 @@ LcIdentifierFirstChar
     ;
 
 UcIdentifier
-    : UcIdentifierFirstChar IdentifierSubsequentChar*
+    : UcIdentifierFirstChar IdentifierSubsequentChar *
     ;
 
 fragment
@@ -138,19 +138,8 @@ UcIdentifierFirstChar
 //-------------------------------------------------------------------------------------------------
 
 StringLiteral
-    : '"' StringCharacters? '"'
-    | '\'' StringCharacters? '\''
-    ;
-
-fragment
-StringCharacters
-    : StringCharacter+
-    ;
-
-fragment
-StringCharacter
-    : ~["\\]
-    | EscapeSequence
+    : '"' StringCharacters '"'
+    | '\'' StringCharacters '\''
     ;
 
 fragment
@@ -160,17 +149,146 @@ EscapeSequence
     ;
 
 fragment
+StringCharacter
+    : ~["\\]
+    | EscapeSequence
+    ;
+
+fragment
+StringCharacters
+    : StringCharacter *
+    ;
+
+fragment
 UnicodeEscape
-    : '\\' 'u' HexDigit HexDigit HexDigit HexDigit;
+    : '\\' 'u' HexDigit HexDigit HexDigit HexDigit
+    ;
 
 
 //-------------------------------------------------------------------------------------------------
 // INTEGER LITERALS
 //-------------------------------------------------------------------------------------------------
 
+IntegerLiteral
+	:	DecimalIntegerLiteral
+	|	HexIntegerLiteral
+	|	BinaryIntegerLiteral
+	;
+
+fragment
+DecimalIntegerLiteral
+	:	DecimalNumeral IntegerTypeSuffix?
+	;
+
+fragment
+HexIntegerLiteral
+	:	HexNumeral IntegerTypeSuffix?
+	;
+
+fragment
+BinaryIntegerLiteral
+	:	BinaryNumeral IntegerTypeSuffix?
+	;
+
+fragment
+IntegerTypeSuffix
+	:	[lL]
+	;
+
+fragment
+DecimalNumeral
+	:	Digit (Digits? | Underscores Digits)
+	;
+
+fragment
+Digits
+	:	Digit (DigitsAndUnderscores? Digit)?
+	;
+
+fragment
+Digit
+	:	[0-9]
+	;
+
+fragment
+DigitsAndUnderscores
+	:	DigitOrUnderscore+
+	;
+
+fragment
+DigitOrUnderscore
+	:	Digit
+	|	'_'
+	;
+
+fragment
+Underscores
+	:	'_'+
+	;
+
+fragment
+HexNumeral
+	:	'0' [xX] HexDigits
+	;
+
+fragment
+HexDigits
+	:	HexDigit (HexDigitsAndUnderscores? HexDigit)?
+	;
+
 fragment
 HexDigit
-    : [0-9a-fA-F]
+	:	[0-9a-fA-F]
+	;
+
+fragment
+HexDigitsAndUnderscores
+	:	HexDigitOrUnderscore+
+	;
+
+fragment
+HexDigitOrUnderscore
+	:	HexDigit
+	|	'_'
+	;
+
+fragment
+BinaryNumeral
+	:	'0' [bB] BinaryDigits
+	;
+
+fragment
+BinaryDigits
+	:	BinaryDigit (BinaryDigitsAndUnderscores? BinaryDigit)?
+	;
+
+fragment
+BinaryDigit
+	:	[01]
+	;
+
+fragment
+BinaryDigitsAndUnderscores
+	:	BinaryDigitOrUnderscore+
+	;
+
+fragment
+BinaryDigitOrUnderscore
+	:	BinaryDigit
+	|	'_'
+	;
+
+
+//-------------------------------------------------------------------------------------------------
+// COMMENTS
+//-------------------------------------------------------------------------------------------------
+
+BLOCK_COMMENT
+    :   '/*' .*? '*/' -> skip
+    ;
+
+LINE_COMMENT
+    :   '//' ~[\r\n]* -> skip
     ;
 
 

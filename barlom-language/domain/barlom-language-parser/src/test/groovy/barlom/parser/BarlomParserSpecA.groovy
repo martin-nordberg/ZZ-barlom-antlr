@@ -42,7 +42,7 @@ class BarlomParserSpecA
 
         import p1.p3.Example;
 
-        let x = "a string";
+        constant x = "a string";
     ''';
 
         expect:
@@ -57,7 +57,7 @@ class BarlomParserSpecA
 
         import p1.p3.Example;
 
-        let x = "a string";
+        constant x = "a string";
 
         function doNothing() {
         }
