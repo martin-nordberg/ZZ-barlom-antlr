@@ -57,7 +57,7 @@ packageDeclaration
 
 annotation
     : TextLiteral
-    | LcIdentifier
+    | LowerCaseIdentifier
     ;
 
 leadingAnnotations
@@ -74,7 +74,7 @@ trailingAnnotations
 //-------------------------------------------------------------------------------------------------
 
 functionDeclaration
-    : leadingAnnotations FUNCTION LcIdentifier LPAREN parameters RPAREN trailingAnnotations
+    : leadingAnnotations FUNCTION LowerCaseIdentifier LPAREN parameters RPAREN trailingAnnotations
       LBRACE /*TODO: statements*/ RBRACE
     ;
 
@@ -84,7 +84,7 @@ functionDeclaration
 //-------------------------------------------------------------------------------------------------
 
 classDeclaration
-    : CLASS UcIdentifier LPAREN parameters RPAREN
+    : CLASS UpperCaseIdentifier LPAREN parameters RPAREN
       extendsDeclaration implementsDeclaration LBRACE
       classMembers
       RBRACE
@@ -138,7 +138,7 @@ arguments
 //-------------------------------------------------------------------------------------------------
 
 parameter
-    : LcIdentifier ( COLON typeDeclaration ) ?
+    : LowerCaseIdentifier ( COLON typeDeclaration ) ?
     ;
 
 parameters
@@ -147,7 +147,7 @@ parameters
     ;
 
 constantDeclaration
-    : leadingAnnotations CONSTANT LcIdentifier trailingAnnotations ASSIGN expression SEMICOLON
+    : leadingAnnotations CONSTANT LowerCaseIdentifier trailingAnnotations ASSIGN expression SEMICOLON
     ;
 
 
@@ -156,7 +156,7 @@ constantDeclaration
 //-------------------------------------------------------------------------------------------------
 
 typeDeclaration
-    : UcIdentifier
+    : UpperCaseIdentifier
     // TODO: closure-like generics
     ;
 
@@ -166,10 +166,10 @@ typeDeclaration
 //-------------------------------------------------------------------------------------------------
 
 lcQualifiedIdentifier
-    : LcIdentifier ( DOT LcIdentifier )*
+    : LowerCaseIdentifier ( DOT LowerCaseIdentifier )*
     ;
 
 ucQualifiedIdentifier
-    : LcIdentifier ( DOT LcIdentifier )* DOT UcIdentifier
+    : LowerCaseIdentifier ( DOT LowerCaseIdentifier )* DOT UpperCaseIdentifier
     ;
 

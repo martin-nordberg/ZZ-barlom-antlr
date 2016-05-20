@@ -5,9 +5,9 @@ package sample.boolean_literals;
 
 // Boolean literals
 
-constant t = true;
+constant isGood = true;
 
-constant f = false;
+constant isBad = false;
 
 
 

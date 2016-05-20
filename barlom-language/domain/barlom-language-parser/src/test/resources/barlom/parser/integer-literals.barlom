@@ -11,11 +11,11 @@ constant zint2 = 0x0;
 
 constant zint3 = 0b0;
 
-constant zint4 = 00;
+constant zint4 = 00y;
 
-constant zint5 = 0x0000;
+constant zint5 = 0x0000s;
 
-constant zint6 = 0b0000_0000;
+constant zint6 = 0b0000_0000i;
 
 
 // Integer literals (non-zero)

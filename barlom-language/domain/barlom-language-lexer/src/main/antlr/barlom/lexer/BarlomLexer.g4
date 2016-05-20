@@ -12,7 +12,7 @@ lexer grammar BarlomLexer;
 
 AND : 'and';
 CLASS : 'class';
-CONSTANT : 'const' ( 'ant' ) ?;
+CONSTANT : 'constant';
 ENUMERATION : 'enumeration';
 EXTENDS : 'extends';
 // false (see below)
@@ -24,7 +24,7 @@ NOT : 'not';
 OR : 'or';
 PACKAGE : 'package';
 // true (see below)
-VARIABLE : 'var' ( 'iable' ) ?;
+VARIABLE : 'variable';
 XOR : 'xor';
 
 
@@ -104,11 +104,13 @@ XOR_ASSIGN : '^=';
 TextLiteral
     : '"' TextCharsNotDblQuote '"'
     | '\'' TextCharsNotSnglQuote '\''
+    | '"""' TextChars '"""'
+    | '\'\'\'' TextChars '\'\'\''
     ;
 
 fragment
 EscapeSequence
-    : '\\' [btnfr"'\\]
+    : '\\' [bfnrt"'\\]
     | UnicodeEscape
     ;
 
@@ -125,6 +127,11 @@ TextCharNotSnglQuote
     ;
 
 fragment
+TextChars
+    : .*?
+    ;
+
+fragment
 TextCharsNotDblQuote
     : TextCharNotDblQuote *
     ;
@@ -136,7 +143,8 @@ TextCharsNotSnglQuote
 
 fragment
 UnicodeEscape
-    : '\\' 'u' HexDigit HexDigit HexDigit HexDigit
+    : '\\u' HexDigit HexDigit HexDigit HexDigit
+    | '\\u{' [A-Z \-]+ '}'    // Unicode character by name. See http://unicode.org/charts/charindex.html#T
     ;
 
 
@@ -167,7 +175,7 @@ BinaryIntegerLiteral
 
 fragment
 IntegerTypeSuffix
-	:	[lL]
+	:	[gGiIlLsSyY]      // g = BigDecimal; i = Integer32; L = Integer64; s = Integer16; y= Integer8
 	;
 
 fragment
@@ -239,12 +247,12 @@ True : 'true';
 // IDENTIFIERS
 //-------------------------------------------------------------------------------------------------
 
-LcIdentifier
-    : LcIdentifierFirstChar IdentifierSubsequentChar *
+LowerCaseIdentifier
+    : LowerCaseIdentifierFirstChar IdentifierSubsequentChar *
     ;
 
-UcIdentifier
-    : UcIdentifierFirstChar IdentifierSubsequentChar *
+UpperCaseIdentifier
+    : UpperCaseIdentifierFirstChar IdentifierSubsequentChar *
     ;
 
 fragment
@@ -254,13 +262,13 @@ IdentifierSubsequentChar
     ;
 
 fragment
-LcIdentifierFirstChar
+LowerCaseIdentifierFirstChar
     : [a-z_]
     // TODO: unicode characters (lower case)
     ;
 
 fragment
-UcIdentifierFirstChar
+UpperCaseIdentifierFirstChar
     : [A-Z_]
     // TODO: unicode characters (upper case)
     ;
