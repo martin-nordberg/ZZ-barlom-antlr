@@ -34,7 +34,9 @@ class BarlomParserSpecB
 
         where:
         fileName | parseResult
-        "literals.barlom" | "Successful parse"
+        "text-literals.barlom" | "Successful parse"
+        "integer-literals.barlom" | "Successful parse"
+        "boolean-literals.barlom" | "Successful parse"
         "sample01.barlom" | "Successful parse"
 
     }

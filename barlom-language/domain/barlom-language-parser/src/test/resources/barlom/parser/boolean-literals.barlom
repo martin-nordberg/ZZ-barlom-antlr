@@ -1,0 +1,13 @@
+
+
+package sample.boolean_literals;
+
+
+// Boolean literals
+
+constant t = true;
+
+constant f = false;
+
+
+

@@ -1,0 +1,21 @@
+
+
+package sample.text_literals;
+
+// Text literals
+
+const text1 = "sample";
+
+"A summary-annotated string literal constant"
+constant text2 = "example";
+
+constant text3 = 'single-quoted';
+
+constant text4 = 'It\'s "complicated"';
+
+constant text5 : "Lots of 'escapes'"
+    = "\b\t\r\n\f\\";
+
+constant text6 = "";
+
+constant text7 = '';

@@ -56,7 +56,7 @@ packageDeclaration
 //-------------------------------------------------------------------------------------------------
 
 annotation
-    : StringLiteral
+    : TextLiteral
     | LcIdentifier
     ;
 
@@ -74,7 +74,7 @@ trailingAnnotations
 //-------------------------------------------------------------------------------------------------
 
 functionDeclaration
-    : leadingAnnotations FUNCTION LcIdentifier LPAREN arguments RPAREN trailingAnnotations
+    : leadingAnnotations FUNCTION LcIdentifier LPAREN parameters RPAREN trailingAnnotations
       LBRACE /*TODO: statements*/ RBRACE
     ;
 
@@ -84,7 +84,7 @@ functionDeclaration
 //-------------------------------------------------------------------------------------------------
 
 classDeclaration
-    : CLASS UcIdentifier LPAREN arguments RPAREN
+    : CLASS UcIdentifier LPAREN parameters RPAREN
       extendsDeclaration implementsDeclaration LBRACE
       classMembers
       RBRACE
@@ -100,7 +100,7 @@ classMembers
     ;
 
 extendsDeclaration
-    : EXTENDS typeDeclaration LPAREN parameters RPAREN
+    : EXTENDS typeDeclaration LPAREN arguments RPAREN
     | /*nothing*/
     ;
 
@@ -120,15 +120,14 @@ expression
     ;
 
 literal
-	:	IntegerLiteral
-//	|	FloatingPointLiteral
-//	|	BooleanLiteral
-//	|	CharacterLiteral
-	|	StringLiteral
-//	|	NullLiteral
+    : IntegerLiteral
+//	| FloatingPointLiteral
+    | BooleanLiteral
+    | TextLiteral
+//	| NothingLiteral
 	;
 
-parameters
+arguments
     : expression ( COMMA expression ) *
     | /*nothing*/
     ;
@@ -138,12 +137,12 @@ parameters
 // VARIABLES
 //-------------------------------------------------------------------------------------------------
 
-argument
+parameter
     : LcIdentifier ( COLON typeDeclaration ) ?
     ;
 
-arguments
-    : argument ( COMMA argument ) *
+parameters
+    : parameter ( COMMA parameter ) *
     | /*nothing*/
     ;
 

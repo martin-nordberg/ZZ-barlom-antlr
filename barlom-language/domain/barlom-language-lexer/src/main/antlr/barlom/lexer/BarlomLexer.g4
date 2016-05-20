@@ -10,18 +10,22 @@ lexer grammar BarlomLexer;
 // KEYWORDS
 //-------------------------------------------------------------------------------------------------
 
+AND : 'and';
 CLASS : 'class';
 CONSTANT : 'const' ( 'ant' ) ?;
-DELEGATES : 'delegates';
 ENUMERATION : 'enumeration';
 EXTENDS : 'extends';
+// false (see below)
 FUNCTION : 'function';
 IMPLEMENTS : 'implements';
 IMPORT : 'import';
 INTERFACE : 'interface';
-METHOD : 'method';
+NOT : 'not';
+OR : 'or';
 PACKAGE : 'package';
+// true (see below)
 VARIABLE : 'var' ( 'iable' ) ?;
+XOR : 'xor';
 
 
 //-------------------------------------------------------------------------------------------------
@@ -52,7 +56,7 @@ GE : '>=';
 GT : '>';
 LE : '<=';
 LT : '<';
-NOTEQUAL : '!=';
+NOTEQUAL : '=/=';   // ( a =/= b )
 
 
 //-------------------------------------------------------------------------------------------------
@@ -77,15 +81,6 @@ BITXOR : '^';
 
 
 //-------------------------------------------------------------------------------------------------
-// LOGIC OPERATORS
-//-------------------------------------------------------------------------------------------------
-
-AND : '&&';
-NOT : '!';
-OR : '||';
-
-
-//-------------------------------------------------------------------------------------------------
 // ASSIGNMENT OPERATORS
 //-------------------------------------------------------------------------------------------------
 
@@ -103,43 +98,12 @@ XOR_ASSIGN : '^=';
 
 
 //-------------------------------------------------------------------------------------------------
-// IDENTIFIERS
+// TEXT LITERALS
 //-------------------------------------------------------------------------------------------------
 
-fragment
-IdentifierSubsequentChar
-    : [a-zA-Z0-9$_]
-    // TODO: unicode
-    ;
-
-LcIdentifier
-    : LcIdentifierFirstChar IdentifierSubsequentChar *
-    ;
-
-fragment
-LcIdentifierFirstChar
-    : [a-z_]
-    // TODO: unicode characters (lower case)
-    ;
-
-UcIdentifier
-    : UcIdentifierFirstChar IdentifierSubsequentChar *
-    ;
-
-fragment
-UcIdentifierFirstChar
-    : [A-Z_]
-    // TODO: unicode characters (upper case)
-    ;
-
-
-//-------------------------------------------------------------------------------------------------
-// STRING LITERALS
-//-------------------------------------------------------------------------------------------------
-
-StringLiteral
-    : '"' StringCharacters '"'
-    | '\'' StringCharacters '\''
+TextLiteral
+    : '"' TextCharsNotDblQuote '"'
+    | '\'' TextCharsNotSnglQuote '\''
     ;
 
 fragment
@@ -149,14 +113,25 @@ EscapeSequence
     ;
 
 fragment
-StringCharacter
+TextCharNotDblQuote
     : ~["\\]
     | EscapeSequence
     ;
 
 fragment
-StringCharacters
-    : StringCharacter *
+TextCharNotSnglQuote
+    : ~['\\]
+    | EscapeSequence
+    ;
+
+fragment
+TextCharsNotDblQuote
+    : TextCharNotDblQuote *
+    ;
+
+fragment
+TextCharsNotSnglQuote
+    : TextCharNotSnglQuote *
     ;
 
 fragment
@@ -197,22 +172,12 @@ IntegerTypeSuffix
 
 fragment
 DecimalNumeral
-	:	Digit (Digits? | Underscores Digits)
-	;
-
-fragment
-Digits
-	:	Digit (DigitsAndUnderscores? Digit)?
+	:	Digit (DigitOrUnderscore* Digit)?
 	;
 
 fragment
 Digit
 	:	[0-9]
-	;
-
-fragment
-DigitsAndUnderscores
-	:	DigitOrUnderscore+
 	;
 
 fragment
@@ -222,28 +187,13 @@ DigitOrUnderscore
 	;
 
 fragment
-Underscores
-	:	'_'+
-	;
-
-fragment
 HexNumeral
-	:	'0' [xX] HexDigits
-	;
-
-fragment
-HexDigits
-	:	HexDigit (HexDigitsAndUnderscores? HexDigit)?
+	:	'0' [xX] HexDigit (HexDigitOrUnderscore* HexDigit)?
 	;
 
 fragment
 HexDigit
 	:	[0-9a-fA-F]
-	;
-
-fragment
-HexDigitsAndUnderscores
-	:	HexDigitOrUnderscore+
 	;
 
 fragment
@@ -254,12 +204,7 @@ HexDigitOrUnderscore
 
 fragment
 BinaryNumeral
-	:	'0' [bB] BinaryDigits
-	;
-
-fragment
-BinaryDigits
-	:	BinaryDigit (BinaryDigitsAndUnderscores? BinaryDigit)?
+	:	'0' [bB] BinaryDigit (BinaryDigitOrUnderscore* BinaryDigit)?
 	;
 
 fragment
@@ -268,15 +213,57 @@ BinaryDigit
 	;
 
 fragment
-BinaryDigitsAndUnderscores
-	:	BinaryDigitOrUnderscore+
-	;
-
-fragment
 BinaryDigitOrUnderscore
 	:	BinaryDigit
 	|	'_'
 	;
+
+
+//-------------------------------------------------------------------------------------------------
+// BOOLEAN LITERALS
+//-------------------------------------------------------------------------------------------------
+
+BooleanLiteral
+    : True
+    | False
+    ;
+
+fragment
+False : 'false';
+
+fragment
+True : 'true';
+
+
+//-------------------------------------------------------------------------------------------------
+// IDENTIFIERS
+//-------------------------------------------------------------------------------------------------
+
+LcIdentifier
+    : LcIdentifierFirstChar IdentifierSubsequentChar *
+    ;
+
+UcIdentifier
+    : UcIdentifierFirstChar IdentifierSubsequentChar *
+    ;
+
+fragment
+IdentifierSubsequentChar
+    : [a-zA-Z0-9$_']
+    // TODO: unicode
+    ;
+
+fragment
+LcIdentifierFirstChar
+    : [a-z_]
+    // TODO: unicode characters (lower case)
+    ;
+
+fragment
+UcIdentifierFirstChar
+    : [A-Z_]
+    // TODO: unicode characters (upper case)
+    ;
 
 
 //-------------------------------------------------------------------------------------------------
