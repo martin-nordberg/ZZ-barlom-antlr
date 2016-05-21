@@ -13,6 +13,7 @@ lexer grammar BarlomLexer;
 AND : 'and';
 // false (see below)
 NOT : 'not';
+// nothing (see below)
 OR : 'or';
 // true (see below)
 XOR : 'xor';
@@ -91,6 +92,11 @@ XOR_ASSIGN : '^=';
 // TEXT LITERALS
 //-------------------------------------------------------------------------------------------------
 
+/**
+ * Recognizes a text literal. Text literals are single or double quoted strings of characters that fit
+ * on one line or else triple-quoted strings that can cross multiple lines and include the line feed
+ * characters.
+ */
 TextLiteral
     : '"' TextCharsNotDblQuote '"'
     | '\'' TextCharsNotSnglQuote '\''
@@ -142,6 +148,10 @@ UnicodeEscape
 // INTEGER LITERALS
 //-------------------------------------------------------------------------------------------------
 
+/**
+ * Recognizes an integer literal. They can be decimal, hexadecimal, or binary. Underscores are
+ * allowed. Suffixes specify the size of the sorage for the value.
+ */
 IntegerLiteral
     : DecimalIntegerLiteral
     | HexIntegerLiteral
@@ -221,6 +231,10 @@ BinaryDigitOrUnderscore
 // NUMBER LITERALS
 //-------------------------------------------------------------------------------------------------
 
+/**
+ * Recognizes a number (floating point) literal. A suffix indicates the representation size for
+ * the value.
+ */
 NumberLiteral
     : DecimalNumeral '.' DecimalNumeral? ExponentPart? FloatTypeSuffix?
     | '.' DecimalNumeral ExponentPart? FloatTypeSuffix?
@@ -235,7 +249,7 @@ ExponentPart
 
 fragment
 FloatTypeSuffix
-    : [fFdD]
+    : [dDfFgG]           // D = 64 bits, f = 32 bits, G = BigDecimal
     ;
 
 
@@ -243,35 +257,60 @@ FloatTypeSuffix
 // BOOLEAN LITERALS
 //-------------------------------------------------------------------------------------------------
 
+/**
+ * Recognizes a Boolean literal (either true or false).
+ */
 BooleanLiteral
     : True
     | False
     ;
 
 fragment
-False : 'false';
+False
+    : 'false'
+    ;
 
 fragment
-True : 'true';
+True
+    : 'true'
+    ;
 
 
 //-------------------------------------------------------------------------------------------------
 // DATE-TIME LITERALS
 //-------------------------------------------------------------------------------------------------
 
+/**
+ * Recognizes a date/time literal. The format is the the W3C profile of ISO 8601 found here:
+ * https://www.w3.org/TR/NOTE-datetime.
+ * Date/time literals are enclosed in dollar signs ("time is money"), an idea from Rascal
+ * http://tutor.rascal-mpl.org/Rascal/Patterns/Abstract/Literal/Literal.html#/Rascal/Expressions/Values/DateTime/DateTime.html
+ */
 DateTimeLiteral
-    : '$' Date ( 'T' Time )? '$'
-    | '$T' Time '$'
+    : '$' Date Time? '$'
+    | '$' Time '$'
     ;
 
+/**
+ * Recognizes the date fragment of a date/time literal, always YYYY-MM-DD, year-month-day.
+ */
+fragment
 Date
     : Digit Digit Digit Digit '-' Digit Digit '-' Digit Digit
     ;
 
+/**
+ * Recognizes the time component of a date/time literal.
+ */
+fragment
 Time
-    : Digit Digit ':' Digit Digit ( ':' Digit Digit ( '.' Digit Digit? Digit? )? )? TimeZone?
+    : 'T' Digit Digit ':' Digit Digit ( ':' Digit Digit ( '.' Digit Digit? Digit? )? )? TimeZone?
     ;
 
+/**
+ * Recognizes the time zone component of a date/time literal. Either Z or +/-hh:mm.
+ */
+fragment
 TimeZone
     : ( '+' | '-' ) Digit Digit ':' Digit Digit
     | 'Z'
@@ -282,8 +321,11 @@ TimeZone
 // REGULAR EXPRESSION LITERALS
 //-------------------------------------------------------------------------------------------------
 
+/**
+ * Recognizes a regular expression.
+ */
 RegularExpressionLiteral
-    : '~/' RegexChar* '/' [igm]? [igm]? [igm]?
+    : '~/' RegexChar* '/' RegexSuffix? RegexSuffix? RegexSuffix?
     ;
 
 fragment
@@ -292,11 +334,36 @@ RegexChar
     | '\\/'
     ;
 
+fragment
+RegexSuffix
+    : [igm]       // i = case insensitive, g = match whole string (global), m = match multiple lines of text
+    ;
+
+
+//-------------------------------------------------------------------------------------------------
+// Nothing Literal
+//-------------------------------------------------------------------------------------------------
+
+/**
+ * The literal "nothing", meaning an undefined value.
+ */
+NothingLiteral
+    : NOTHING
+    ;
+
+fragment
+NOTHING
+    : 'nothing'
+    ;
+
 
 //-------------------------------------------------------------------------------------------------
 // IDENTIFIERS
 //-------------------------------------------------------------------------------------------------
 
+/**
+ * Recognizes an identifier.
+ */
 Identifier
     : IdentifierFirstChar IdentifierSubsequentChar* IdentifierLastChar?
     ;
@@ -324,6 +391,10 @@ IdentifierFirstChar
 // Symbol Literals
 //-------------------------------------------------------------------------------------------------
 
+/**
+ * Recognizes a symbol (sometimes called atom) - a value meant to represent a symbol in code.
+ * When converted to or from text, the name and text are the same.
+ */
 SymbolLiteral
     : '#' IdentifierFirstChar IdentifierSubsequentChar* IdentifierLastChar?
     ;
@@ -346,6 +417,12 @@ LINE_COMMENT
 // WHITE SPACE
 //-------------------------------------------------------------------------------------------------
 
+/**
+ * Recognizes white space.
+ * NOTE: Tab characters are NOT recognized. Tools are expected to automatically adjust indenting
+ * when needed to suit the taste of an individual developer, but in the absence of a tool, there
+ * is no possibility of tab munging.
+ */
 WS : [ \r\n\u000C]+ -> skip;
 
 

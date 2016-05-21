@@ -1,0 +1,11 @@
+
+
+package( #sample ) {
+  package( #nothing_literal ) {
+
+    constant( #inOthersWordsUndefined, nothing )
+
+  }
+}
+
+

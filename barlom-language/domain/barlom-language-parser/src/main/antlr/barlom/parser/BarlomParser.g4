@@ -13,15 +13,23 @@ options {
 // START RULE
 //-------------------------------------------------------------------------------------------------
 
-parse : compilationUnit;
+/**
+ * Default start rule, parses a whole Barlom file.
+ */
+parse
+    : compilationUnit
+    ;
 
 
 //-------------------------------------------------------------------------------------------------
 // COMPILATION UNIT
 //-------------------------------------------------------------------------------------------------
 
+/**
+ * Parses an entire Barlom source file.
+ */
 compilationUnit
-    : expressions
+    : expressions EOF
     ;
 
 
@@ -29,6 +37,25 @@ compilationUnit
 // EXPRESSIONS
 //-------------------------------------------------------------------------------------------------
 
+/**
+ * Parses one argument of a function call.
+ */
+argument
+    : expression
+    ;
+
+/**
+ * Parses the argument list of a function call.
+ */
+arguments
+    : argument ( COMMA argument ) *
+    | /*nothing*/
+    ;
+
+
+/**
+ * Parses an expression.
+ */
 expression
     : expression DOT functionCall
     | expression DOT Identifier
@@ -38,14 +65,24 @@ expression
     // TODO: more alternatives ...
     ;
 
+/**
+ * Parses a sequence of expressions.
+ */
 expressions
     : expression*
     ;
 
+/**
+ * Parses a function call optionally followed by a sequence of expressions to be executed in
+ * the context of the result of the function call.
+ */
 functionCall
     : Identifier LPAREN arguments RPAREN ( LBRACE expressions RBRACE )?
     ;
 
+/**
+ * Parses one of many kinds of literals.
+ */
 literal
     : TextLiteral
     | IntegerLiteral
@@ -54,11 +91,6 @@ literal
     | SymbolLiteral
     | DateTimeLiteral
     | RegularExpressionLiteral
-//  | NothingLiteral
-    ;
-
-arguments
-    : expression ( COMMA expression ) *
-    | /*nothing*/
+    | NothingLiteral
     ;
 
