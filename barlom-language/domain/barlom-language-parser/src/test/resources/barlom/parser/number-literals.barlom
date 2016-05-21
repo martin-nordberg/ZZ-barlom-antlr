@@ -1,0 +1,36 @@
+
+
+package( #sample ).package( #number_literals ) {
+
+
+    // Number literals (zero)
+
+    constant( #zNumber0, 0.0 )
+
+    constant( #zNumber1, 0E0 )
+
+    constant( #zNumber2, 0E+0 )
+
+    constant( #zNumber3, 00f )
+
+    constant( #zNumber4, 0D )
+
+    constant( #zNumber5, .0 )
+
+
+    // Number literals (non-zero)
+
+    constant( #int1, 123_456. )
+
+    constant( #int2, 123.456 )
+
+    constant( #int3, .12345 )
+
+    constant( #int4, 123E456 )
+
+    constant( #int5, 123E-45 )
+
+    constant( #int6, 123.456E03 )
+
+}
+

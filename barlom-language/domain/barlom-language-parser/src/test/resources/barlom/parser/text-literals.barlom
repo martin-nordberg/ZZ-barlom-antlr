@@ -1,6 +1,6 @@
 
 
-// Text literals
+// Text Literals
 
 package( #sample ).package( #text_literals ) {
 

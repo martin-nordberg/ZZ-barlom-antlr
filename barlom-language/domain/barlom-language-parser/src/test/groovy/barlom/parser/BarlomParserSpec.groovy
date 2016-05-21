@@ -34,10 +34,13 @@ class BarlomParserSpec
 
         where:
         fileName | parseResult
-        "text-literals.barlom" | "Successful parse"
-        "integer-literals.barlom" | "Successful parse"
-        "boolean-literals.barlom" | "Successful parse"
-        "symbol-literals.barlom" | "Successful parse"
+        "text-literals.barlom"     | "Successful parse"
+        "integer-literals.barlom"  | "Successful parse"
+        "number-literals.barlom"   | "Successful parse"
+        "boolean-literals.barlom"  | "Successful parse"
+        "symbol-literals.barlom"   | "Successful parse"
+        "datetime-literals.barlom" | "Successful parse"
+        "regex-literals.barlom"    | "Successful parse"
 
     }
 

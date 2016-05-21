@@ -165,7 +165,7 @@ BinaryIntegerLiteral
 
 fragment
 IntegerTypeSuffix
-    : [uU]? [iLsy]      // i = BigInteger; L = Integer64; s = Integer16; y = Integer8 (case sensitive)
+    : [uU]? [iIlLsSyY]      // i = BigInteger; L = Integer64; s = Integer16; y = Integer8 (case sensitive)
     ;
 
 fragment
@@ -218,6 +218,28 @@ BinaryDigitOrUnderscore
 
 
 //-------------------------------------------------------------------------------------------------
+// NUMBER LITERALS
+//-------------------------------------------------------------------------------------------------
+
+NumberLiteral
+    : DecimalNumeral '.' DecimalNumeral? ExponentPart? FloatTypeSuffix?
+    | '.' DecimalNumeral ExponentPart? FloatTypeSuffix?
+    | DecimalNumeral ExponentPart FloatTypeSuffix?
+    | DecimalNumeral FloatTypeSuffix
+    ;
+
+fragment
+ExponentPart
+    : [eE] [+-]? DecimalNumeral
+    ;
+
+fragment
+FloatTypeSuffix
+    : [fFdD]
+    ;
+
+
+//-------------------------------------------------------------------------------------------------
 // BOOLEAN LITERALS
 //-------------------------------------------------------------------------------------------------
 
@@ -231,6 +253,44 @@ False : 'false';
 
 fragment
 True : 'true';
+
+
+//-------------------------------------------------------------------------------------------------
+// DATE-TIME LITERALS
+//-------------------------------------------------------------------------------------------------
+
+DateTimeLiteral
+    : '$' Date ( 'T' Time )? '$'
+    | '$T' Time '$'
+    ;
+
+Date
+    : Digit Digit Digit Digit '-' Digit Digit '-' Digit Digit
+    ;
+
+Time
+    : Digit Digit ':' Digit Digit ( ':' Digit Digit ( '.' Digit Digit? Digit? )? )? TimeZone?
+    ;
+
+TimeZone
+    : ( '+' | '-' ) Digit Digit ':' Digit Digit
+    | 'Z'
+    ;
+
+
+//-------------------------------------------------------------------------------------------------
+// REGULAR EXPRESSION LITERALS
+//-------------------------------------------------------------------------------------------------
+
+RegularExpressionLiteral
+    : '~/' RegexChar* '/' [igm]? [igm]? [igm]?
+    ;
+
+fragment
+RegexChar
+    : ~[/]
+    | '\\/'
+    ;
 
 
 //-------------------------------------------------------------------------------------------------

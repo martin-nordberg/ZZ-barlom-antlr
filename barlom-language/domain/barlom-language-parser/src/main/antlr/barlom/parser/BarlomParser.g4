@@ -47,13 +47,15 @@ functionCall
     ;
 
 literal
-    : IntegerLiteral
-//	| FloatingPointLiteral
+    : TextLiteral
+    | IntegerLiteral
+    | NumberLiteral
     | BooleanLiteral
     | SymbolLiteral
-    | TextLiteral
-//	| NothingLiteral
-	;
+    | DateTimeLiteral
+    | RegularExpressionLiteral
+//  | NothingLiteral
+    ;
 
 arguments
     : expression ( COMMA expression ) *
