@@ -1,0 +1,17 @@
+
+
+definePackage( #sample )
+sample.definePackage( #symbol_literals )
+
+sample.symbol_literals.defineConstant( #symbol1, #sample1 )
+
+sample.symbol_literals.defineConstant( #symbol2, #s )
+
+sample.symbol_literals.defineConstant( #symbol3, #S )
+
+sample.symbol_literals.defineConstant( #symbol4, #CYMBAL_SYMBOL )
+
+sample.symbol_literals.defineConstant( #symbol5, #_symbol' )
+
+
+

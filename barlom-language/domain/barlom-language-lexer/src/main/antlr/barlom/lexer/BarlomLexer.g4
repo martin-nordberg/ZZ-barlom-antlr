@@ -11,20 +11,10 @@ lexer grammar BarlomLexer;
 //-------------------------------------------------------------------------------------------------
 
 AND : 'and';
-CLASS : 'class';
-CONSTANT : 'constant';
-ENUMERATION : 'enumeration';
-EXTENDS : 'extends';
 // false (see below)
-FUNCTION : 'function';
-IMPLEMENTS : 'implements';
-IMPORT : 'import';
-INTERFACE : 'interface';
 NOT : 'not';
 OR : 'or';
-PACKAGE : 'package';
 // true (see below)
-VARIABLE : 'variable';
 XOR : 'xor';
 
 
@@ -133,12 +123,12 @@ TextChars
 
 fragment
 TextCharsNotDblQuote
-    : TextCharNotDblQuote *
+    : TextCharNotDblQuote*
     ;
 
 fragment
 TextCharsNotSnglQuote
-    : TextCharNotSnglQuote *
+    : TextCharNotSnglQuote*
     ;
 
 fragment
@@ -153,78 +143,78 @@ UnicodeEscape
 //-------------------------------------------------------------------------------------------------
 
 IntegerLiteral
-	:	DecimalIntegerLiteral
-	|	HexIntegerLiteral
-	|	BinaryIntegerLiteral
-	;
+    : DecimalIntegerLiteral
+    | HexIntegerLiteral
+    | BinaryIntegerLiteral
+    ;
 
 fragment
 DecimalIntegerLiteral
-	:	DecimalNumeral IntegerTypeSuffix?
-	;
+    : DecimalNumeral IntegerTypeSuffix?
+    ;
 
 fragment
 HexIntegerLiteral
-	:	HexNumeral IntegerTypeSuffix?
-	;
+    : HexNumeral IntegerTypeSuffix?
+    ;
 
 fragment
 BinaryIntegerLiteral
-	:	BinaryNumeral IntegerTypeSuffix?
-	;
+    : BinaryNumeral IntegerTypeSuffix?
+    ;
 
 fragment
 IntegerTypeSuffix
-	:	[gGiIlLsSyY]      // g = BigDecimal; i = Integer32; L = Integer64; s = Integer16; y= Integer8
-	;
+    : [uU]? [iLsy]      // i = BigInteger; L = Integer64; s = Integer16; y = Integer8 (case sensitive)
+    ;
 
 fragment
 DecimalNumeral
-	:	Digit (DigitOrUnderscore* Digit)?
-	;
+    : Digit (DigitOrUnderscore* Digit)?
+    ;
 
 fragment
 Digit
-	:	[0-9]
-	;
+    : [0-9]
+    ;
 
 fragment
 DigitOrUnderscore
-	:	Digit
-	|	'_'
-	;
+    : Digit
+    | '_'
+    ;
 
 fragment
 HexNumeral
-	:	'0' [xX] HexDigit (HexDigitOrUnderscore* HexDigit)?
-	;
+    : '0' [xX] HexDigit (HexDigitOrUnderscore* HexDigit)?
+    ;
 
 fragment
 HexDigit
-	:	[0-9a-fA-F]
-	;
+    : [0-9a-fA-F]
+    ;
 
 fragment
 HexDigitOrUnderscore
-	:	HexDigit
-	|	'_'
-	;
+    : HexDigit
+    | '_'
+    ;
 
 fragment
 BinaryNumeral
-	:	'0' [bB] BinaryDigit (BinaryDigitOrUnderscore* BinaryDigit)?
-	;
+    : '0' [bB] BinaryDigit (BinaryDigitOrUnderscore* BinaryDigit)?
+    ;
 
 fragment
 BinaryDigit
-	:	[01]
-	;
+    : [01]
+    ;
 
 fragment
 BinaryDigitOrUnderscore
-	:	BinaryDigit
-	|	'_'
-	;
+    : BinaryDigit
+    | '_'
+    ;
 
 
 //-------------------------------------------------------------------------------------------------
@@ -247,30 +237,35 @@ True : 'true';
 // IDENTIFIERS
 //-------------------------------------------------------------------------------------------------
 
-LowerCaseIdentifier
-    : LowerCaseIdentifierFirstChar IdentifierSubsequentChar *
-    ;
-
-UpperCaseIdentifier
-    : UpperCaseIdentifierFirstChar IdentifierSubsequentChar *
+Identifier
+    : IdentifierFirstChar IdentifierSubsequentChar* IdentifierLastChar?
     ;
 
 fragment
 IdentifierSubsequentChar
-    : [a-zA-Z0-9$_']
+    : [a-zA-Z0-9$_]
     // TODO: unicode
     ;
 
 fragment
-LowerCaseIdentifierFirstChar
-    : [a-z_]
-    // TODO: unicode characters (lower case)
+IdentifierLastChar
+    : IdentifierSubsequentChar
+    | '\''
     ;
 
 fragment
-UpperCaseIdentifierFirstChar
-    : [A-Z_]
-    // TODO: unicode characters (upper case)
+IdentifierFirstChar
+    : [A-Za-z_]
+    // TODO: unicode characters (lower case)
+    ;
+
+
+//-------------------------------------------------------------------------------------------------
+// Symbol Literals
+//-------------------------------------------------------------------------------------------------
+
+SymbolLiteral
+    : '#' IdentifierFirstChar IdentifierSubsequentChar* IdentifierLastChar?
     ;
 
 

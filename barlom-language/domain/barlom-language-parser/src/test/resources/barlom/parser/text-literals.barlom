@@ -1,36 +1,38 @@
 
 
-package sample.text_literals;
-
 // Text literals
 
-constant text1 = "sample";
+package( #sample ).package( #text_literals ) {
 
-"A summary-annotated string literal constant"
-constant text2 = "example";
+    constant( #text1, "sample" )
 
-constant text3 = 'single-quoted';
+    constant( #text2, "example", "A summary-annotated string literal constant" )
 
-constant text4 = 'It\'s "complicated"';
+    constant( #text3, 'single-quoted' )
 
-constant text5 : "Lots of 'escapes'"
-    = "\b\f\n\r\t\\";
+    constant( #text4, 'It\'s "complicated"' )
 
-constant text6 = "";
+    constant( #text5, "\b\f\n\r\t\\", "Lots of 'escapes'" )
 
-constant text7 = '';
+    constant( #text6, "" )
 
-constant text8 = '\u01EF\uABCD';
+    constant( #text7, '' )
 
-constant text9 = '\u{LEFT-POINTING DOUBLE ANGLE QUOTATION MARK}stuff between guillemets\u{RIGHT-POINTING DOUBLE ANGLE QUOTATION MARK}';
+    constant( #text8, '\u01EF\uABCD' )
 
-constant text10 = '''abcdefgh sfasf asdf asfd asdf asdf asdfasdf asdf asfd''';
+    constant( #text9, '\u{LEFT-POINTING DOUBLE ANGLE QUOTATION MARK}stuff between guillemets\u{RIGHT-POINTING DOUBLE ANGLE QUOTATION MARK}' )
 
-constant text11 = """
-                    line "1"
-                    line "2"
-                  """;
+    constant( #text10, '''abcdefgh sfasf asdf asfd asdf asdf asdfasdf asdf asfd''' )
 
-constant text12 = '''
-''';
+    constant( #text11, """
+                          line "1"
+                          line "2"
+                        """ )
+
+    constant( #text12, '''
+''' )
+
+}
+
+
 

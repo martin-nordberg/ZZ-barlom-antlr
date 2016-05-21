@@ -1,13 +1,12 @@
 
 
-package sample.boolean_literals;
+package( #sample ) {
+  package( #boolean_literals ) {
 
+    constant( #isGood, true )
+    constant( #isBad, false )
 
-// Boolean literals
-
-constant isGood = true;
-
-constant isBad = false;
-
+  }
+}
 
 

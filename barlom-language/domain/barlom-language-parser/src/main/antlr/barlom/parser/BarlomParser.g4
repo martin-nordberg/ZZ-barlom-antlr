@@ -21,92 +21,7 @@ parse : compilationUnit;
 //-------------------------------------------------------------------------------------------------
 
 compilationUnit
-    : packageDeclaration importDeclarations packagedElements EOF
-    ;
-
-
-importDeclaration
-    : IMPORT ucQualifiedIdentifier SEMICOLON
-    ;
-
-importDeclarations
-    : importDeclaration *
-    ;
-
-
-packagedElement
-    : classDeclaration
-    | constantDeclaration
-    | functionDeclaration
-    // TODO: more alternatives ...
-    ;
-
-packagedElements
-    : packagedElement +
-    ;
-
-
-packageDeclaration
-    : PACKAGE lcQualifiedIdentifier SEMICOLON
-    ;
-
-
-//-------------------------------------------------------------------------------------------------
-// ANNOTATIONS
-//-------------------------------------------------------------------------------------------------
-
-annotation
-    : TextLiteral
-    | LowerCaseIdentifier
-    ;
-
-leadingAnnotations
-    : ( annotation ) *
-    ;
-
-trailingAnnotations
-    : ( COLON annotation ) *
-    | typeDeclaration
-    ;
-
-//-------------------------------------------------------------------------------------------------
-// FUNCTIONS
-//-------------------------------------------------------------------------------------------------
-
-functionDeclaration
-    : leadingAnnotations FUNCTION LowerCaseIdentifier LPAREN parameters RPAREN trailingAnnotations
-      LBRACE /*TODO: statements*/ RBRACE
-    ;
-
-
-//-------------------------------------------------------------------------------------------------
-// CLASSES
-//-------------------------------------------------------------------------------------------------
-
-classDeclaration
-    : CLASS UpperCaseIdentifier LPAREN parameters RPAREN
-      extendsDeclaration implementsDeclaration LBRACE
-      classMembers
-      RBRACE
-    ;
-
-classMember
-    : constantDeclaration
-    | functionDeclaration
-    ;
-
-classMembers
-    : classMember *
-    ;
-
-extendsDeclaration
-    : EXTENDS typeDeclaration LPAREN arguments RPAREN
-    | /*nothing*/
-    ;
-
-implementsDeclaration
-    : IMPLEMENTS typeDeclaration ( COMMA typeDeclaration ) *
-    | /*nothing*/
+    : expressions
     ;
 
 
@@ -115,14 +30,27 @@ implementsDeclaration
 //-------------------------------------------------------------------------------------------------
 
 expression
-    : literal
+    : expression DOT functionCall
+    | expression DOT Identifier
+    | functionCall
+    | Identifier
+    | literal
     // TODO: more alternatives ...
+    ;
+
+expressions
+    : expression*
+    ;
+
+functionCall
+    : Identifier LPAREN arguments RPAREN ( LBRACE expressions RBRACE )?
     ;
 
 literal
     : IntegerLiteral
 //	| FloatingPointLiteral
     | BooleanLiteral
+    | SymbolLiteral
     | TextLiteral
 //	| NothingLiteral
 	;
@@ -130,46 +58,5 @@ literal
 arguments
     : expression ( COMMA expression ) *
     | /*nothing*/
-    ;
-
-
-//-------------------------------------------------------------------------------------------------
-// VARIABLES
-//-------------------------------------------------------------------------------------------------
-
-parameter
-    : LowerCaseIdentifier ( COLON typeDeclaration ) ?
-    ;
-
-parameters
-    : parameter ( COMMA parameter ) *
-    | /*nothing*/
-    ;
-
-constantDeclaration
-    : leadingAnnotations CONSTANT LowerCaseIdentifier trailingAnnotations ASSIGN expression SEMICOLON
-    ;
-
-
-//-------------------------------------------------------------------------------------------------
-// TYPE DECLARATIONS
-//-------------------------------------------------------------------------------------------------
-
-typeDeclaration
-    : UpperCaseIdentifier
-    // TODO: closure-like generics
-    ;
-
-
-//-------------------------------------------------------------------------------------------------
-// BASICS
-//-------------------------------------------------------------------------------------------------
-
-lcQualifiedIdentifier
-    : LowerCaseIdentifier ( DOT LowerCaseIdentifier )*
-    ;
-
-ucQualifiedIdentifier
-    : LowerCaseIdentifier ( DOT LowerCaseIdentifier )* DOT UpperCaseIdentifier
     ;
 

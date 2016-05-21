@@ -1,39 +1,39 @@
 
 
-package sample.integer_literals;
+package( #sample ).package( #integer_literals ) {
 
 
-// Integer literals (zero)
+    // Integer literals (zero)
 
-constant zint0 = 0;
+    constant( #zInt0, 0 )
 
-constant zint2 = 0x0;
+    constant( #zInt1, 0x0 )
 
-constant zint3 = 0b0;
+    constant( #zInt1', 0b0 )
 
-constant zint4 = 00y;
+    constant( #zInt2, 00y )
 
-constant zint5 = 0x0000s;
+    constant( #zInt3, 0x0000s )
 
-constant zint6 = 0b0000_0000i;
-
-
-// Integer literals (non-zero)
-
-constant int1 = 123_456;
-
-constant int2 = 0b1010101000011;
-
-constant int3 = 0xABCD_ef01;
+    constant( #zInt4, 0b0000_0000i )
 
 
-// Integer literals (long)
+    // Integer literals (non-zero)
 
-constant lint1 = 123456789L;
+    constant( #int1, 123_456 )
 
-constant lint2 = 0xCAFE_BABE_1234_0000l;
+    constant( #int2, 0b1010101000011 )
 
-constant lint3 = 2L;
+    constant( #int3, 0xABCD_ef01 )
 
 
+    // Integer literals (long)
+
+    constant( #lint1, 123456789L )
+
+    constant( #lint2, 0xCAFE_BABE_1234_0000L )
+
+    constant( #lint3, 2L )
+
+}
 

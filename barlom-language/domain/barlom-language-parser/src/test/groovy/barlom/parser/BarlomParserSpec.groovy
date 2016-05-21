@@ -8,7 +8,7 @@ import spock.lang.Specification
 /**
  * Specification for parsing a compilation unit.
  */
-class BarlomParserSpecB
+class BarlomParserSpec
     extends Specification {
 
     def static String parse( String fileName ) {
@@ -27,7 +27,7 @@ class BarlomParserSpecB
         return "Successful parse";
     }
 
-    def "Sample files are parsed successfully."( String fileName, String parseResult ) {
+    def "Literals are parsed successfully."( String fileName, String parseResult ) {
 
         expect:
         parse( fileName ) == parseResult
@@ -37,7 +37,7 @@ class BarlomParserSpecB
         "text-literals.barlom" | "Successful parse"
         "integer-literals.barlom" | "Successful parse"
         "boolean-literals.barlom" | "Successful parse"
-        "sample01.barlom" | "Successful parse"
+        "symbol-literals.barlom" | "Successful parse"
 
     }
 
