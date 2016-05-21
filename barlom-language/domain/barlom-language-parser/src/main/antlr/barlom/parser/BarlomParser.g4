@@ -54,6 +54,13 @@ arguments
 
 
 /**
+ * Parses an array literal.
+ */
+arrayLiteral
+    : LBRACKET ( expression ( COMMA expression )* )? RBRACKET
+    ;
+
+/**
  * Parses an expression.
  */
 expression
@@ -92,5 +99,6 @@ literal
     | DateTimeLiteral
     | RegularExpressionLiteral
     | NothingLiteral
+    | arrayLiteral
     ;
 

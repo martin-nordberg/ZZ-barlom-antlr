@@ -1,0 +1,13 @@
+
+
+package( #sample ) {
+  package( #array_literals ) {
+
+    constant( #empty, [] )
+    constant( #numbers, [ 1, 2, 3 ] )
+    constant( #strings, [ "a", "b", "c" ] )
+
+  }
+}
+
+
