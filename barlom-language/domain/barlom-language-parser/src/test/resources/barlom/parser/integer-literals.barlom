@@ -1,6 +1,6 @@
 
 
-package( #sample ).package( #integer_literals ) {
+package( #sample ).package( #integer_literals ) begin
 
 
     // Integer literals (zero)
@@ -35,5 +35,5 @@ package( #sample ).package( #integer_literals ) {
 
     constant( #lint3, 2L )
 
-}
+end
 

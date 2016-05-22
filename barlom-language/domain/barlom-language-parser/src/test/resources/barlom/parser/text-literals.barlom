@@ -2,7 +2,7 @@
 
 // Text Literals
 
-package( #sample ).package( #text_literals ) {
+package( #sample ).package( #text_literals ) begin
 
     constant( #text1, "sample" )
 
@@ -32,7 +32,7 @@ package( #sample ).package( #text_literals ) {
     constant( #text12, '''
 ''' )
 
-}
+end
 
 
 

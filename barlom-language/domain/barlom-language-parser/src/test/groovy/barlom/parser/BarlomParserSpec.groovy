@@ -38,11 +38,14 @@ class BarlomParserSpec
         "boolean-literals.barlom"  | "Successful parse"
         "datetime-literals.barlom" | "Successful parse"
         "integer-literals.barlom"  | "Successful parse"
+        "map-literals.barlom"      | "Successful parse"
         "nothing-literal.barlom"   | "Successful parse"
         "number-literals.barlom"   | "Successful parse"
         "regex-literals.barlom"    | "Successful parse"
+        "set-literals.barlom"      | "Successful parse"
         "symbol-literals.barlom"   | "Successful parse"
         "text-literals.barlom"     | "Successful parse"
+        "tuple-literals.barlom"    | "Successful parse"
 
     }
 

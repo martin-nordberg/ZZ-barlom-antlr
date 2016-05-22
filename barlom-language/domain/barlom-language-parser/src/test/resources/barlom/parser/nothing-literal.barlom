@@ -1,11 +1,11 @@
 
 
-package( #sample ) {
-  package( #nothing_literal ) {
+package( #sample ) begin
+  package( #nothing_literal ) begin
 
     constant( #inOthersWordsUndefined, nothing )
 
-  }
-}
+  end
+end
 
 

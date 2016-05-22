@@ -2,7 +2,7 @@
 
 // Regular Expression literals
 
-package( #sample ).package( #regex_literals ) {
+package( #sample ).package( #regex_literals ) begin
 
     constant( #regex1, ~/sample/ )
 
@@ -12,8 +12,7 @@ package( #sample ).package( #regex_literals ) {
 
     constant( #regex4, ~/..\/..AbC.*\//i )
 
-
-}
+end
 
 
 

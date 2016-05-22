@@ -60,6 +60,7 @@ arrayLiteral
     : LBRACKET ( expression ( COMMA expression )* )? RBRACKET
     ;
 
+
 /**
  * Parses an expression.
  */
@@ -79,13 +80,15 @@ expressions
     : expression*
     ;
 
+
 /**
  * Parses a function call optionally followed by a sequence of expressions to be executed in
  * the context of the result of the function call.
  */
 functionCall
-    : Identifier LPAREN arguments RPAREN ( LBRACE expressions RBRACE )?
+    : Identifier LPAREN arguments RPAREN ( BEGIN expressions END )?
     ;
+
 
 /**
  * Parses one of many kinds of literals.
@@ -100,5 +103,42 @@ literal
     | RegularExpressionLiteral
     | NothingLiteral
     | arrayLiteral
+    | mapLiteral
+    | setLiteral
+    | tupleLiteral
+    ;
+
+
+/**
+ * Parses one entry in a map literal.
+ */
+mapEntry
+    : expression TILDEARROW expression
+    ;
+
+/**
+ * Parses a map literal.
+ */
+mapLiteral
+    : LBRACE TILDEARROW RBRACE
+    | LBRACE mapEntry ( COMMA mapEntry )* RBRACE
+    ;
+
+
+/**
+ * Parses a set literal.
+ */
+setLiteral
+    : LBRACE ( expression ( COMMA expression )* )? RBRACE
+    ;
+
+
+/**
+ * Parses a tuple literal.
+ * TODO: not sure all is clear between tuple & function call.
+ */
+tupleLiteral
+    : LPAREN RPAREN
+    | LPAREN expression ( COMMA expression )+ RPAREN
     ;
 

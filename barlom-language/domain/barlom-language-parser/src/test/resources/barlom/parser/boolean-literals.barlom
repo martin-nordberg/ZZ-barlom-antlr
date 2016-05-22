@@ -1,12 +1,12 @@
 
 
-package( #sample ) {
-  package( #boolean_literals ) {
+package( #sample ) begin
+  package( #boolean_literals ) begin
 
     constant( #isGood, true )
     constant( #isBad, false )
 
-  }
-}
+  end
+end
 
 

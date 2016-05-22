@@ -1,6 +1,6 @@
 
 
-package( #sample ).package( #number_literals ) {
+package( #sample ).package( #number_literals ) begin
 
 
     // Number literals (zero)
@@ -32,5 +32,5 @@ package( #sample ).package( #number_literals ) {
 
     constant( #int6, 123.456E03 )
 
-}
+end
 
