@@ -92,6 +92,24 @@ XOR_ASSIGN : '^=';
 
 
 //-------------------------------------------------------------------------------------------------
+// GRAPH PUNCTUATION
+//-------------------------------------------------------------------------------------------------
+
+GRAPH_START : '[%%';
+GRAPH_END : '%%]';
+
+EDGE : '---';
+EDGE_LPAREN : '--(';
+EDGE_RPAREN : ')--';
+
+EDGE_LEFT : '<--';
+EDGE_LEFT_LPAREN : '<-(';
+
+EDGE_RIGHT : '-->';
+EDGE_RIGHT_RPAREN : ')->';
+
+
+//-------------------------------------------------------------------------------------------------
 // TEXT LITERALS
 //-------------------------------------------------------------------------------------------------
 
@@ -153,27 +171,10 @@ UnicodeEscape
 
 /**
  * Recognizes an integer literal. They can be decimal, hexadecimal, or binary. Underscores are
- * allowed. Suffixes specify the size of the sorage for the value.
+ * allowed. Suffixes specify the size of the storage for the value.
  */
 IntegerLiteral
-    : DecimalIntegerLiteral
-    | HexIntegerLiteral
-    | BinaryIntegerLiteral
-    ;
-
-fragment
-DecimalIntegerLiteral
-    : DecimalNumeral IntegerTypeSuffix?
-    ;
-
-fragment
-HexIntegerLiteral
-    : HexNumeral IntegerTypeSuffix?
-    ;
-
-fragment
-BinaryIntegerLiteral
-    : BinaryNumeral IntegerTypeSuffix?
+    : ( DecimalNumeral | HexNumeral | BinaryNumeral ) IntegerTypeSuffix?
     ;
 
 fragment
@@ -264,18 +265,8 @@ FloatTypeSuffix
  * Recognizes a Boolean literal (either true or false).
  */
 BooleanLiteral
-    : True
-    | False
-    ;
-
-fragment
-False
-    : 'false'
-    ;
-
-fragment
-True
     : 'true'
+    | 'false'
     ;
 
 
@@ -351,11 +342,6 @@ RegexSuffix
  * The literal "nothing", meaning an undefined value.
  */
 NothingLiteral
-    : NOTHING
-    ;
-
-fragment
-NOTHING
     : 'nothing'
     ;
 
@@ -368,7 +354,7 @@ NOTHING
  * Recognizes an identifier.
  */
 Identifier
-    : IdentifierFirstChar IdentifierSubsequentChar* IdentifierLastChar?
+    : IdentifierFirstChar IdentifierSubsequentChar* Prime?
     ;
 
 fragment
@@ -378,15 +364,14 @@ IdentifierSubsequentChar
     ;
 
 fragment
-IdentifierLastChar
-    : IdentifierSubsequentChar
-    | '\''
+Prime
+    : '\''
     ;
 
 fragment
 IdentifierFirstChar
     : [A-Za-z_]
-    // TODO: unicode characters (lower case)
+    // TODO: unicode characters
     ;
 
 
@@ -399,7 +384,7 @@ IdentifierFirstChar
  * When converted to or from text, the name and text are the same.
  */
 SymbolLiteral
-    : '#' IdentifierFirstChar IdentifierSubsequentChar* IdentifierLastChar?
+    : '#' IdentifierFirstChar IdentifierSubsequentChar* Prime?
     ;
 
 

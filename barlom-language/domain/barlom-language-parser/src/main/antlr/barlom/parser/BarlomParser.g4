@@ -91,6 +91,47 @@ functionCall
 
 
 /**
+ * Parses the declaration of an edge within a graph literal
+ */
+graphEdgeDeclaration
+    : graphVertexDeclaration graphEdgeArrowDeclaration graphVertexDeclaration
+    ;
+
+/**
+ * Parses the arrow portion of an edge declaration.
+ */
+graphEdgeArrowDeclaration
+    : EDGE
+    | EDGE_LPAREN Identifier EDGE_RPAREN
+    | EDGE_LEFT
+    | EDGE_LEFT_LPAREN Identifier EDGE_RPAREN
+    | EDGE_RIGHT
+    | EDGE_LPAREN Identifier EDGE_RIGHT_RPAREN
+    ;
+
+/**
+ * Parses a vertex or edge declaration within a graph literal.
+ */
+graphElementDeclaration
+    : graphVertexDeclaration | graphEdgeDeclaration
+    ;
+
+/**
+ * Parses a literal graph.
+ */
+graphLiteral
+    : GRAPH_START ( graphElementDeclaration ( COMMA graphElementDeclaration )* )? GRAPH_END
+    ;
+
+/**
+ * Parses a vertex declaration within a graph literal
+ */
+graphVertexDeclaration
+    : LBRACKET Identifier /*TODO( COLON typeExpression )*/ recordLiteral? RBRACKET
+    ;
+
+
+/**
  * Parses one of many kinds of literals.
  */
 literal
@@ -103,7 +144,9 @@ literal
     | RegularExpressionLiteral
     | NothingLiteral
     | arrayLiteral
+    | graphLiteral
     | mapLiteral
+    | recordLiteral
     | setLiteral
     | tupleLiteral
     ;
@@ -122,6 +165,22 @@ mapEntry
 mapLiteral
     : LBRACE TILDEARROW RBRACE
     | LBRACE mapEntry ( COMMA mapEntry )* RBRACE
+    ;
+
+
+/**
+ * Parses one entry in a record literal.
+ */
+recordEntry
+    : Identifier ASSIGN expression
+    ;
+
+/**
+ * Parses a record literal.
+ */
+recordLiteral
+    : LBRACE ASSIGN RBRACE
+    | LBRACE recordEntry ( COMMA recordEntry )* RBRACE
     ;
 
 
