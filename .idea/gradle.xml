@@ -11,7 +11,6 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
-            <option value="$PROJECT_DIR$/barlom-language/domain/barlom-language-lexer" />
             <option value="$PROJECT_DIR$/barlom-language/domain/barlom-language-parser" />
           </set>
         </option>

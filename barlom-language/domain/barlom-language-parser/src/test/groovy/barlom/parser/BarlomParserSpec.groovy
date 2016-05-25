@@ -1,6 +1,5 @@
 package barlom.parser
 
-import barlom.lexer.BarlomLexer
 import org.antlr.v4.runtime.ANTLRInputStream
 import org.antlr.v4.runtime.CommonTokenStream
 import spock.lang.Specification
@@ -30,10 +29,10 @@ class BarlomParserSpec
     def "Literals are parsed successfully."( String fileName, String parseResult ) {
 
         expect:
-        parse( fileName ) == parseResult
+        parse( "literals/" + fileName ) == parseResult
 
         where:
-        fileName | parseResult
+        fileName                   | parseResult
         "array-literals.barlom"    | "Successful parse"
         "boolean-literals.barlom"  | "Successful parse"
         "datetime-literals.barlom" | "Successful parse"
