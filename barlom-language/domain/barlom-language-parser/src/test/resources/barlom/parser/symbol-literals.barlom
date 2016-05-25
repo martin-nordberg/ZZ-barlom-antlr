@@ -1,17 +1,17 @@
 
 
-package( #sample )
-sample.package( #symbol_literals )
+package sample.symbol_literals begin
 
-sample.symbol_literals.defineConstant( #symbol1, #sample1 )
+  constant symbol1 = #sample1;
 
-sample.symbol_literals.defineConstant( #symbol2, #s )
+  constant symbol2 = #s;
 
-sample.symbol_literals.defineConstant( #symbol3, #S )
+  constant symbol3 = #S;
 
-sample.symbol_literals.defineConstant( #symbol4, #CYMBAL_SYMBOL )
+  constant symbol4 = #CYMBAL_SYMBOL;
 
-sample.symbol_literals.defineConstant( #symbol5, #_symbol' )
+  constant symbol5 = #_symbol';
 
+end
 
 

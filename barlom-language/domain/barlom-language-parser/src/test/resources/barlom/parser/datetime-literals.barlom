@@ -1,18 +1,23 @@
 
 
-package( #sample ) begin
-  package( #datetime_literals ) begin
+package sample.datetime_literals begin
 
-    constant( #time1, $2016-05-01$ )
-    constant( #time2, $2016-05-31T08:00$ )
-    constant( #time3, $T23:59$ )
-    constant( #time4, $2016-05-31T08:00:12.3$ )
-    constant( #time4, $2016-05-31T08:00:12.345$ )
-    constant( #time5, $2016-05-31T08:00+01:00$ )
-    constant( #time6, $2016-05-31T08:00-05:00$ )
-    constant( #time4, $2016-05-31T08:00:12.345Z$ )
+  constant time1 = $2016-05-01$;
 
-  end
+  constant time2 = $2016-05-31T08:00$;
+
+  constant time3 = $T23:59$;
+
+  constant time4 = $2016-05-31T08:00:12.3$;
+
+  constant time5 = $2016-05-31T08:00:12.345$;
+
+  constant time6 = $2016-05-31T08:00+01:00$;
+
+  constant time7 = $2016-05-31T08:00-05:00$;
+
+  constant time8 = $2016-05-31T08:00:12.345Z$;
+
 end
 
 

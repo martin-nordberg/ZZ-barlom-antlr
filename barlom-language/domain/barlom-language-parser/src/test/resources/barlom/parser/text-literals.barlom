@@ -2,35 +2,35 @@
 
 // Text Literals
 
-package( #sample ).package( #text_literals ) begin
+package sample.text_literals begin
 
-    constant( #text1, "sample" )
+  constant text1  = "sample";
 
-    constant( #text2, "example", "A summary-annotated string literal constant" )
+  constant text2 = "example";
 
-    constant( #text3, 'single-quoted' )
+  constant text3 = 'single-quoted';
 
-    constant( #text4, 'It\'s "complicated"' )
+  constant text4 = 'It\'s "complicated"';
 
-    constant( #text5, "\b\f\n\r\t\\", "Lots of 'escapes'" )
+  constant text5 = "\b\f\n\r\t\\";
 
-    constant( #text6, "" )
+  constant text6 = "";
 
-    constant( #text7, '' )
+  constant text7 = '';
 
-    constant( #text8, '\u01EF\uABCD' )
+  constant text8 = '\u01EF\uABCD';
 
-    constant( #text9, '\u{LEFT-POINTING DOUBLE ANGLE QUOTATION MARK}stuff between guillemets\u{RIGHT-POINTING DOUBLE ANGLE QUOTATION MARK}' )
+  constant text9 = '\u{LEFT-POINTING DOUBLE ANGLE QUOTATION MARK}stuff between guillemets\u{RIGHT-POINTING DOUBLE ANGLE QUOTATION MARK}';
 
-    constant( #text10, '''abcdefgh sfasf asdf asfd asdf asdf asdfasdf asdf asfd''' )
+  constant text10 = '''abcdefgh sfasf asdf asfd asdf asdf asdfasdf asdf asfd''';
 
-    constant( #text11, """
-                          line "1"
-                          line "2"
-                        """ )
+  constant text11 = """
+                      line "1"
+                      line "2"
+                    """;
 
-    constant( #text12, '''
-''' )
+  constant text12 = '''
+''';
 
 end
 

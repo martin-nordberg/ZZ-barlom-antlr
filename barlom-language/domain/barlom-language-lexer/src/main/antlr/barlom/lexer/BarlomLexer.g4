@@ -12,11 +12,15 @@ lexer grammar BarlomLexer;
 
 AND : 'and';
 BEGIN : 'begin';
+CONSTANT : 'constant';
 END : 'end';
 // false (see below)
+FUNCTION : 'function';
+IMPORT : 'import';
 NOT : 'not';
 // nothing (see below)
 OR : 'or';
+PACKAGE : 'package';
 // true (see below)
 XOR : 'xor';
 
@@ -351,16 +355,24 @@ NothingLiteral
 //-------------------------------------------------------------------------------------------------
 
 /**
- * Recognizes an identifier.
+ * Recognizes an identifier that starts with a lower case letter.
  */
-Identifier
-    : IdentifierFirstChar IdentifierSubsequentChar* Prime?
+LowerCaseIdentifier
+    : LowerCaseIdentifierFirstChar IdentifierSubsequentChar* Prime?
+    ;
+
+/**
+ * Recognizes an identifier that starts with an upper case letter.
+ */
+UpperCaseIdentifier
+    : UpperCaseIdentifierFirstChar IdentifierSubsequentChar* Prime?
     ;
 
 fragment
 IdentifierSubsequentChar
-    : [a-zA-Z0-9$_]
-    // TODO: unicode
+    : LowerCaseChar
+    | UpperCaseChar
+    | DigitOrUnderscore
     ;
 
 fragment
@@ -369,11 +381,26 @@ Prime
     ;
 
 fragment
-IdentifierFirstChar
-    : [A-Za-z_]
+LowerCaseIdentifierFirstChar
+    : '_'* LowerCaseChar
+    ;
+
+fragment
+LowerCaseChar
+    : [a-z]
     // TODO: unicode characters
     ;
 
+fragment
+UpperCaseIdentifierFirstChar
+    : '_'* UpperCaseChar
+    ;
+
+fragment
+UpperCaseChar
+    : [A-Z]
+    // TODO: unicode characters
+    ;
 
 //-------------------------------------------------------------------------------------------------
 // Symbol Literals
@@ -383,8 +410,12 @@ IdentifierFirstChar
  * Recognizes a symbol (sometimes called atom) - a value meant to represent a symbol in code.
  * When converted to or from text, the name and text are the same.
  */
-SymbolLiteral
-    : '#' IdentifierFirstChar IdentifierSubsequentChar* Prime?
+LowerCaseSymbolLiteral
+    : '#' LowerCaseIdentifierFirstChar IdentifierSubsequentChar* Prime?
+    ;
+
+UpperCaseSymbolLiteral
+    : '#' UpperCaseIdentifierFirstChar IdentifierSubsequentChar* Prime?
     ;
 
 

@@ -1,11 +1,9 @@
 
 
-package( #sample ) begin
-  package( #nothing_literal ) begin
+package sample.nothing_literal begin
 
-    constant( #inOthersWordsUndefined, nothing )
+  constant inOthersWordsUndefined = nothing;
 
-  end
 end
 
 

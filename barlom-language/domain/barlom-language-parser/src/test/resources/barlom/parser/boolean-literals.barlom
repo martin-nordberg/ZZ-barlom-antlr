@@ -1,12 +1,10 @@
 
 
-package( #sample ) begin
-  package( #boolean_literals ) begin
+package sample.boolean_literals begin
 
-    constant( #isGood, true )
-    constant( #isBad, false )
+  constant isGood = true;
 
-  end
+  constant isBad = false;
+
 end
-
 

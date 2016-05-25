@@ -1,13 +1,13 @@
 
 
-package( #sample ) begin
-  package( #map_literals ) begin
+package sample.map_literals begin
 
-    constant( #empty, {~>} )
-    constant( #numbers, { "one"~>1, "two"~>2, "three"~>3 } )
-    constant( #letters, { "a" ~> "A", "b" ~> "B", "c" ~> "C" } )
+  constant empty = {~>};
 
-  end
+  constant numbers = { "one"~>1, "two"~>2, "three"~>3 };
+
+  constant letters = { "a" ~> "A", "b" ~> "B", "c" ~> "C" };
+
 end
 
 

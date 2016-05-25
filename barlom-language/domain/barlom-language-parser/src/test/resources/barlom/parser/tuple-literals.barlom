@@ -1,13 +1,13 @@
 
 
-package( #sample ) begin
-  package( #tuple_literals ) begin
+package sample.tuple_literals begin
 
-    constant( #empty, () )
-    constant( #numbers, [ ( "one", 1 ), ("two", 2), ("three", 3) ] )
-    constant( #letters, ( "a", "b", "c" ) )
+  constant empty = ();
 
-  end
+  constant numbers = [ ( "one", 1 ), ("two", 2), ("three", 3) ];
+
+  constant letters = ( "a", "b", "c" );
+
 end
 
 

@@ -1,29 +1,28 @@
 
 
-package( #sample ) begin
-  package( #boolean_literals ) begin
+package sample.graph_literals begin
 
-    constant( #graph0, [%% %%] )
+  constant graph0 = [%% %%];
 
-    constant( #graph1, [%%
-        [a]
-    %%] )
+  constant graph1 = [%%
+    [a]
+  %%];
 
-    constant( #graph2, [%%
-        [a {x=1, y=3}],
-        [b],
-        [c {w=4}],
-        [d],
+  constant graph2 = [%%
+    [a {x=1, y=3}],
+    [b],
+    [c {w=4}],
+    [d],
 
-        [a]---[b],
-        [b]-->[c],
-        [c]<--[d],
-        [a]--(q)--[c],
-        [b]--(r)->[d],
-        [c]<-(s)--[d]
+    [a]---[b],
+    [b]-->[c],
+    [c]<--[d],
+    [a]--(q)--[c],
+    [b]--(r)->[d],
+    [c]<-(s)--[d]
 
-    %%] )
-  end
+  %%];
+
 end
 
 

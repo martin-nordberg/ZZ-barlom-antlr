@@ -29,7 +29,60 @@ parse
  * Parses an entire Barlom source file.
  */
 compilationUnit
-    : expressions EOF
+    : packageDeclaration EOF
+    ;
+
+
+importDeclaration
+    : IMPORT ucQualifiedIdentifier SEMICOLON
+    ;
+
+importDeclarations
+    : importDeclaration *
+    ;
+
+
+packagedElement
+    : constantDeclaration
+    | functionDeclaration
+    // TODO: more alternatives ...
+    ;
+
+packagedElements
+    : packagedElement +
+    ;
+
+
+packageDeclaration
+    : PACKAGE lcQualifiedIdentifier BEGIN importDeclarations packagedElements END
+    ;
+
+
+//-------------------------------------------------------------------------------------------------
+// ANNOTATIONS
+//-------------------------------------------------------------------------------------------------
+
+annotation
+    : TextLiteral
+    | LowerCaseIdentifier
+    ;
+
+leadingAnnotations
+    : ( annotation ) *
+    ;
+
+trailingAnnotations
+    : ( COLON annotation ) *
+    | typeDeclaration
+    ;
+
+//-------------------------------------------------------------------------------------------------
+// FUNCTIONS
+//-------------------------------------------------------------------------------------------------
+
+functionDeclaration
+    : leadingAnnotations FUNCTION LowerCaseIdentifier LPAREN parameters RPAREN trailingAnnotations
+      LBRACE /*TODO: statements*/ RBRACE
     ;
 
 
@@ -58,9 +111,9 @@ arguments
  */
 expression
     : expression DOT functionCall
-    | expression DOT Identifier
+    | expression DOT LowerCaseIdentifier
     | functionCall
-    | Identifier
+    | LowerCaseIdentifier
     | literal
     // TODO: more alternatives ...
     ;
@@ -78,7 +131,35 @@ expressions
  * the context of the result of the function call.
  */
 functionCall
-    : Identifier LPAREN arguments RPAREN ( BEGIN expressions END )?
+    : LowerCaseIdentifier LPAREN arguments RPAREN ( BEGIN expressions END )?
+    ;
+
+
+//-------------------------------------------------------------------------------------------------
+// VARIABLES
+//-------------------------------------------------------------------------------------------------
+
+parameter
+    : LowerCaseIdentifier ( COLON typeDeclaration ) ?
+    ;
+
+parameters
+    : parameter ( COMMA parameter ) *
+    | /*nothing*/
+    ;
+
+constantDeclaration
+    : leadingAnnotations CONSTANT LowerCaseIdentifier trailingAnnotations ASSIGN expression SEMICOLON
+    ;
+
+
+//-------------------------------------------------------------------------------------------------
+// TYPE DECLARATIONS
+//-------------------------------------------------------------------------------------------------
+
+typeDeclaration
+    : UpperCaseIdentifier
+    // TODO: closure-like generics
     ;
 
 
@@ -107,11 +188,11 @@ graphEdgeDeclaration
  */
 graphEdgeArrowDeclaration
     : EDGE
-    | EDGE_LPAREN Identifier EDGE_RPAREN
+    | EDGE_LPAREN LowerCaseIdentifier EDGE_RPAREN
     | EDGE_LEFT
-    | EDGE_LEFT_LPAREN Identifier EDGE_RPAREN
+    | EDGE_LEFT_LPAREN LowerCaseIdentifier EDGE_RPAREN
     | EDGE_RIGHT
-    | EDGE_LPAREN Identifier EDGE_RIGHT_RPAREN
+    | EDGE_LPAREN LowerCaseIdentifier EDGE_RIGHT_RPAREN
     ;
 
 /**
@@ -132,7 +213,7 @@ graphLiteral
  * Parses a vertex declaration within a graph literal
  */
 graphVertexDeclaration
-    : LBRACKET Identifier /*TODO( COLON typeExpression )*/ recordLiteral? RBRACKET
+    : LBRACKET LowerCaseIdentifier /*TODO( COLON typeExpression )*/ recordLiteral? RBRACKET
     ;
 
 
@@ -144,10 +225,11 @@ literal
     | IntegerLiteral
     | NumberLiteral
     | BooleanLiteral
-    | SymbolLiteral
     | DateTimeLiteral
     | RegularExpressionLiteral
     | NothingLiteral
+    | LowerCaseSymbolLiteral
+    | UpperCaseSymbolLiteral
     | arrayLiteral
     | graphLiteral
     | mapLiteral
@@ -177,7 +259,7 @@ mapLiteral
  * Parses one entry in a record literal.
  */
 recordEntry
-    : Identifier ASSIGN expression
+    : LowerCaseIdentifier ASSIGN expression
     ;
 
 /**
@@ -205,5 +287,19 @@ tupleLiteral
     : LPAREN RPAREN
     | LPAREN expression ( COMMA expression )+ RPAREN
     ;
+
+
+//-------------------------------------------------------------------------------------------------
+// BASICS
+//-------------------------------------------------------------------------------------------------
+
+lcQualifiedIdentifier
+    : LowerCaseIdentifier ( DOT LowerCaseIdentifier )*
+    ;
+
+ucQualifiedIdentifier
+    : LowerCaseIdentifier ( DOT LowerCaseIdentifier )* DOT UpperCaseIdentifier
+    ;
+
 
 //-------------------------------------------------------------------------------------------------

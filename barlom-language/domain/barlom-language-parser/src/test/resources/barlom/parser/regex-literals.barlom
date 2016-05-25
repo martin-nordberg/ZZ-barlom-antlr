@@ -2,15 +2,15 @@
 
 // Regular Expression literals
 
-package( #sample ).package( #regex_literals ) begin
+package sample.regex_literals begin
 
-    constant( #regex1, ~/sample/ )
+  constant regex1 = ~/sample/;
 
-    constant( #regex2, ~/asasdf adf.*[asdfsadf]/mgi )
+  constant regex2 = ~/asasdf adf.*[asdfsadf]/mgi;
 
-    constant( #regex3, ~/\// )
+  constant regex3 = ~/\//;
 
-    constant( #regex4, ~/..\/..AbC.*\//i )
+  constant regex4 = ~/..\/..AbC.*\//i;
 
 end
 
