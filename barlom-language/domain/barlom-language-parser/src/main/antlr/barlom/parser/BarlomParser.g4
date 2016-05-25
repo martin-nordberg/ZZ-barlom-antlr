@@ -54,14 +54,6 @@ arguments
 
 
 /**
- * Parses an array literal.
- */
-arrayLiteral
-    : LBRACKET ( expression ( COMMA expression )* )? RBRACKET
-    ;
-
-
-/**
  * Parses an expression.
  */
 expression
@@ -87,6 +79,19 @@ expressions
  */
 functionCall
     : Identifier LPAREN arguments RPAREN ( BEGIN expressions END )?
+    ;
+
+
+//-------------------------------------------------------------------------------------------------
+// LITERALS
+//-------------------------------------------------------------------------------------------------
+
+
+/**
+ * Parses an array literal.
+ */
+arrayLiteral
+    : LBRACKET ( expression ( COMMA expression )* )? RBRACKET
     ;
 
 
@@ -201,3 +206,4 @@ tupleLiteral
     | LPAREN expression ( COMMA expression )+ RPAREN
     ;
 
+//-------------------------------------------------------------------------------------------------
