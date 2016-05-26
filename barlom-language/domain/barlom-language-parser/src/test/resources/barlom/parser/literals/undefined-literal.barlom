@@ -1,0 +1,9 @@
+
+
+package sample.undefined_literal begin
+
+  constant inOthersWordsUndefined = undefined;
+
+end
+
+

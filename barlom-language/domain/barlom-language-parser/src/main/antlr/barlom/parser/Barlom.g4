@@ -28,27 +28,42 @@ compilationUnit
     : packageDeclaration EOF
     ;
 
-
+/**
+ * Parses an import declaration.
+ */
 importDeclaration
     : IMPORT ucQualifiedIdentifier SEMICOLON
     ;
 
+/**
+ * Parses a sequence of import declarations.
+ */
 importDeclarations
     : importDeclaration *
     ;
 
 
+/**
+ * Parses a language element allowed in a package.
+ */
 packagedElement
     : constantDeclaration
+    | variableDeclaration
     | functionDeclaration
     // TODO: more alternatives ...
     ;
 
+/**
+ * Parses a sequence of elements within a package.
+ */
 packagedElements
     : packagedElement +
     ;
 
 
+/**
+ * Parses a package declaration and its contents.
+ */
 packageDeclaration
     : PACKAGE lcQualifiedIdentifier BEGIN importDeclarations packagedElements END
     ;
@@ -58,24 +73,37 @@ packageDeclaration
 // ANNOTATIONS
 //-------------------------------------------------------------------------------------------------
 
+/**
+ * Parses one annotation.
+ */
 annotation
     : TextLiteral
-    | LowerCaseIdentifier
-    ;
-
-leadingAnnotations
-    : ( annotation ) *
-    ;
-
-trailingAnnotations
-    : ( COLON annotation ) *
+    | LowerCaseIdentifier ( LPAREN arguments RPAREN )?
     | typeDeclaration
     ;
+
+/**
+ * Parses a sequence of annotations preceding a declaration.
+ */
+leadingAnnotations
+    : ( annotation )*
+    ;
+
+/**
+ * Parses a sequence of annotations following a declaration.
+ */
+trailingAnnotations
+    : ( COLON annotation+ )?
+    ;
+
 
 //-------------------------------------------------------------------------------------------------
 // FUNCTIONS
 //-------------------------------------------------------------------------------------------------
 
+/**
+ * Parses a variable declaration.
+ */
 functionDeclaration
     : leadingAnnotations FUNCTION LowerCaseIdentifier LPAREN parameters RPAREN trailingAnnotations
       LBRACE /*TODO: statements*/ RBRACE
@@ -135,8 +163,19 @@ functionCall
 // VARIABLES
 //-------------------------------------------------------------------------------------------------
 
+/**
+ * Parses the declaration of a value that cannot be changed once initialized.
+ */
+constantDeclaration
+    : leadingAnnotations CONSTANT LowerCaseIdentifier trailingAnnotations ASSIGN expression SEMICOLON
+    ;
+
+
+/**
+ * Parses the declaration of a function parameter.
+ */
 parameter
-    : LowerCaseIdentifier ( COLON typeDeclaration ) ?
+    : LowerCaseIdentifier trailingAnnotations
     ;
 
 parameters
@@ -144,9 +183,11 @@ parameters
     | /*nothing*/
     ;
 
-constantDeclaration
-    : leadingAnnotations CONSTANT LowerCaseIdentifier trailingAnnotations ASSIGN expression SEMICOLON
+
+variableDeclaration
+    : leadingAnnotations VARIABLE LowerCaseIdentifier trailingAnnotations ASSIGN expression SEMICOLON
     ;
+
 
 
 //-------------------------------------------------------------------------------------------------
@@ -223,7 +264,7 @@ literal
     | BooleanLiteral
     | DateTimeLiteral
     | RegularExpressionLiteral
-    | NothingLiteral
+    | UndefinedLiteral
     | LowerCaseSymbolLiteral
     | UpperCaseSymbolLiteral
     | arrayLiteral
@@ -316,10 +357,11 @@ END : 'end';
 FUNCTION : 'function';
 IMPORT : 'import';
 NOT : 'not';
-// nothing (see below)
 OR : 'or';
 PACKAGE : 'package';
 // true (see below)
+// undefined (see below)
+VARIABLE : 'variable';
 XOR : 'xor';
 
 
@@ -637,14 +679,14 @@ RegexSuffix
 
 
 //-------------------------------------------------------------------------------------------------
-// Nothing Literal
+// Undefined Literal
 //-------------------------------------------------------------------------------------------------
 
 /**
- * The literal "nothing", meaning an undefined value.
+ * The literal "undefined", meaning an undefined value.
  */
-NothingLiteral
-    : 'nothing'
+UndefinedLiteral
+    : 'undefined'
     ;
 
 
@@ -722,11 +764,15 @@ UpperCaseSymbolLiteral
 //-------------------------------------------------------------------------------------------------
 
 BLOCK_COMMENT
-    :   '/*' .*? '*/' -> skip
+    : '/*' .*? '*/' -> skip
     ;
 
 LINE_COMMENT
-    :   '//' ~[\r\n]* -> skip
+    : '//' ~[\r\n]* -> skip
+    ;
+
+ERROR_UNCLOSED_BLOCK_COMMENT
+    : '/*' .*? EOF
     ;
 
 

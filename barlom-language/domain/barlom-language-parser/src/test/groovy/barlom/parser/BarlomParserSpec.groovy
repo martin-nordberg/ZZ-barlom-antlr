@@ -39,7 +39,6 @@ class BarlomParserSpec
         "graph-literals.barlom"    | "Successful parse"
         "integer-literals.barlom"  | "Successful parse"
         "map-literals.barlom"      | "Successful parse"
-        "nothing-literal.barlom"   | "Successful parse"
         "number-literals.barlom"   | "Successful parse"
         "record-literals.barlom"   | "Successful parse"
         "regex-literals.barlom"    | "Successful parse"
@@ -47,6 +46,7 @@ class BarlomParserSpec
         "symbol-literals.barlom"   | "Successful parse"
         "text-literals.barlom"     | "Successful parse"
         "tuple-literals.barlom"    | "Successful parse"
+        "undefined-literal.barlom" | "Successful parse"
 
     }
 

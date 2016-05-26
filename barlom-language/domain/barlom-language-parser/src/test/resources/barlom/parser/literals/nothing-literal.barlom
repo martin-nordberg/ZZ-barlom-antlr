@@ -1,9 +1,0 @@
-
-
-package sample.nothing_literal begin
-
-  constant inOthersWordsUndefined = nothing;
-
-end
-
-
