@@ -33,6 +33,7 @@ class BarlomParserSpec
 
         where:
         fileName                      | parseResult
+        "anonymous-literal.barlom"    | "Successful parse"
         "array-literals.barlom"       | "Successful parse"
         "boolean-literals.barlom"     | "Successful parse"
         "datetime-literals.barlom"    | "Successful parse"

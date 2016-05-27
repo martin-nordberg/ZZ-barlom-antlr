@@ -1,0 +1,12 @@
+
+
+package sample.version_literals begin
+
+  // Version literals -- TODO: use these in package declarations
+
+  constant v1 = 1.0.1;
+
+  constant v2 = 2.3.9;
+
+end
+

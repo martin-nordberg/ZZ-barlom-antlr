@@ -32,7 +32,7 @@ compilationUnit
  * Parses an import declaration.
  */
 importDeclaration
-    : IMPORT ucQualifiedIdentifier SEMICOLON
+    : IMPORT qualifiedIdentifier SEMICOLON
     ;
 
 /**
@@ -65,7 +65,7 @@ packagedElements
  * Parses a package declaration and its contents.
  */
 packageDeclaration
-    : PACKAGE lcQualifiedIdentifier BEGIN importDeclarations packagedElements END
+    : PACKAGE qualifiedIdentifier BEGIN importDeclarations packagedElements END
     ;
 
 
@@ -184,6 +184,9 @@ parameters
     ;
 
 
+/**
+ * Parses the declaration of a value that can be changed after it has been initialized.
+ */
 variableDeclaration
     : leadingAnnotations VARIABLE Identifier trailingAnnotations ASSIGN expression SEMICOLON
     ;
@@ -266,12 +269,14 @@ literal
     | RegularExpressionLiteral
     | UndefinedLiteral
     | SymbolLiteral
+    | VersionLiteral
     | arrayLiteral
     | graphLiteral
     | mapLiteral
     | structureLiteral
     | setLiteral
     | tupleLiteral
+    | AnonymousLiteral
     ;
 
 
@@ -307,7 +312,7 @@ structureEntry
     ;
 
 /**
- * Parses a record literal.
+ * Parses a structure literal.
  */
 structureLiteral
     : LBRACE ASSIGN RBRACE
@@ -329,12 +334,8 @@ tupleLiteral
 // BASICS
 //-------------------------------------------------------------------------------------------------
 
-lcQualifiedIdentifier
+qualifiedIdentifier
     : Identifier ( DOT Identifier )*
-    ;
-
-ucQualifiedIdentifier
-    : Identifier ( DOT Identifier )* DOT Identifier
     ;
 
 
@@ -476,13 +477,13 @@ EscapeSequence
 
 fragment
 TextCharNotDblQuote
-    : ~["\\]
+    : ~["\\\n]
     | EscapeSequence
     ;
 
 fragment
 TextCharNotSnglQuote
-    : ~['\\]
+    : ~['\\\n]
     | EscapeSequence
     ;
 
@@ -507,6 +508,12 @@ UnicodeEscape
     | '\\u{' [A-Z \-]+ '}'    // Unicode character by name. See http://unicode.org/charts/charindex.html#T
     ;
 
+ERROR_UNCLOSED_TEXT
+    : '"' TextCharsNotDblQuote '\n'
+    | '\'' TextCharsNotSnglQuote '\n'
+    | '"""' ( '"'? '"'? TextCharNotDblQuote )* EOF
+    | '\'\'\'' ( '\''? '\''? TextCharNotSnglQuote )* EOF
+    ;
 
 //-------------------------------------------------------------------------------------------------
 // INTEGER LITERALS
@@ -597,6 +604,18 @@ ExponentPart
 fragment
 FloatTypeSuffix
     : [dDfFgG]           // D = 64 bits, f = 32 bits, G = BigDecimal
+    ;
+
+
+//-------------------------------------------------------------------------------------------------
+// VERSION LITERALS
+//-------------------------------------------------------------------------------------------------
+
+/**
+ * Recognizes a three-level semantic version
+ */
+VersionLiteral
+    : DecimalNumeral '.' DecimalNumeral '.' DecimalNumeral
     ;
 
 

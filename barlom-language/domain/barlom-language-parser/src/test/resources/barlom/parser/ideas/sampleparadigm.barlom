@@ -1,30 +1,51 @@
 
 
-paradigm algebraic_data_type;
-paradigm functional;
-paradigm graph_oriented;
-paradigm logic;
-paradigm object_oriented;
-paradigm structural;
-paradigm tree_oriented;
+module stuff.specialstuff@1.1.0
+  : contracted
+    dependencies( [
+      lib.gunk@2.1.1
+    ] )
+    documented
+    paradigms( [
+      algebraic,
+      annotational,
+      functional,
+      graph_oriented,
+      logic,
+      object_oriented,
+      structural,
+      tree_oriented
+    ] )
+    tested
+    type_checked
+    versioned
+begin
 
+  synonym extra = lib.gunk.extra@2.1.1;
 
-package stuff.specialstuff( 1.0.0 ) begin
-
-  function doStuff( 1.0.1, x , y ) begin
+  function doStuff@1.0.1( x , y ) begin
     return x + y;
   end
 
-  function doStuff( 1.1.0, x , y ) begin
-    return x + y + 42;
+  function doStuff@1.1.0( x , y ) begin
+    return x + y + extra( x, y );
   end
+
+  function factorial( n : Integer32 )
+    : "The factorial function (@1.0.0 implicitly) is defined in recursive fragments.";
+  function factorial( 0 )
+    : "The base case"
+    return 1;
+  function factorial( n )
+    : "Tail recursion"
+    return n * factorial( n - 1 );
 
 end
 
 
-package stuff.specialstuff( 2.0.0 ) begin
+module stuff.specialstuff@2.0.0 begin
 
-  function doMore( 2.0.0, a ) begin
+  function doMore@2.0.0( a ) begin
     return a^2;
   end
 

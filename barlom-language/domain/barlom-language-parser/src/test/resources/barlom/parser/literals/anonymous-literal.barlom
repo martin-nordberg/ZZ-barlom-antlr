@@ -1,0 +1,9 @@
+
+
+package sample.anonymous_literal begin
+
+  constant curried = f( 3, _, 4 );
+
+end
+
+

@@ -7,11 +7,11 @@ package sample.one( plugin_package )
     """ )
 begin
 
-  record_type Example : defined_in( "one/Example.barlom" );
+  structure.type Example : defined_in( "one/Example.barlom" );
 
   function doIt : defined_in( "one/doIt.barlom" );
 
-  object_type MyWidget : defined_in( "one/MyWidget.barlom" );
+  object.type MyWidget : defined_in( "one/MyWidget.barlom" );
 
   package innards : defined_in( "one/innards.barlom" );
 
