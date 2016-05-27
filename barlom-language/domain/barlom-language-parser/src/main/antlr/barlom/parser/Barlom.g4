@@ -78,7 +78,7 @@ packageDeclaration
  */
 annotation
     : TextLiteral
-    | LowerCaseIdentifier ( LPAREN arguments RPAREN )?
+    | Identifier ( LPAREN arguments RPAREN )?
     | typeDeclaration
     ;
 
@@ -105,7 +105,7 @@ trailingAnnotations
  * Parses a variable declaration.
  */
 functionDeclaration
-    : leadingAnnotations FUNCTION LowerCaseIdentifier LPAREN parameters RPAREN trailingAnnotations
+    : leadingAnnotations FUNCTION Identifier LPAREN parameters RPAREN trailingAnnotations
       LBRACE /*TODO: statements*/ RBRACE
     ;
 
@@ -135,9 +135,9 @@ arguments
  */
 expression
     : expression DOT functionCall
-    | expression DOT LowerCaseIdentifier
+    | expression DOT Identifier
     | functionCall
-    | LowerCaseIdentifier
+    | Identifier
     | literal
     // TODO: more alternatives ...
     ;
@@ -155,7 +155,7 @@ expressions
  * the context of the result of the function call.
  */
 functionCall
-    : LowerCaseIdentifier LPAREN arguments RPAREN ( BEGIN expressions END )?
+    : Identifier LPAREN arguments RPAREN ( BEGIN expressions END )?
     ;
 
 
@@ -167,7 +167,7 @@ functionCall
  * Parses the declaration of a value that cannot be changed once initialized.
  */
 constantDeclaration
-    : leadingAnnotations CONSTANT LowerCaseIdentifier trailingAnnotations ASSIGN expression SEMICOLON
+    : leadingAnnotations CONSTANT Identifier trailingAnnotations ASSIGN expression SEMICOLON
     ;
 
 
@@ -175,7 +175,7 @@ constantDeclaration
  * Parses the declaration of a function parameter.
  */
 parameter
-    : LowerCaseIdentifier trailingAnnotations
+    : Identifier trailingAnnotations
     ;
 
 parameters
@@ -185,7 +185,7 @@ parameters
 
 
 variableDeclaration
-    : leadingAnnotations VARIABLE LowerCaseIdentifier trailingAnnotations ASSIGN expression SEMICOLON
+    : leadingAnnotations VARIABLE Identifier trailingAnnotations ASSIGN expression SEMICOLON
     ;
 
 
@@ -195,7 +195,7 @@ variableDeclaration
 //-------------------------------------------------------------------------------------------------
 
 typeDeclaration
-    : UpperCaseIdentifier
+    : Identifier
     // TODO: closure-like generics
     ;
 
@@ -225,11 +225,11 @@ graphEdgeDeclaration
  */
 graphEdgeArrowDeclaration
     : EDGE
-    | EDGE_LPAREN LowerCaseIdentifier EDGE_RPAREN
+    | EDGE_LPAREN Identifier EDGE_RPAREN
     | EDGE_LEFT
-    | EDGE_LEFT_LPAREN LowerCaseIdentifier EDGE_RPAREN
+    | EDGE_LEFT_LPAREN Identifier EDGE_RPAREN
     | EDGE_RIGHT
-    | EDGE_LPAREN LowerCaseIdentifier EDGE_RIGHT_RPAREN
+    | EDGE_LPAREN Identifier EDGE_RIGHT_RPAREN
     ;
 
 /**
@@ -250,7 +250,7 @@ graphLiteral
  * Parses a vertex declaration within a graph literal
  */
 graphVertexDeclaration
-    : LBRACKET LowerCaseIdentifier /*TODO( COLON typeExpression )*/ recordLiteral? RBRACKET
+    : LBRACKET Identifier /*TODO( COLON typeExpression )*/ structureLiteral? RBRACKET
     ;
 
 
@@ -265,12 +265,11 @@ literal
     | DateTimeLiteral
     | RegularExpressionLiteral
     | UndefinedLiteral
-    | LowerCaseSymbolLiteral
-    | UpperCaseSymbolLiteral
+    | SymbolLiteral
     | arrayLiteral
     | graphLiteral
     | mapLiteral
-    | recordLiteral
+    | structureLiteral
     | setLiteral
     | tupleLiteral
     ;
@@ -293,26 +292,26 @@ mapLiteral
 
 
 /**
- * Parses one entry in a record literal.
+ * Parses a set literal.
  */
-recordEntry
-    : LowerCaseIdentifier ASSIGN expression
+setLiteral
+    : LBRACE ( expression ( COMMA expression )* )? RBRACE
+    ;
+
+
+/**
+ * Parses one entry in a structure literal.
+ */
+structureEntry
+    : Identifier ASSIGN expression
     ;
 
 /**
  * Parses a record literal.
  */
-recordLiteral
+structureLiteral
     : LBRACE ASSIGN RBRACE
-    | LBRACE recordEntry ( COMMA recordEntry )* RBRACE
-    ;
-
-
-/**
- * Parses a set literal.
- */
-setLiteral
-    : LBRACE ( expression ( COMMA expression )* )? RBRACE
+    | LBRACE structureEntry ( COMMA structureEntry )* RBRACE
     ;
 
 
@@ -331,11 +330,11 @@ tupleLiteral
 //-------------------------------------------------------------------------------------------------
 
 lcQualifiedIdentifier
-    : LowerCaseIdentifier ( DOT LowerCaseIdentifier )*
+    : Identifier ( DOT Identifier )*
     ;
 
 ucQualifiedIdentifier
-    : LowerCaseIdentifier ( DOT LowerCaseIdentifier )* DOT UpperCaseIdentifier
+    : Identifier ( DOT Identifier )* DOT Identifier
     ;
 
 
@@ -679,7 +678,7 @@ RegexSuffix
 
 
 //-------------------------------------------------------------------------------------------------
-// Undefined Literal
+// UNDEFINED LITERAL
 //-------------------------------------------------------------------------------------------------
 
 /**
@@ -691,27 +690,36 @@ UndefinedLiteral
 
 
 //-------------------------------------------------------------------------------------------------
+// ANONYMOUS LITERAL
+//-------------------------------------------------------------------------------------------------
+
+/**
+ * The literal "_", meaning an unnamed or unknown value.
+ */
+AnonymousLiteral
+    : '_'
+    ;
+
+
+//-------------------------------------------------------------------------------------------------
 // IDENTIFIERS
 //-------------------------------------------------------------------------------------------------
 
 /**
- * Recognizes an identifier that starts with a lower case letter.
+ * Recognizes an identifier.
  */
-LowerCaseIdentifier
-    : LowerCaseIdentifierFirstChar IdentifierSubsequentChar* Prime?
-    ;
-
-/**
- * Recognizes an identifier that starts with an upper case letter.
- */
-UpperCaseIdentifier
-    : UpperCaseIdentifierFirstChar IdentifierSubsequentChar* Prime?
+Identifier
+    : IdentifierPrefix IdentifierBodyChar* Prime?
     ;
 
 fragment
-IdentifierSubsequentChar
-    : LowerCaseChar
-    | UpperCaseChar
+IdentifierPrefix
+    : '_'* IdentifierChar
+    ;
+
+fragment
+IdentifierBodyChar
+    : IdentifierChar
     | DigitOrUnderscore
     ;
 
@@ -721,41 +729,22 @@ Prime
     ;
 
 fragment
-LowerCaseIdentifierFirstChar
-    : '_'* LowerCaseChar
-    ;
-
-fragment
-LowerCaseChar
-    : [a-z]
+IdentifierChar
+    : [a-zA-Z]
     // TODO: unicode characters
     ;
 
-fragment
-UpperCaseIdentifierFirstChar
-    : '_'* UpperCaseChar
-    ;
-
-fragment
-UpperCaseChar
-    : [A-Z]
-    // TODO: unicode characters
-    ;
 
 //-------------------------------------------------------------------------------------------------
-// Symbol Literals
+// SYMBOL LITERALS
 //-------------------------------------------------------------------------------------------------
 
 /**
  * Recognizes a symbol (sometimes called atom) - a value meant to represent a symbol in code.
  * When converted to or from text, the name and text are the same.
  */
-LowerCaseSymbolLiteral
-    : '#' LowerCaseIdentifierFirstChar IdentifierSubsequentChar* Prime?
-    ;
-
-UpperCaseSymbolLiteral
-    : '#' UpperCaseIdentifierFirstChar IdentifierSubsequentChar* Prime?
+SymbolLiteral
+    : '#' IdentifierPrefix IdentifierBodyChar* Prime?
     ;
 
 

@@ -1,6 +1,6 @@
 
 
-package sample.record_literals begin
+package sample.structure_literals begin
 
   constant empty = {=};
 

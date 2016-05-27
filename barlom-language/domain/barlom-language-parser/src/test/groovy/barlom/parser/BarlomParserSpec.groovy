@@ -32,21 +32,21 @@ class BarlomParserSpec
         parse( "literals/" + fileName ) == parseResult
 
         where:
-        fileName                   | parseResult
-        "array-literals.barlom"    | "Successful parse"
-        "boolean-literals.barlom"  | "Successful parse"
-        "datetime-literals.barlom" | "Successful parse"
-        "graph-literals.barlom"    | "Successful parse"
-        "integer-literals.barlom"  | "Successful parse"
-        "map-literals.barlom"      | "Successful parse"
-        "number-literals.barlom"   | "Successful parse"
-        "record-literals.barlom"   | "Successful parse"
-        "regex-literals.barlom"    | "Successful parse"
-        "set-literals.barlom"      | "Successful parse"
-        "symbol-literals.barlom"   | "Successful parse"
-        "text-literals.barlom"     | "Successful parse"
-        "tuple-literals.barlom"    | "Successful parse"
-        "undefined-literal.barlom" | "Successful parse"
+        fileName                      | parseResult
+        "array-literals.barlom"       | "Successful parse"
+        "boolean-literals.barlom"     | "Successful parse"
+        "datetime-literals.barlom"    | "Successful parse"
+        "graph-literals.barlom"       | "Successful parse"
+        "integer-literals.barlom"     | "Successful parse"
+        "map-literals.barlom"         | "Successful parse"
+        "number-literals.barlom"      | "Successful parse"
+        "regex-literals.barlom"       | "Successful parse"
+        "set-literals.barlom"         | "Successful parse"
+        "structure-literals.barlom"   | "Successful parse"
+        "symbol-literals.barlom"      | "Successful parse"
+        "text-literals.barlom"        | "Successful parse"
+        "tuple-literals.barlom"       | "Successful parse"
+        "undefined-literal.barlom"    | "Successful parse"
 
     }
 

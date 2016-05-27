@@ -1,0 +1,31 @@
+
+
+paradigm algebraic_data_type;
+paradigm functional;
+paradigm graph_oriented;
+paradigm logic;
+paradigm object_oriented;
+paradigm structural;
+paradigm tree_oriented;
+
+
+package stuff.specialstuff( 1.0.0 ) begin
+
+  function doStuff( 1.0.1, x , y ) begin
+    return x + y;
+  end
+
+  function doStuff( 1.1.0, x , y ) begin
+    return x + y + 42;
+  end
+
+end
+
+
+package stuff.specialstuff( 2.0.0 ) begin
+
+  function doMore( 2.0.0, a ) begin
+    return a^2;
+  end
+
+end
