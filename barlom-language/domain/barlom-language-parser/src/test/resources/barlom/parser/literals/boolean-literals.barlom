@@ -1,6 +1,7 @@
 
+namespace sample;
 
-package sample.boolean_literals begin
+module boolean_literals begin
 
   constant isGood = true;
 

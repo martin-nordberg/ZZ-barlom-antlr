@@ -1,6 +1,7 @@
 
+namespace sample;
 
-package sample.number_literals begin
+module number_literals begin
 
   // Number literals (zero)
 

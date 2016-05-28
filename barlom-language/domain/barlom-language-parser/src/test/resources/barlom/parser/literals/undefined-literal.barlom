@@ -1,6 +1,7 @@
 
+namespace sample;
 
-package sample.undefined_literal begin
+module undefined_literal begin
 
   constant inOthersWordsUndefined = undefined;
 

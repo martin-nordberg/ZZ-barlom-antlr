@@ -1,8 +1,10 @@
 
 
+namespace sample;
+
 // Text Literals
 
-package sample.text_literals begin
+module text_literals begin
 
   constant text1  = "sample";
 

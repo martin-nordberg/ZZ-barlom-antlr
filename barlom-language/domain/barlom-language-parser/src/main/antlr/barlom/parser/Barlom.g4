@@ -25,23 +25,33 @@ parse
  * Parses an entire Barlom source file.
  */
 compilationUnit
-    : packageDeclaration EOF
+    : namespaceContext moduleDeclarations EOF
+    | moduleContext packagedElements EOF
+    | packageContext packagedElements EOF
     ;
 
-/**
- * Parses an import declaration.
- */
-importDeclaration
-    : IMPORT qualifiedIdentifier SEMICOLON
+
+moduleContext
+    : MODULE qualifiedIdentifier SEMICOLON
     ;
 
-/**
- * Parses a sequence of import declarations.
- */
-importDeclarations
-    : importDeclaration *
+moduleDeclaration
+    : leadingAnnotations MODULE Identifier trailingAnnotations BEGIN packagedElements END
     ;
 
+moduleDeclarations
+    : moduleDeclaration*
+    ;
+
+
+namespaceContext
+    : NAMESPACE qualifiedIdentifier SEMICOLON
+    ;
+
+
+packageContext
+    : PACKAGE qualifiedIdentifier SEMICOLON
+    ;
 
 /**
  * Parses a language element allowed in a package.
@@ -65,7 +75,7 @@ packagedElements
  * Parses a package declaration and its contents.
  */
 packageDeclaration
-    : PACKAGE qualifiedIdentifier BEGIN importDeclarations packagedElements END
+    : leadingAnnotations PACKAGE trailingAnnotations qualifiedIdentifier BEGIN packagedElements END
     ;
 
 
@@ -356,6 +366,8 @@ END : 'end';
 // false (see below)
 FUNCTION : 'function';
 IMPORT : 'import';
+MODULE : 'module';
+NAMESPACE : 'namespace';
 NOT : 'not';
 OR : 'or';
 PACKAGE : 'package';

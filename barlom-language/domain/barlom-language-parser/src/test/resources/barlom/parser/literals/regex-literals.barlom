@@ -1,8 +1,10 @@
 
 
+namespace sample;
+
 // Regular Expression literals
 
-package sample.regex_literals begin
+module regex_literals begin
 
   constant regex1 = ~/sample/;
 

@@ -1,6 +1,7 @@
 
+namespace sample;
 
-package sample.anonymous_literal begin
+module anonymous_literal begin
 
   constant curried = f( 3, _, 4 );
 

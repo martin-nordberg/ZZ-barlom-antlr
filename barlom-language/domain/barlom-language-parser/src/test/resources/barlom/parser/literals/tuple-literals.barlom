@@ -1,6 +1,7 @@
 
+namespace sample;
 
-package sample.tuple_literals begin
+module tuple_literals begin
 
   constant empty = ();
 

@@ -1,6 +1,7 @@
 
+namespace sample;
 
-package sample.map_literals begin
+module map_literals begin
 
   constant empty = {~>};
 

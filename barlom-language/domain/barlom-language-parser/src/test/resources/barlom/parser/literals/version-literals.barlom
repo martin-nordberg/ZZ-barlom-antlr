@@ -1,6 +1,7 @@
 
+namespace sample;
 
-package sample.version_literals begin
+module version_literals begin
 
   // Version literals -- TODO: use these in package declarations
 

@@ -1,9 +1,10 @@
 
+namespace stuff;
 
-module stuff.specialstuff@1.1.0
+module specialstuff
   : contracted
     dependencies( [
-      lib.gunk@2.1.1
+      lib.gunk version( 2.1.1 )
     ] )
     documented
     paradigms( [
@@ -18,10 +19,10 @@ module stuff.specialstuff@1.1.0
     ] )
     tested
     type_checked
-    versioned
+    version( 1.1.0 )
 begin
 
-  synonym extra = lib.gunk.extra@2.1.1;
+  function extra synonym_for lib.gunk.extra : version( 2.1.1 );
 
   function doStuff@1.0.1( x , y ) begin
     return x + y;
@@ -32,18 +33,18 @@ begin
   end
 
   function factorial( n : Integer32 )
-    : "The factorial function (@1.0.0 implicitly) is defined in recursive fragments.";
+    : "The factorial function (1.0.0 implicitly) is defined in recursive fragments.";
+      recursive
+    return n * factorial( n - 1 );
+
   function factorial( 0 )
     : "The base case"
     return 1;
-  function factorial( n )
-    : "Tail recursion"
-    return n * factorial( n - 1 );
 
 end
 
 
-module stuff.specialstuff@2.0.0 begin
+module specialstuff@2.0.0 begin
 
   function doMore@2.0.0( a ) begin
     return a^2;
