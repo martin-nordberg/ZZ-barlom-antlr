@@ -1,0 +1,15 @@
+
+namespace sample;
+
+module range_literals begin
+
+  constant oneToTen = 1..10;
+
+  constant oneToTenExclusive = 1..<10;
+
+  constant letters = 'a'..'z';
+
+  constant numbers = 1.0..<10.0;
+
+end
+

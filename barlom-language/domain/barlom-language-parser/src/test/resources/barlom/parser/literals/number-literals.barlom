@@ -20,7 +20,7 @@ module number_literals begin
 
   // Number literals (non-zero)
 
-  constant int1 = 123_456.;
+  constant int1 = 123_456.0;
 
   constant int2 = 123.456;
 

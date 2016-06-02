@@ -369,6 +369,7 @@ literal
     | arrayLiteral
     | graphLiteral
     | mapLiteral
+    | rangeLiteral
     | structureLiteral
     | setLiteral
     | tupleLiteral
@@ -389,6 +390,13 @@ mapEntry
 mapLiteral
     : LBRACE TILDEARROW RBRACE
     | LBRACE mapEntry ( COMMA mapEntry )* RBRACE
+    ;
+
+
+rangeLiteral
+    : ( Identifier | TextLiteral ) ( RANGEINCLUSIVE | RANGEEXCLUSIVE ) ( Identifier | TextLiteral )
+    | ( Identifier | IntegerLiteral ) ( RANGEINCLUSIVE | RANGEEXCLUSIVE ) ( Identifier | IntegerLiteral )
+    | ( Identifier | NumberLiteral ) ( RANGEINCLUSIVE | RANGEEXCLUSIVE ) ( Identifier | NumberLiteral )
     ;
 
 
@@ -465,6 +473,14 @@ XOR : 'xor';
 
 
 //-------------------------------------------------------------------------------------------------
+// RANGE OPERATORS
+//-------------------------------------------------------------------------------------------------
+
+RANGEINCLUSIVE : '..';
+RANGEEXCLUSIVE : '..<';
+
+
+//-------------------------------------------------------------------------------------------------
 // PUNCTUATION
 //-------------------------------------------------------------------------------------------------
 
@@ -519,7 +535,6 @@ MINUSASSIGN : '-=';
 PERCENTASSIGN : '%=';
 PLUSASSIGN : '+=';
 SLASHASSIGN : '/=';
-
 
 
 //-------------------------------------------------------------------------------------------------
@@ -678,7 +693,7 @@ BinaryDigitOrUnderscore
  * the value.
  */
 NumberLiteral
-    : DecimalNumeral '.' DecimalNumeral? ExponentPart? FloatTypeSuffix?
+    : DecimalNumeral '.' DecimalNumeral ExponentPart? FloatTypeSuffix?
     | '.' DecimalNumeral ExponentPart? FloatTypeSuffix?
     | DecimalNumeral ExponentPart FloatTypeSuffix?
     | DecimalNumeral FloatTypeSuffix
