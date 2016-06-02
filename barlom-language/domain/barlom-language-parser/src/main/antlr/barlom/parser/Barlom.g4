@@ -1,3 +1,4 @@
+//-------------------------------------------------------------------------------------------------
 
 grammar Barlom;
 
@@ -31,14 +32,23 @@ compilationUnit
     ;
 
 
+/**
+ * Parses a module to be the context for subsequent declarations.
+ */
 moduleContext
     : MODULE qualifiedIdentifier SEMICOLON
     ;
 
+/**
+ * Parses the declaration of a module.
+ */
 moduleDeclaration
-    : leadingAnnotations MODULE Identifier trailingAnnotations BEGIN packagedElements END
+    : leadingAnnotations MODULE Identifier parameters? trailingAnnotations packagedElements
     ;
 
+/**
+ * Parses a sequence of module declarations.
+ */
 moduleDeclarations
     : moduleDeclaration*
     ;
@@ -60,6 +70,7 @@ packagedElement
     : constantDeclaration
     | variableDeclaration
     | functionDeclaration
+    | packageDeclaration
     // TODO: more alternatives ...
     ;
 
@@ -67,7 +78,7 @@ packagedElement
  * Parses a sequence of elements within a package.
  */
 packagedElements
-    : packagedElement +
+    : BEGIN packagedElement+ END
     ;
 
 
@@ -75,7 +86,7 @@ packagedElements
  * Parses a package declaration and its contents.
  */
 packageDeclaration
-    : leadingAnnotations PACKAGE trailingAnnotations qualifiedIdentifier BEGIN packagedElements END
+    : leadingAnnotations PACKAGE Identifier parameters? trailingAnnotations packagedElements
     ;
 
 
@@ -88,7 +99,7 @@ packageDeclaration
  */
 annotation
     : TextLiteral
-    | Identifier ( LPAREN arguments RPAREN )?
+    | Identifier arguments?
     | typeDeclaration
     ;
 
@@ -115,9 +126,30 @@ trailingAnnotations
  * Parses a variable declaration.
  */
 functionDeclaration
-    : leadingAnnotations FUNCTION Identifier LPAREN parameters RPAREN trailingAnnotations
-      LBRACE /*TODO: statements*/ RBRACE
+    : leadingAnnotations FUNCTION Identifier parameters trailingAnnotations
+      ( codeBlock | returnStatement )
     ;
+
+
+//-------------------------------------------------------------------------------------------------
+// STATEMENTS
+//-------------------------------------------------------------------------------------------------
+
+codeBlock
+    : BEGIN statement+ END
+    ;
+
+
+returnStatement
+    : RETURN expression SEMICOLON
+    ;
+
+
+statement
+    : returnStatement
+    // TODO: more
+    ;
+
 
 
 //-------------------------------------------------------------------------------------------------
@@ -135,8 +167,8 @@ argument
  * Parses the argument list of a function call.
  */
 arguments
-    : argument ( COMMA argument ) *
-    | /*nothing*/
+    : LPAREN argument ( COMMA argument )* RPAREN
+    | LPAREN RPAREN
     ;
 
 
@@ -146,26 +178,80 @@ arguments
 expression
     : expression DOT functionCall
     | expression DOT Identifier
-    | functionCall
-    | Identifier
-    | literal
+    | conditionalOrExpression
     // TODO: more alternatives ...
     ;
 
+
 /**
- * Parses a sequence of expressions.
+ * Parses a function call optionally followed by a sequence of statements to be executed in
+ * the context of the result of the function call. -- TODO: the code block is just an idea so far
  */
-expressions
-    : expression*
+functionCall
+    : Identifier arguments codeBlock?
     ;
 
 
+conditionalOrExpression
+	:	conditionalAndExpression
+	|	conditionalOrExpression OR conditionalAndExpression
+	;
+
+conditionalAndExpression
+	:	exclusiveOrExpression
+	|	conditionalAndExpression AND exclusiveOrExpression
+	;
+
+exclusiveOrExpression
+	:	equalityExpression
+	|	exclusiveOrExpression XOR equalityExpression
+	;
+
+equalityExpression
+	:	relationalExpression
+	|	equalityExpression EQUALS relationalExpression
+	|	equalityExpression NOTEQUAL relationalExpression
+	;
+
+relationalExpression
+	:	additiveExpression
+	|	relationalExpression LESSTHAN additiveExpression
+	|	relationalExpression GREATERTHAN additiveExpression
+	|	relationalExpression LESSTHANOREQUAL additiveExpression
+	|	relationalExpression GREATERTHANOREQUAL additiveExpression
+	;
+
+additiveExpression
+	:	multiplicativeExpression
+	|	additiveExpression PLUS multiplicativeExpression
+	|	additiveExpression MINUS multiplicativeExpression
+	;
+
+multiplicativeExpression
+	:	exponentialExpression
+	|	multiplicativeExpression ASTERISK exponentialExpression
+	|	multiplicativeExpression SLASH exponentialExpression
+	|	multiplicativeExpression PERCENT exponentialExpression
+	;
+
+exponentialExpression
+	: unaryExpression ( CARET exponentialExpression )?
+	;
+
+unaryExpression
+    : primaryExpression
+    | PLUS unaryExpression
+    | MINUS unaryExpression
+    ;
+
 /**
- * Parses a function call optionally followed by a sequence of expressions to be executed in
- * the context of the result of the function call.
+ * Parses an expression with no operators.
  */
-functionCall
-    : Identifier LPAREN arguments RPAREN ( BEGIN expressions END )?
+primaryExpression
+    : functionCall
+    | Identifier
+    | literal
+    // TODO: more alternatives ...
     ;
 
 
@@ -186,11 +272,12 @@ constantDeclaration
  */
 parameter
     : Identifier trailingAnnotations
+    | expression
     ;
 
 parameters
-    : parameter ( COMMA parameter ) *
-    | /*nothing*/
+    : LPAREN parameter ( COMMA parameter )* RPAREN
+    | LPAREN RPAREN
     ;
 
 
@@ -216,7 +303,6 @@ typeDeclaration
 //-------------------------------------------------------------------------------------------------
 // LITERALS
 //-------------------------------------------------------------------------------------------------
-
 
 /**
  * Parses an array literal.
@@ -371,6 +457,7 @@ NAMESPACE : 'namespace';
 NOT : 'not';
 OR : 'or';
 PACKAGE : 'package';
+RETURN : 'return';
 // true (see below)
 // undefined (see below)
 VARIABLE : 'variable';
@@ -401,11 +488,11 @@ TILDEARROW : '~>';
 // COMPARISON OPERATORS
 //-------------------------------------------------------------------------------------------------
 
-EQUAL : '==';
-GE : '>=';
-GT : '>';
-LE : '<=';
-LT : '<';
+EQUALS : '==';
+GREATERTHANOREQUAL : '>=';
+GREATERTHAN : '>';
+LESSTHANOREQUAL : '<=';
+LESSTHAN : '<';
 NOTEQUAL : '=/=';   // ( a =/= b )
 
 
@@ -413,21 +500,12 @@ NOTEQUAL : '=/=';   // ( a =/= b )
 // ARITHMETIC OPERATORS
 //-------------------------------------------------------------------------------------------------
 
-ADD : '+';
-DIV : '/';
-MOD : '%';
-MUL : '*';
-SUB : '-';
-
-
-//-------------------------------------------------------------------------------------------------
-// BITWISE OPERATORS
-//-------------------------------------------------------------------------------------------------
-
-BITAND : '&';
-BITOR : '|';
-BITNOT : '~';
-BITXOR : '^';
+ASTERISK : '*';
+CARET : '^';
+MINUS : '-';
+PERCENT : '%';
+PLUS : '+';
+SLASH : '/';
 
 
 //-------------------------------------------------------------------------------------------------
@@ -435,16 +513,13 @@ BITXOR : '^';
 //-------------------------------------------------------------------------------------------------
 
 ASSIGN : '=';
+ASTERISKASSIGN : '*=';
+CARETASSIGN : '^=';
+MINUSASSIGN : '-=';
+PERCENTASSIGN : '%=';
+PLUSASSIGN : '+=';
+SLASHASSIGN : '/=';
 
-ADD_ASSIGN : '+=';
-DIV_ASSIGN : '/=';
-MOD_ASSIGN : '%=';
-MUL_ASSIGN : '*=';
-SUB_ASSIGN : '-=';
-
-AND_ASSIGN : '&=';
-OR_ASSIGN : '|=';
-XOR_ASSIGN : '^=';
 
 
 //-------------------------------------------------------------------------------------------------
@@ -526,6 +601,7 @@ ERROR_UNCLOSED_TEXT
     | '"""' ( '"'? '"'? TextCharNotDblQuote )* EOF
     | '\'\'\'' ( '\''? '\''? TextCharNotSnglQuote )* EOF
     ;
+
 
 //-------------------------------------------------------------------------------------------------
 // INTEGER LITERALS
