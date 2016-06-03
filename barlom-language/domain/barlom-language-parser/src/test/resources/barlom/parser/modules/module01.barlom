@@ -39,7 +39,7 @@ end
 
 module specialstuff( 1.1.0 ) begin
 
-  // synonym extra = lib.gunk( 2.1.1 ).extra;
+  alias extra = lib.gunk( 2.1.1 ).extra;
 
   function doStuff( x , y ) begin
     return x + y + extra( x, y );

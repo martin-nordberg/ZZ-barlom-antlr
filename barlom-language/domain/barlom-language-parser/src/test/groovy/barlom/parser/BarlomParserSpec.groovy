@@ -37,6 +37,7 @@ class BarlomParserSpec
         "array-literals.barlom"       | "Successful parse"
         "boolean-literals.barlom"     | "Successful parse"
         "datetime-literals.barlom"    | "Successful parse"
+        "function-literals.barlom"    | "Successful parse"
         "graph-literals.barlom"       | "Successful parse"
         "integer-literals.barlom"     | "Successful parse"
         "map-literals.barlom"         | "Successful parse"

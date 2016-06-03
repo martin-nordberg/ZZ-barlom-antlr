@@ -1,0 +1,18 @@
+
+namespace sample;
+
+module function_literals begin
+
+  function f = (x) -> x + 1;
+
+  function g = (a,b,c) -> a*b+c;
+
+  constant h = (p,q) -> p^q;
+
+  function cubed = (x) -> begin
+    constant xsquared = x*x;
+    return xsquared * x;
+  end
+
+end
+

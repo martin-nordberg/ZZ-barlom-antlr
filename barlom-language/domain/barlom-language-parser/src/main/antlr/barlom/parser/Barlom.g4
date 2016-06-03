@@ -71,6 +71,7 @@ packagedElement
     | variableDeclaration
     | functionDeclaration
     | packageDeclaration
+    | aliasDeclaration
     // TODO: more alternatives ...
     ;
 
@@ -119,6 +120,18 @@ trailingAnnotations
 
 
 //-------------------------------------------------------------------------------------------------
+// ALIASES
+//-------------------------------------------------------------------------------------------------
+
+/**
+ * Parses an alias declaration
+ */
+aliasDeclaration
+    : ALIAS Identifier ASSIGN qualifiedIdentifier SEMICOLON
+    ;
+
+
+//-------------------------------------------------------------------------------------------------
 // FUNCTIONS
 //-------------------------------------------------------------------------------------------------
 
@@ -126,8 +139,9 @@ trailingAnnotations
  * Parses a variable declaration.
  */
 functionDeclaration
-    : leadingAnnotations FUNCTION Identifier parameters trailingAnnotations
-      ( codeBlock | returnStatement )
+    : leadingAnnotations FUNCTION Identifier parameters trailingAnnotations ( codeBlock | returnStatement )
+    | leadingAnnotations FUNCTION Identifier ASSIGN functionExpressionLiteral SEMICOLON
+    | leadingAnnotations FUNCTION Identifier ASSIGN functionBlockLiteral
     ;
 
 
@@ -135,18 +149,35 @@ functionDeclaration
 // STATEMENTS
 //-------------------------------------------------------------------------------------------------
 
+/**
+ * Parses a sequence of statements.
+ */
 codeBlock
     : BEGIN statement+ END
     ;
 
-
+loopStatement
+    : REPEAT FOR Identifier trailingAnnotations IN expression codeBlock
+    | REPEAT WHILE expression codeBlock
+    | REPEAT UNTIL expression codeBlock
+    ;
+/**
+ * Parses a return statement
+ */
 returnStatement
     : RETURN expression SEMICOLON
     ;
 
-
+/**
+ * Parses a statement
+ */
 statement
-    : returnStatement
+    : aliasDeclaration
+    | constantDeclaration
+    | functionDeclaration
+    | loopStatement
+    | returnStatement
+    | variableDeclaration
     // TODO: more
     ;
 
@@ -167,8 +198,8 @@ argument
  * Parses the argument list of a function call.
  */
 arguments
-    : LPAREN argument ( COMMA argument )* RPAREN
-    | LPAREN RPAREN
+    : LEFT_PARENTHESIS argument ( COMMA argument )* RIGHT_PARENTHESIS
+    | LEFT_PARENTHESIS RIGHT_PARENTHESIS
     ;
 
 
@@ -210,15 +241,15 @@ exclusiveOrExpression
 equalityExpression
 	:	relationalExpression
 	|	equalityExpression EQUALS relationalExpression
-	|	equalityExpression NOTEQUAL relationalExpression
+	|	equalityExpression NOT_EQUAL relationalExpression
 	;
 
 relationalExpression
 	:	additiveExpression
-	|	relationalExpression LESSTHAN additiveExpression
-	|	relationalExpression GREATERTHAN additiveExpression
-	|	relationalExpression LESSTHANOREQUAL additiveExpression
-	|	relationalExpression GREATERTHANOREQUAL additiveExpression
+	|	relationalExpression LESS_THAN additiveExpression
+	|	relationalExpression GREATER_THAN additiveExpression
+	|	relationalExpression LESS_THAN_OR_EQUAL additiveExpression
+	|	relationalExpression GREATER_THAN_OR_EQUAL additiveExpression
 	;
 
 additiveExpression
@@ -229,13 +260,13 @@ additiveExpression
 
 multiplicativeExpression
 	:	exponentialExpression
-	|	multiplicativeExpression ASTERISK exponentialExpression
-	|	multiplicativeExpression SLASH exponentialExpression
-	|	multiplicativeExpression PERCENT exponentialExpression
+	|	multiplicativeExpression TIMES exponentialExpression
+	|	multiplicativeExpression DIVIDED_BY exponentialExpression
+	|	multiplicativeExpression MODULO exponentialExpression
 	;
 
 exponentialExpression
-	: unaryExpression ( CARET exponentialExpression )?
+	: unaryExpression ( POWER exponentialExpression )?
 	;
 
 unaryExpression
@@ -251,6 +282,7 @@ primaryExpression
     : functionCall
     | Identifier
     | literal
+    | LEFT_PARENTHESIS expression RIGHT_PARENTHESIS
     // TODO: more alternatives ...
     ;
 
@@ -276,8 +308,8 @@ parameter
     ;
 
 parameters
-    : LPAREN parameter ( COMMA parameter )* RPAREN
-    | LPAREN RPAREN
+    : LEFT_PARENTHESIS parameter ( COMMA parameter )* RIGHT_PARENTHESIS
+    | LEFT_PARENTHESIS RIGHT_PARENTHESIS
     ;
 
 
@@ -289,13 +321,12 @@ variableDeclaration
     ;
 
 
-
 //-------------------------------------------------------------------------------------------------
 // TYPE DECLARATIONS
 //-------------------------------------------------------------------------------------------------
 
 typeDeclaration
-    : Identifier
+    : Identifier arguments? QUESTION?
     // TODO: closure-like generics
     ;
 
@@ -308,9 +339,16 @@ typeDeclaration
  * Parses an array literal.
  */
 arrayLiteral
-    : LBRACKET ( expression ( COMMA expression )* )? RBRACKET
+    : LEFT_BRACKET ( expression ( COMMA expression )* )? RIGHT_BRACKET
     ;
 
+functionBlockLiteral
+    : parameters ARROW codeBlock
+    ;
+
+functionExpressionLiteral
+    : parameters ARROW expression
+    ;
 
 /**
  * Parses the declaration of an edge within a graph literal
@@ -349,7 +387,7 @@ graphLiteral
  * Parses a vertex declaration within a graph literal
  */
 graphVertexDeclaration
-    : LBRACKET Identifier /*TODO( COLON typeExpression )*/ structureLiteral? RBRACKET
+    : LEFT_BRACKET Identifier /*TODO( COLON typeExpression )*/ structureLiteral? RIGHT_BRACKET
     ;
 
 
@@ -357,23 +395,25 @@ graphVertexDeclaration
  * Parses one of many kinds of literals.
  */
 literal
-    : TextLiteral
-    | IntegerLiteral
-    | NumberLiteral
+    : AnonymousLiteral
     | BooleanLiteral
     | DateTimeLiteral
+    | IntegerLiteral
+    | NumberLiteral
     | RegularExpressionLiteral
-    | UndefinedLiteral
     | SymbolLiteral
+    | TextLiteral
+    | UndefinedLiteral
     | VersionLiteral
     | arrayLiteral
+    | functionBlockLiteral
+    | functionExpressionLiteral
     | graphLiteral
     | mapLiteral
     | rangeLiteral
-    | structureLiteral
     | setLiteral
+    | structureLiteral
     | tupleLiteral
-    | AnonymousLiteral
     ;
 
 
@@ -381,22 +421,25 @@ literal
  * Parses one entry in a map literal.
  */
 mapEntry
-    : expression TILDEARROW expression
+    : expression TILDE_ARROW expression
     ;
 
 /**
  * Parses a map literal.
  */
 mapLiteral
-    : LBRACE TILDEARROW RBRACE
-    | LBRACE mapEntry ( COMMA mapEntry )* RBRACE
+    : LEFT_BRACE TILDE_ARROW RIGHT_BRACE
+    | LEFT_BRACE mapEntry ( COMMA mapEntry )* RIGHT_BRACE
     ;
 
 
+/**
+ * Parses a range literal
+ */
 rangeLiteral
-    : ( Identifier | TextLiteral ) ( RANGEINCLUSIVE | RANGEEXCLUSIVE ) ( Identifier | TextLiteral )
-    | ( Identifier | IntegerLiteral ) ( RANGEINCLUSIVE | RANGEEXCLUSIVE ) ( Identifier | IntegerLiteral )
-    | ( Identifier | NumberLiteral ) ( RANGEINCLUSIVE | RANGEEXCLUSIVE ) ( Identifier | NumberLiteral )
+    : ( Identifier | TextLiteral ) ( RANGE_INCLUSIVE | RANGE_EXCLUSIVE ) ( Identifier | TextLiteral )
+    | ( Identifier | IntegerLiteral ) ( RANGE_INCLUSIVE | RANGE_EXCLUSIVE ) ( Identifier | IntegerLiteral )
+    | ( Identifier | NumberLiteral ) ( RANGE_INCLUSIVE | RANGE_EXCLUSIVE ) ( Identifier | NumberLiteral )
     ;
 
 
@@ -404,7 +447,7 @@ rangeLiteral
  * Parses a set literal.
  */
 setLiteral
-    : LBRACE ( expression ( COMMA expression )* )? RBRACE
+    : LEFT_BRACE ( expression ( COMMA expression )* )? RIGHT_BRACE
     ;
 
 
@@ -419,8 +462,8 @@ structureEntry
  * Parses a structure literal.
  */
 structureLiteral
-    : LBRACE ASSIGN RBRACE
-    | LBRACE structureEntry ( COMMA structureEntry )* RBRACE
+    : LEFT_BRACE ASSIGN RIGHT_BRACE
+    | LEFT_BRACE structureEntry ( COMMA structureEntry )* RIGHT_BRACE
     ;
 
 
@@ -429,8 +472,8 @@ structureLiteral
  * TODO: not sure all is clear between tuple & function call.
  */
 tupleLiteral
-    : LPAREN RPAREN
-    | LPAREN expression ( COMMA expression )+ RPAREN
+    : LEFT_PARENTHESIS RIGHT_PARENTHESIS
+    | LEFT_PARENTHESIS expression ( COMMA expression )+ RIGHT_PARENTHESIS
     ;
 
 
@@ -439,7 +482,7 @@ tupleLiteral
 //-------------------------------------------------------------------------------------------------
 
 qualifiedIdentifier
-    : Identifier ( DOT Identifier )*
+    : Identifier arguments? ( DOT Identifier arguments? )*
     ;
 
 
@@ -453,31 +496,29 @@ qualifiedIdentifier
 // KEYWORDS
 //-------------------------------------------------------------------------------------------------
 
+ALIAS : 'alias';
 AND : 'and';
 BEGIN : 'begin';
 CONSTANT : 'constant';
 END : 'end';
 // false (see below)
+FOR : 'for';
 FUNCTION : 'function';
 IMPORT : 'import';
+IN : 'in';
 MODULE : 'module';
 NAMESPACE : 'namespace';
 NOT : 'not';
 OR : 'or';
 PACKAGE : 'package';
+REPEAT : 'repeat';
 RETURN : 'return';
 // true (see below)
 // undefined (see below)
+UNTIL : 'until';
 VARIABLE : 'variable';
+WHILE : 'while';
 XOR : 'xor';
-
-
-//-------------------------------------------------------------------------------------------------
-// RANGE OPERATORS
-//-------------------------------------------------------------------------------------------------
-
-RANGEINCLUSIVE : '..';
-RANGEEXCLUSIVE : '..<';
 
 
 //-------------------------------------------------------------------------------------------------
@@ -486,18 +527,18 @@ RANGEEXCLUSIVE : '..<';
 
 ARROW : '->';
 COLON: ':';
-COLONCOLON : '::';
+COLON_COLON : '::';
 COMMA : ',';
 DOT : '.';
-LBRACE : '{';
-LBRACKET : '[';
-LPAREN : '(';
+LEFT_BRACE : '{';
+LEFT_BRACKET : '[';
+LEFT_PARENTHESIS : '(';
 QUESTION : '?';
-RBRACE : '}';
-RBRACKET : ']';
-RPAREN : ')';
+RIGHT_BRACE : '}';
+RIGHT_BRACKET : ']';
+RIGHT_PARENTHESIS : ')';
 SEMICOLON : ';';
-TILDEARROW : '~>';
+TILDE_ARROW : '~>';
 
 
 //-------------------------------------------------------------------------------------------------
@@ -505,23 +546,23 @@ TILDEARROW : '~>';
 //-------------------------------------------------------------------------------------------------
 
 EQUALS : '==';
-GREATERTHANOREQUAL : '>=';
-GREATERTHAN : '>';
-LESSTHANOREQUAL : '<=';
-LESSTHAN : '<';
-NOTEQUAL : '=/=';   // ( a =/= b )
+GREATER_THAN_OR_EQUAL : '>=';
+GREATER_THAN : '>';
+LESS_THAN_OR_EQUAL : '<=';
+LESS_THAN : '<';
+NOT_EQUAL : '=/=';   // ( a =/= b )
 
 
 //-------------------------------------------------------------------------------------------------
 // ARITHMETIC OPERATORS
 //-------------------------------------------------------------------------------------------------
 
-ASTERISK : '*';
-CARET : '^';
+DIVIDED_BY : '/';
 MINUS : '-';
-PERCENT : '%';
+MODULO : '%';
 PLUS : '+';
-SLASH : '/';
+POWER : '^';
+TIMES : '*';
 
 
 //-------------------------------------------------------------------------------------------------
@@ -529,12 +570,20 @@ SLASH : '/';
 //-------------------------------------------------------------------------------------------------
 
 ASSIGN : '=';
-ASTERISKASSIGN : '*=';
-CARETASSIGN : '^=';
-MINUSASSIGN : '-=';
-PERCENTASSIGN : '%=';
-PLUSASSIGN : '+=';
-SLASHASSIGN : '/=';
+DIVIDE_ASSIGN : '/=';
+MINUS_ASSIGN : '-=';
+MODULO_ASSIGN : '%=';
+PLUS_ASSIGN : '+=';
+POWER_ASSIGN : '^=';
+TIMES_ASSIGN : '*=';
+
+
+//-------------------------------------------------------------------------------------------------
+// RANGE OPERATORS
+//-------------------------------------------------------------------------------------------------
+
+RANGE_INCLUSIVE : '..';
+RANGE_EXCLUSIVE : '..<';
 
 
 //-------------------------------------------------------------------------------------------------
@@ -895,9 +944,9 @@ ERROR_UNCLOSED_BLOCK_COMMENT
  * Recognizes white space.
  * NOTE: Tab characters are NOT recognized. Tools are expected to automatically adjust indenting
  * when needed to suit the taste of an individual developer, but in the absence of a tool, there
- * is no possibility of tab munging.
+ * is no possibility of tab munging. Also form feeds are a relic of the past not recognized either.
  */
-WS : [ \r\n\u000C]+ -> skip;
+WS : [ \r\n]+ -> skip;
 
 
 //-------------------------------------------------------------------------------------------------
