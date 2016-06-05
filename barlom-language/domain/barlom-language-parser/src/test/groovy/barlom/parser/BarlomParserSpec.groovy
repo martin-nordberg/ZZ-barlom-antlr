@@ -54,7 +54,7 @@ class BarlomParserSpec
 
     }
 
-    def "Module declarations are parsed successfully."( String fileName, String parseResult ) {
+    def "Module definitions are parsed successfully."( String fileName, String parseResult ) {
 
         expect:
         parse( "modules/" + fileName ) == parseResult
@@ -66,7 +66,7 @@ class BarlomParserSpec
 
     }
 
-    def "Package declarations are parsed successfully."( String fileName, String parseResult ) {
+    def "Package definitions are parsed successfully."( String fileName, String parseResult ) {
 
         expect:
         parse( "packages/" + fileName ) == parseResult
@@ -74,6 +74,17 @@ class BarlomParserSpec
         where:
         fileName           | parseResult
         "package01.barlom" | "Successful parse"
+
+    }
+
+    def "Function definitions are parsed successfully."( String fileName, String parseResult ) {
+
+        expect:
+        parse( "functions/" + fileName ) == parseResult
+
+        where:
+        fileName                 | parseResult
+        "functions-loops.barlom" | "Successful parse"
 
     }
 

@@ -60,15 +60,11 @@ moduleContext
  * Parses the definition of a module.
  */
 moduleDefinition
-    : leadingAnnotations MODULE Identifier moduleVersionArgument? trailingAnnotations packagedElements
+    : leadingAnnotations MODULE Identifier parameters? trailingAnnotations packagedElements
     ;
 
 modulePath
-    : namespacePath DOT Identifier moduleVersionArgument?
-    ;
-
-moduleVersionArgument
-    : LEFT_PARENTHESIS VersionLiteral RIGHT_PARENTHESIS
+    : namespacePath DOT Identifier arguments?
     ;
 
 
@@ -179,6 +175,20 @@ functionDefinition
 // STATEMENTS
 //-------------------------------------------------------------------------------------------------
 
+assignmentOperator
+    : ASSIGN
+    | DIVIDE_ASSIGN
+    | MINUS_ASSIGN
+    | MODULO_ASSIGN
+    | PLUS_ASSIGN
+    | POWER_ASSIGN
+    | TIMES_ASSIGN
+    ;
+
+assignmentStatement
+    : Identifier assignmentOperator expression SEMICOLON
+    ;
+
 /**
  * Parses a sequence of statements.
  */
@@ -204,6 +214,7 @@ returnStatement
  */
 statement
     : aliasDeclaration
+    | assignmentStatement
     | constantDefinition
     | functionDefinition
     | loopStatement
@@ -513,7 +524,7 @@ tupleLiteral
 //-------------------------------------------------------------------------------------------------
 
 qualifiedIdentifier
-    : Identifier moduleVersionArgument? ( DOT Identifier moduleVersionArgument? )*
+    : Identifier arguments? ( DOT Identifier arguments? )*
     ;
 
 
