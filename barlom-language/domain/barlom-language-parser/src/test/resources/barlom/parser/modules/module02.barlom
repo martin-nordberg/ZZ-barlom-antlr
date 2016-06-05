@@ -1,0 +1,15 @@
+
+namespace stuff;
+
+module mythings( 1.2.1 )
+  : "A module contains only packages"
+    by( "Martin Nordberg" )
+begin
+
+  package details : public;
+
+  package moredetails : private;
+
+end
+
+

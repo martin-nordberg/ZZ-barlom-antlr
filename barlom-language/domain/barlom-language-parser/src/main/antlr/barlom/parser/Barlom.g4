@@ -26,38 +26,55 @@ parse
  * Parses an entire Barlom source file.
  */
 compilationUnit
-    : namespaceContext moduleDeclarations EOF
-    | moduleContext packagedElements EOF
-    | packageContext packagedElements EOF
+    : namespaceContext moduleDefinition+ EOF
+    | moduleContext packageDefinition+ EOF
+    | packageContext packagedElement+ EOF
     ;
 
+
+//-------------------------------------------------------------------------------------------------
+// NAMESPACES
+//-------------------------------------------------------------------------------------------------
+
+namespaceContext
+    : NAMESPACE namespacePath SEMICOLON
+    ;
+
+namespacePath
+    : Identifier ( DOT Identifier )*
+    ;
+
+
+//-------------------------------------------------------------------------------------------------
+// MODULES
+//-------------------------------------------------------------------------------------------------
 
 /**
  * Parses a module to be the context for subsequent declarations.
  */
 moduleContext
-    : MODULE qualifiedIdentifier SEMICOLON
+    : MODULE modulePath SEMICOLON
     ;
 
 /**
- * Parses the declaration of a module.
+ * Parses the definition of a module.
  */
-moduleDeclaration
-    : leadingAnnotations MODULE Identifier parameters? trailingAnnotations packagedElements
+moduleDefinition
+    : leadingAnnotations MODULE Identifier moduleVersionArgument? trailingAnnotations packagedElements
     ;
 
-/**
- * Parses a sequence of module declarations.
- */
-moduleDeclarations
-    : moduleDeclaration*
+modulePath
+    : namespacePath DOT Identifier moduleVersionArgument?
+    ;
+
+moduleVersionArgument
+    : LEFT_PARENTHESIS VersionLiteral RIGHT_PARENTHESIS
     ;
 
 
-namespaceContext
-    : NAMESPACE qualifiedIdentifier SEMICOLON
-    ;
-
+//-------------------------------------------------------------------------------------------------
+// PACKAGES
+//-------------------------------------------------------------------------------------------------
 
 packageContext
     : PACKAGE qualifiedIdentifier SEMICOLON
@@ -67,10 +84,12 @@ packageContext
  * Parses a language element allowed in a package.
  */
 packagedElement
-    : constantDeclaration
-    | variableDeclaration
+    : constantDefinition
+    | variableDefinition
     | functionDeclaration
+    | functionDefinition
     | packageDeclaration
+    | packageDefinition
     | aliasDeclaration
     // TODO: more alternatives ...
     ;
@@ -87,6 +106,10 @@ packagedElements
  * Parses a package declaration and its contents.
  */
 packageDeclaration
+    : leadingAnnotations PACKAGE Identifier parameters? trailingAnnotations SEMICOLON
+    ;
+
+packageDefinition
     : leadingAnnotations PACKAGE Identifier parameters? trailingAnnotations packagedElements
     ;
 
@@ -136,9 +159,16 @@ aliasDeclaration
 //-------------------------------------------------------------------------------------------------
 
 /**
- * Parses a variable declaration.
+ * Parses a function declaration.
  */
 functionDeclaration
+    : leadingAnnotations FUNCTION Identifier parameters trailingAnnotations SEMICOLON
+    ;
+
+/**
+ * Parses a function definition.
+ */
+functionDefinition
     : leadingAnnotations FUNCTION Identifier parameters trailingAnnotations ( codeBlock | returnStatement )
     | leadingAnnotations FUNCTION Identifier ASSIGN functionExpressionLiteral SEMICOLON
     | leadingAnnotations FUNCTION Identifier ASSIGN functionBlockLiteral
@@ -173,14 +203,13 @@ returnStatement
  */
 statement
     : aliasDeclaration
-    | constantDeclaration
-    | functionDeclaration
+    | constantDefinition
+    | functionDefinition
     | loopStatement
     | returnStatement
-    | variableDeclaration
+    | variableDefinition
     // TODO: more
     ;
-
 
 
 //-------------------------------------------------------------------------------------------------
@@ -294,7 +323,7 @@ primaryExpression
 /**
  * Parses the declaration of a value that cannot be changed once initialized.
  */
-constantDeclaration
+constantDefinition
     : leadingAnnotations CONSTANT Identifier trailingAnnotations ASSIGN expression SEMICOLON
     ;
 
@@ -316,7 +345,7 @@ parameters
 /**
  * Parses the declaration of a value that can be changed after it has been initialized.
  */
-variableDeclaration
+variableDefinition
     : leadingAnnotations VARIABLE Identifier trailingAnnotations ASSIGN expression SEMICOLON
     ;
 
@@ -482,7 +511,7 @@ tupleLiteral
 //-------------------------------------------------------------------------------------------------
 
 qualifiedIdentifier
-    : Identifier arguments? ( DOT Identifier arguments? )*
+    : Identifier moduleVersionArgument? ( DOT Identifier moduleVersionArgument? )*
     ;
 
 
@@ -768,6 +797,20 @@ FloatTypeSuffix
  */
 VersionLiteral
     : DecimalNumeral '.' DecimalNumeral '.' DecimalNumeral
+      ( '-' VersionPrereleaseFragment ( ('.'|'-') VersionPrereleaseFragment )* )?
+      ( '+' VersionBuildFragment ( ('.'|'-') VersionBuildFragment )* )?
+    ;
+
+fragment
+VersionBuildFragment
+    : [a-zA-Z] [a-zA-Z0-9]*
+    | [0-9]+
+    ;
+
+fragment
+VersionPrereleaseFragment
+    : [a-zA-Z] [a-zA-Z0-9]*
+    | [1-9] [0-9]*
     ;
 
 

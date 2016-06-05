@@ -61,6 +61,18 @@ class BarlomParserSpec
         where:
         fileName          | parseResult
         "module01.barlom" | "Successful parse"
+        "module02.barlom" | "Successful parse"
+
+    }
+
+    def "Package declarations are parsed successfully."( String fileName, String parseResult ) {
+
+        expect:
+        parse( "packages/" + fileName ) == parseResult
+
+        where:
+        fileName           | parseResult
+        "package01.barlom" | "Successful parse"
 
     }
 

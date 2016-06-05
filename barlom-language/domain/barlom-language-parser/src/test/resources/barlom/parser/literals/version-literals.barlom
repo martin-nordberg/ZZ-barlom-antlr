@@ -3,11 +3,15 @@ namespace sample;
 
 module version_literals begin
 
-  // Version literals -- TODO: use these in package declarations
-
   constant v1 = 1.0.1;
 
   constant v2 = 2.3.9;
+
+  constant v3 = 2.3.9-ALPHA.1;
+
+  constant v4 = 2.3.9-beta-1+002;
+
+  constant v5 = 1.2.3-rc1+build-789;
 
 end
 

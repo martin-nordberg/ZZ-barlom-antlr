@@ -1,10 +1,10 @@
 
 namespace stuff;
 
-module specialstuff( version )
+module specialstuff( 2.0.1 )
   : contracted
     dependencies( [
-      lib.gunk( 2.1.1 )
+      lib.gunk( 2.0.1 or 2.0.2 )
     ] )
     documented
     paradigms( [
@@ -21,37 +21,8 @@ module specialstuff( version )
     type_checked
 begin
 
-  function doStuff( x , y ) begin
-    return x + y;
-  end
+  function a();
 
-  function factorial( n : Integer32 )
-    : "The factorial function is defined in recursive fragments."
-      recursive
-    return n * factorial( n - 1 );
-
-  function factorial( 0 )
-    : "The base case"
-    return 1;
-
-end
-
-
-module specialstuff( 1.1.0 ) begin
-
-  alias extra = lib.gunk( 2.1.1 ).extra;
-
-  function doStuff( x , y ) begin
-    return x + y + extra( x, y );
-  end
-
-end
-
-
-module specialstuff( 2.0.0 ) begin
-
-  function doMore( a ) begin
-    return a^2;
-  end
+  package b;
 
 end

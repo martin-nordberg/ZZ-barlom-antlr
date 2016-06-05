@@ -1,4 +1,6 @@
 
+module sample.mod_1;
+
 package sample.one( plugin_package )
   : "This is a package that takes another package as a parameter."
     details( """
@@ -7,11 +9,11 @@ package sample.one( plugin_package )
     """ )
 begin
 
-  structure.type Example : defined_in( "one/Example.barlom" );
+  structure type Example : defined_in( "one/Example.barlom" );
 
   function doIt : defined_in( "one/doIt.barlom" );
 
-  object.type MyWidget : defined_in( "one/MyWidget.barlom" );
+  object type MyWidget : defined_in( "one/MyWidget.barlom" );
 
   package innards : defined_in( "one/innards.barlom" );
 

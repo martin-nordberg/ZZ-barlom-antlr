@@ -1,0 +1,36 @@
+
+module stuff.specialstuff;
+
+package specialstuff
+  : contracted
+    dependencies( [
+      widgets.otherpackage
+    ] )
+    documented
+    paradigms( [
+      functional
+    ] )
+    tested
+    type_checked
+begin
+
+  alias extra = lib.gunk( 2.1.1 ).extra;
+
+  function doStuff( x , y ) : since ( 1.2.1 ) begin
+    return x + y + extra( x, y );
+  end
+
+  function factorial( n : Integer32 )
+    : "The factorial function is defined in recursive fragments."
+      recursive
+    return n * factorial( n - 1 );
+
+  function factorial( 0 )
+    : "The base case"
+    return 1;
+
+  function doMore( a ) : since( 2.0.0 ) begin
+    return a^2;
+  end
+
+end
