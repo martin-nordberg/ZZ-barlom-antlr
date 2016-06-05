@@ -191,6 +191,7 @@ loopStatement
     | REPEAT WHILE expression codeBlock
     | REPEAT UNTIL expression codeBlock
     ;
+
 /**
  * Parses a return statement
  */
@@ -431,6 +432,7 @@ literal
     | NumberLiteral
     | RegularExpressionLiteral
     | SymbolLiteral
+    | TemplateLiteral
     | TextLiteral
     | UndefinedLiteral
     | VersionLiteral
@@ -693,6 +695,32 @@ ERROR_UNCLOSED_TEXT
     | '\'' TextCharsNotSnglQuote '\n'
     | '"""' ( '"'? '"'? TextCharNotDblQuote )* EOF
     | '\'\'\'' ( '\''? '\''? TextCharNotSnglQuote )* EOF
+    ;
+
+
+//-------------------------------------------------------------------------------------------------
+// TEXT LITERALS
+//-------------------------------------------------------------------------------------------------
+
+/**
+ * Recognizes a template literal. Template literals are delimited by quote/brace/quote. The quotes
+ * may be either double or single in symmetric pairs.
+ */
+TemplateLiteral
+    : '"{"' TextChars '"}"'
+    | '\'{\'' TextChars '\'}\''
+    | '"{\'' TextChars '\'}"'
+    | '\'{"' TextChars '"}\''
+    ;
+
+/**
+ * Recognizes a template literal with no closing quote triple.
+ */
+ERROR_UNCLOSED_TEMPLATE
+    : '"{"' ( '"'? '}'? TextCharNotDblQuote )* EOF
+    | '\'{\'' ( '\''? '}'? TextCharNotSnglQuote )* EOF
+    | '"{\'' ( '\''? '}'? TextCharNotDblQuote )* EOF
+    | '\'{"' ( '"'? '}'? TextCharNotSnglQuote )* EOF
     ;
 
 

@@ -1,0 +1,29 @@
+
+
+namespace sample;
+
+// Template Literals
+
+module text_literals begin
+
+  constant template1 = '{'abcdefgh sfasf asdf {{a.b}} asdf asdf asdfasdf asdf asfd'}';
+
+  constant template2 = "{"
+                        line "1"
+                        line "2"
+                       "}";
+
+  constant template3 = "{'
+                        line {{a}}
+                        line {{b}}
+                       '}";
+
+  constant template2 = '{"
+                        line "1"
+                        line "2"
+                       "}';
+
+end
+
+
+
