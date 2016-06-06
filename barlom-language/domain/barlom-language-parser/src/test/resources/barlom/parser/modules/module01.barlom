@@ -1,7 +1,5 @@
 
-namespace stuff;
-
-module specialstuff( 2.0.1 )
+module stuff.specialstuff( 2.0.1 )
   : contracted
     dependencies( [
       lib.gunk( 2.0.1 or 2.0.2 )

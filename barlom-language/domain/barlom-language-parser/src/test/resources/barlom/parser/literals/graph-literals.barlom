@@ -1,7 +1,5 @@
 
-namespace sample;
-
-module graph_literals begin
+module sample.graph_literals begin
 
   constant graph0 = [%% %%];
 

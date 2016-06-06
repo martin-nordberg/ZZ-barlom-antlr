@@ -1,7 +1,5 @@
 
-namespace sample;
-
-module array_literals begin
+module sample.array_literals begin
 
   constant empty = [];
 

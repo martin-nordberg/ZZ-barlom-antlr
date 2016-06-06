@@ -1,7 +1,5 @@
 
-namespace sample;
-
-module version_literals begin
+module sample.version_literals begin
 
   constant v1 = 1.0.1;
 

@@ -1,7 +1,5 @@
 
-namespace sample;
-
-module symbol_literals begin
+module sample.symbol_literals begin
 
   constant symbol1 = #sample1;
 

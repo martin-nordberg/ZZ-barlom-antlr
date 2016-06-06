@@ -1,7 +1,5 @@
 
-namespace sample;
-
-module set_literals begin
+module sample.set_literals begin
 
   constant empty = {};
 

@@ -1,7 +1,5 @@
 
-namespace sample;
-
-module range_literals begin
+module sample.range_literals begin
 
   constant oneToTen = 1..10;
 

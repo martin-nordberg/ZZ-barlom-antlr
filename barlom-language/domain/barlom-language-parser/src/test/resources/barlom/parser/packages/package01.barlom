@@ -1,7 +1,5 @@
 
-module stuff.specialstuff;
-
-package specialstuff
+package stuff.specialstuff.specialstuff
   : contracted
     dependencies( [
       widgets.otherpackage

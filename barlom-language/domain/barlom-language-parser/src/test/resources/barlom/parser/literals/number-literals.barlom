@@ -1,7 +1,5 @@
 
-namespace sample;
-
-module number_literals begin
+module sample.number_literals begin
 
   // Number literals (zero)
 

@@ -1,7 +1,5 @@
 
-namespace sample;
-
-module boolean_literals begin
+module sample.boolean_literals begin
 
   constant isGood = true;
 

@@ -26,28 +26,8 @@ parse
  * Parses an entire Barlom source file.
  */
 compilationUnit
-    : namespaceContext moduleDefinition+ EOF
-    | moduleContext packageDefinition+ EOF
-    | packageContext packagedElement+ EOF
-    ;
-
-
-//-------------------------------------------------------------------------------------------------
-// NAMESPACES
-//-------------------------------------------------------------------------------------------------
-
-/**
- * Parses the namespace of a module.
- */
-namespaceContext
-    : NAMESPACE namespacePath SEMICOLON
-    ;
-
-/**
- * Parses a namespace path - a dot-seprated sequence of identifiers.
- */
-namespacePath
-    : Identifier ( DOT Identifier )*
+    : moduleDefinition EOF
+    | packagedElementNamespacedDefinition EOF
     ;
 
 
@@ -56,24 +36,17 @@ namespacePath
 //-------------------------------------------------------------------------------------------------
 
 /**
- * Parses a module to be the context for subsequent declarations.
- */
-moduleContext
-    : MODULE modulePath SEMICOLON
-    ;
-
-/**
  * Parses the definition of a module.
  */
 moduleDefinition
-    : leadingAnnotations MODULE Identifier parameters? trailingAnnotations packagedElements
+    : leadingAnnotations MODULE modulePath parameters? trailingAnnotations packagedElements
     ;
 
 /**
  * Parses a module path.
  */
 modulePath
-    : namespacePath DOT Identifier arguments?
+    : ( Identifier ( DOT Identifier )* DOT )? Identifier arguments?
     ;
 
 
@@ -91,14 +64,30 @@ packageContext
 /**
  * Parses a language element allowed in a package.
  */
-packagedElement
+packagedElementDeclaration
+    : functionDeclaration
+    | packageDeclaration
+    | aliasDeclaration
+    // TODO: more alternatives ...
+    ;
+
+/**
+ * Parses a language element allowed in a package.
+ */
+packagedElementDefinition
     : constantDefinition
     | variableDefinition
-    | functionDeclaration
     | functionDefinition
-    | packageDeclaration
     | packageDefinition
-    | aliasDeclaration
+    // TODO: more alternatives ...
+    ;
+
+/**
+ * Parses a language element allowed in a package when it is the whole file.
+ */
+packagedElementNamespacedDefinition
+    : functionNamespacedDefinition
+    | packageNamespacedDefinition
     // TODO: more alternatives ...
     ;
 
@@ -106,7 +95,7 @@ packagedElement
  * Parses a sequence of elements within a package.
  */
 packagedElements
-    : BEGIN packagedElement+ END
+    : BEGIN ( packagedElementDeclaration | packagedElementDefinition )+ END
     ;
 
 
@@ -121,7 +110,21 @@ packageDeclaration
  * Parses a package declaration with its contents.
  */
 packageDefinition
-    : leadingAnnotations PACKAGE Identifier parameters? trailingAnnotations packagedElements
+    : leadingAnnotations PACKAGE Identifier trailingAnnotations packagedElements
+    ;
+
+/**
+ * Parses a package declaration with its contents when the package is a whole compilation unit.
+ */
+packageNamespacedDefinition
+    : leadingAnnotations PACKAGE packagePath trailingAnnotations packagedElements
+    ;
+
+/**
+ * Parses the namespace, module, name, and optional parameters of a package.
+ */
+packagePath
+    : modulePath DOT Identifier parameters?
     ;
 
 
@@ -161,7 +164,7 @@ trailingAnnotations
  * Parses an alias declaration
  */
 aliasDeclaration
-    : ALIAS Identifier ASSIGN qualifiedIdentifier SEMICOLON
+    : ALIAS Identifier EQUALS qualifiedIdentifier SEMICOLON
     ;
 
 
@@ -181,8 +184,22 @@ functionDeclaration
  */
 functionDefinition
     : leadingAnnotations FUNCTION Identifier parameters trailingAnnotations ( codeBlock | returnStatement )
-    | leadingAnnotations FUNCTION Identifier ASSIGN functionExpressionLiteral SEMICOLON
-    | leadingAnnotations FUNCTION Identifier ASSIGN functionBlockLiteral
+    | leadingAnnotations FUNCTION Identifier EQUALS functionExpressionLiteral SEMICOLON
+    | leadingAnnotations FUNCTION Identifier EQUALS functionBlockLiteral
+    ;
+
+/**
+ * Parses a function definition when it is a whole file.
+ */
+functionNamespacedDefinition
+    : leadingAnnotations FUNCTION functionPath trailingAnnotations ( codeBlock | returnStatement )
+    ;
+
+/**
+ * Parses the path and parameters of a function definition
+ */
+functionPath
+    : packagePath DOT Identifier parameters
     ;
 
 
@@ -194,20 +211,20 @@ functionDefinition
  * Parses one of the assignment operators.
  */
 assignmentOperator
-    : ASSIGN
-    | DIVIDE_ASSIGN
-    | MINUS_ASSIGN
-    | MODULO_ASSIGN
-    | PLUS_ASSIGN
-    | POWER_ASSIGN
-    | TIMES_ASSIGN
+    : EQUALS
+    | DIVIDE_EQUALS
+    | MINUS_EQUALS
+    | MODULO_EQUALS
+    | PLUS_EQUALS
+    | POWER_EQUALS
+    | TIMES_EQUALS
     ;
 
 /**
  * Parses an assignment statement.
  */
 assignmentStatement
-    : Identifier assignmentOperator expression SEMICOLON
+    : ASSIGN Identifier assignmentOperator expression SEMICOLON
     ;
 
 /**
@@ -321,8 +338,8 @@ exclusiveOrExpression
 
 equalityExpression
 	:	relationalExpression
-	|	equalityExpression EQUALS relationalExpression
-	|	equalityExpression NOT_EQUAL relationalExpression
+	|	equalityExpression EQUAL_TO relationalExpression
+	|	equalityExpression NOT_EQUAL_TO relationalExpression
 	;
 
 relationalExpression
@@ -377,7 +394,7 @@ primaryExpression
  * Parses the declaration of a value that cannot be changed once initialized.
  */
 constantDefinition
-    : leadingAnnotations CONSTANT Identifier trailingAnnotations ASSIGN expression SEMICOLON
+    : leadingAnnotations CONSTANT Identifier trailingAnnotations EQUALS expression SEMICOLON
     ;
 
 
@@ -399,7 +416,7 @@ parameters
  * Parses the declaration of a value that can be changed after it has been initialized.
  */
 variableDefinition
-    : leadingAnnotations VARIABLE Identifier trailingAnnotations ASSIGN expression SEMICOLON
+    : leadingAnnotations VARIABLE Identifier trailingAnnotations EQUALS expression SEMICOLON
     ;
 
 
@@ -422,6 +439,14 @@ typeDeclaration
  */
 arrayLiteral
     : LEFT_BRACKET ( expression ( COMMA expression )* )? RIGHT_BRACKET
+    ;
+
+/**
+ * Recognizes a Boolean literal (either true or false).
+ */
+booleanLiteral
+    : TRUE
+    | FALSE
     ;
 
 /**
@@ -484,7 +509,6 @@ graphVertexDeclaration
  */
 literal
     : AnonymousLiteral
-    | BooleanLiteral
     | DateTimeLiteral
     | IntegerLiteral
     | NumberLiteral
@@ -492,17 +516,19 @@ literal
     | SymbolLiteral
     | TemplateLiteral
     | TextLiteral
-    | UndefinedLiteral
     | VersionLiteral
     | arrayLiteral
+    | booleanLiteral
     | functionBlockLiteral
     | functionExpressionLiteral
     | graphLiteral
     | mapLiteral
     | rangeLiteral
+    | selfLiteral
     | setLiteral
     | structureLiteral
     | tupleLiteral
+    | undefinedLiteral
     ;
 
 
@@ -531,6 +557,12 @@ rangeLiteral
     | ( Identifier | NumberLiteral ) ( RANGE_INCLUSIVE | RANGE_EXCLUSIVE ) ( Identifier | NumberLiteral )
     ;
 
+/**
+ * Parses the literal for self - the currently executing object or structure.
+ */
+selfLiteral
+    : SELF
+    ;
 
 /**
  * Parses a set literal.
@@ -544,14 +576,14 @@ setLiteral
  * Parses one entry in a structure literal.
  */
 structureEntry
-    : Identifier ASSIGN expression
+    : Identifier EQUALS expression
     ;
 
 /**
  * Parses a structure literal.
  */
 structureLiteral
-    : LEFT_BRACE ASSIGN RIGHT_BRACE
+    : LEFT_BRACE EQUALS RIGHT_BRACE
     | LEFT_BRACE structureEntry ( COMMA structureEntry )* RIGHT_BRACE
     ;
 
@@ -563,6 +595,13 @@ structureLiteral
 tupleLiteral
     : LEFT_PARENTHESIS RIGHT_PARENTHESIS
     | LEFT_PARENTHESIS expression ( COMMA expression )+ RIGHT_PARENTHESIS
+    ;
+
+/**
+ * The literal "undefined", meaning an undefined value.
+ */
+undefinedLiteral
+    : UNDEFINED
     ;
 
 
@@ -587,11 +626,12 @@ qualifiedIdentifier
 
 ALIAS : 'alias';
 AND : 'and';
+ASSIGN : 'assign';
 BEGIN : 'begin';
 CONSTANT : 'constant';
 ELSE : 'else';
 END : 'end';
-// false (see below)
+FALSE : 'false';
 IF : 'if';
 FOR : 'for';
 FUNCTION : 'function';
@@ -605,9 +645,10 @@ OR : 'or';
 PACKAGE : 'package';
 REPEAT : 'repeat';
 RETURN : 'return';
+SELF : 'self';
 THEN : 'then';
-// true (see below)
-// undefined (see below)
+TRUE : 'true';
+UNDEFINED : 'undefined';
 UNTIL : 'until';
 VARIABLE : 'variable';
 WHEN : 'when';
@@ -641,12 +682,12 @@ TILDE_ARROW : '~>';
 // COMPARISON OPERATORS
 //-------------------------------------------------------------------------------------------------
 
-EQUALS : '==';
+EQUAL_TO : '==';
 GREATER_THAN_OR_EQUAL : '>=';
 GREATER_THAN : '>';
 LESS_THAN_OR_EQUAL : '<=';
 LESS_THAN : '<';
-NOT_EQUAL : '=/=';   // ( a =/= b )
+NOT_EQUAL_TO : '=/=';   // ( a =/= b )
 
 
 //-------------------------------------------------------------------------------------------------
@@ -665,13 +706,13 @@ TIMES : '*';
 // ASSIGNMENT OPERATORS
 //-------------------------------------------------------------------------------------------------
 
-ASSIGN : '=';
-DIVIDE_ASSIGN : '/=';
-MINUS_ASSIGN : '-=';
-MODULO_ASSIGN : '%=';
-PLUS_ASSIGN : '+=';
-POWER_ASSIGN : '^=';
-TIMES_ASSIGN : '*=';
+EQUALS : '=';
+DIVIDE_EQUALS : '/=';
+MINUS_EQUALS : '-=';
+MODULO_EQUALS : '%=';
+PLUS_EQUALS : '+=';
+POWER_EQUALS : '^=';
+TIMES_EQUALS : '*=';
 
 
 //-------------------------------------------------------------------------------------------------
@@ -908,19 +949,6 @@ VersionPrereleaseFragment
 
 
 //-------------------------------------------------------------------------------------------------
-// BOOLEAN LITERALS
-//-------------------------------------------------------------------------------------------------
-
-/**
- * Recognizes a Boolean literal (either true or false).
- */
-BooleanLiteral
-    : 'true'
-    | 'false'
-    ;
-
-
-//-------------------------------------------------------------------------------------------------
 // DATE-TIME LITERALS
 //-------------------------------------------------------------------------------------------------
 
@@ -981,18 +1009,6 @@ RegexChar
 fragment
 RegexSuffix
     : [igm]       // i = case insensitive, g = match whole string (global), m = match multiple lines of text
-    ;
-
-
-//-------------------------------------------------------------------------------------------------
-// UNDEFINED LITERAL
-//-------------------------------------------------------------------------------------------------
-
-/**
- * The literal "undefined", meaning an undefined value.
- */
-UndefinedLiteral
-    : 'undefined'
     ;
 
 

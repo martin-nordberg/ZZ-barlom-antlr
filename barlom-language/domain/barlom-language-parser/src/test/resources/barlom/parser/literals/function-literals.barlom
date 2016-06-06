@@ -1,7 +1,5 @@
 
-namespace sample;
-
-module function_literals begin
+module sample.function_literals begin
 
   function f = (x) -> x + 1;
 

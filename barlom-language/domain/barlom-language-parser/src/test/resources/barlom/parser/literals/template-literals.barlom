@@ -1,10 +1,7 @@
 
+module sample.text_literals begin
 
-namespace sample;
-
-// Template Literals
-
-module text_literals begin
+  // Template Literals
 
   constant template1 = '{'abcdefgh sfasf asdf {{a.b}} asdf asdf asdfasdf asdf asfd'}';
 
