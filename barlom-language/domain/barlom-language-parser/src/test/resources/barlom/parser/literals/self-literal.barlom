@@ -1,0 +1,10 @@
+
+module sample.anonymous_literal begin
+
+  constant a = 3 + 1;
+
+  constant b = self.a + 2;
+
+end
+
+

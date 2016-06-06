@@ -1,0 +1,17 @@
+
+module sample.code_literals begin
+
+  // Code Literals
+
+  constant code1 = `function doStuff = () -> 42;`;
+
+  constant template2 = `
+                         function doStuff() begin
+                           return 42;
+                         end
+                       `;
+
+end
+
+
+

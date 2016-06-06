@@ -378,10 +378,12 @@ unaryExpression
  * Parses an expression with no operators.
  */
 primaryExpression
-    : functionCall
-    | Identifier
+    : Identifier
+    | functionCall
     | literal
     | LEFT_PARENTHESIS expression RIGHT_PARENTHESIS
+    | primaryExpression DOT Identifier
+    | primaryExpression DOT functionCall
     // TODO: more alternatives ...
     ;
 
@@ -509,6 +511,7 @@ graphVertexDeclaration
  */
 literal
     : AnonymousLiteral
+    | CodeLiteral
     | DateTimeLiteral
     | IntegerLiteral
     | NumberLiteral
@@ -639,7 +642,6 @@ IMPORT : 'import';
 IN : 'in';
 MATCH : 'match';
 MODULE : 'module';
-NAMESPACE : 'namespace';
 NOT : 'not';
 OR : 'or';
 PACKAGE : 'package';
@@ -799,13 +801,31 @@ UnicodeEscape
 ERROR_UNCLOSED_TEXT
     : '"' TextCharsNotDblQuote '\n'
     | '\'' TextCharsNotSnglQuote '\n'
-    | '"""' ( '"'? '"'? TextCharNotDblQuote )* EOF
-    | '\'\'\'' ( '\''? '\''? TextCharNotSnglQuote )* EOF
+    | '"""' ( '"'? '"'? TextCharNotDblQuote | '\n' )* EOF
+    | '\'\'\'' ( '\''? '\''? TextCharNotSnglQuote | '\n' )* EOF
     ;
 
 
 //-------------------------------------------------------------------------------------------------
-// TEXT LITERALS
+// CODE LITERALS
+//-------------------------------------------------------------------------------------------------
+
+CodeLiteral
+    : '`' TextChars '`'
+    ;
+
+fragment
+TextCharNotBackTick
+    : ~'`'
+    | EscapeSequence
+    ;
+
+ERROR_UNCLOSED_CODE
+    : '`' TextCharNotBackTick* EOF
+    ;
+
+//-------------------------------------------------------------------------------------------------
+// TEMPLATE LITERALS
 //-------------------------------------------------------------------------------------------------
 
 /**
