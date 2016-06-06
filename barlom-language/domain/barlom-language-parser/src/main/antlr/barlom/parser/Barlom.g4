@@ -36,10 +36,16 @@ compilationUnit
 // NAMESPACES
 //-------------------------------------------------------------------------------------------------
 
+/**
+ * Parses the namespace of a module.
+ */
 namespaceContext
     : NAMESPACE namespacePath SEMICOLON
     ;
 
+/**
+ * Parses a namespace path - a dot-seprated sequence of identifiers.
+ */
 namespacePath
     : Identifier ( DOT Identifier )*
     ;
@@ -63,6 +69,9 @@ moduleDefinition
     : leadingAnnotations MODULE Identifier parameters? trailingAnnotations packagedElements
     ;
 
+/**
+ * Parses a module path.
+ */
 modulePath
     : namespacePath DOT Identifier arguments?
     ;
@@ -72,8 +81,11 @@ modulePath
 // PACKAGES
 //-------------------------------------------------------------------------------------------------
 
+/**
+ * Parses the context of a package when compiling the elements of that package.
+ */
 packageContext
-    : PACKAGE qualifiedIdentifier SEMICOLON
+    : PACKAGE modulePath ( DOT Identifier arguments? )+ SEMICOLON
     ;
 
 /**
@@ -99,12 +111,15 @@ packagedElements
 
 
 /**
- * Parses a package declaration and its contents.
+ * Parses a package declaration (contents deferred).
  */
 packageDeclaration
     : leadingAnnotations PACKAGE Identifier parameters? trailingAnnotations SEMICOLON
     ;
 
+/**
+ * Parses a package declaration with its contents.
+ */
 packageDefinition
     : leadingAnnotations PACKAGE Identifier parameters? trailingAnnotations packagedElements
     ;
@@ -175,6 +190,9 @@ functionDefinition
 // STATEMENTS
 //-------------------------------------------------------------------------------------------------
 
+/**
+ * Parses one of the assignment operators.
+ */
 assignmentOperator
     : ASSIGN
     | DIVIDE_ASSIGN
@@ -185,6 +203,9 @@ assignmentOperator
     | TIMES_ASSIGN
     ;
 
+/**
+ * Parses an assignment statement.
+ */
 assignmentStatement
     : Identifier assignmentOperator expression SEMICOLON
     ;
@@ -196,10 +217,27 @@ codeBlock
     : BEGIN statement+ END
     ;
 
+/**
+ * Parses an if statement.
+ */
+ifStatement
+    : IF expression THEN statement ( ELSE statement )?
+    ;
+
+/**
+ * Parses a repeat statement.
+ */
 loopStatement
     : REPEAT FOR Identifier trailingAnnotations IN expression codeBlock
     | REPEAT WHILE expression codeBlock
     | REPEAT UNTIL expression codeBlock
+    ;
+
+/**
+ * Parses a match statement.
+ */
+matchStatement
+    : MATCH expression WITH ( expression ( WHEN expression )? EQUAL_ARROW statement )+
     ;
 
 /**
@@ -216,8 +254,10 @@ statement
     : aliasDeclaration
     | assignmentStatement
     | constantDefinition
+    | ifStatement
     | functionDefinition
     | loopStatement
+    | matchStatement
     | returnStatement
     | variableDefinition
     // TODO: more
@@ -314,6 +354,7 @@ unaryExpression
     : primaryExpression
     | PLUS unaryExpression
     | MINUS unaryExpression
+    | NOT unaryExpression
     ;
 
 /**
@@ -383,10 +424,16 @@ arrayLiteral
     : LEFT_BRACKET ( expression ( COMMA expression )* )? RIGHT_BRACKET
     ;
 
+/**
+ * Parses a function literal with multple statements in the function definition.
+ */
 functionBlockLiteral
     : parameters ARROW codeBlock
     ;
 
+/**
+ * Parses a function literal with one expression in its definition.
+ */
 functionExpressionLiteral
     : parameters ARROW expression
     ;
@@ -542,12 +589,15 @@ ALIAS : 'alias';
 AND : 'and';
 BEGIN : 'begin';
 CONSTANT : 'constant';
+ELSE : 'else';
 END : 'end';
 // false (see below)
+IF : 'if';
 FOR : 'for';
 FUNCTION : 'function';
 IMPORT : 'import';
 IN : 'in';
+MATCH : 'match';
 MODULE : 'module';
 NAMESPACE : 'namespace';
 NOT : 'not';
@@ -555,11 +605,14 @@ OR : 'or';
 PACKAGE : 'package';
 REPEAT : 'repeat';
 RETURN : 'return';
+THEN : 'then';
 // true (see below)
 // undefined (see below)
 UNTIL : 'until';
 VARIABLE : 'variable';
+WHEN : 'when';
 WHILE : 'while';
+WITH : 'with';
 XOR : 'xor';
 
 
@@ -572,6 +625,7 @@ COLON: ':';
 COLON_COLON : '::';
 COMMA : ',';
 DOT : '.';
+EQUAL_ARROW : '=>';
 LEFT_BRACE : '{';
 LEFT_BRACKET : '[';
 LEFT_PARENTHESIS : '(';

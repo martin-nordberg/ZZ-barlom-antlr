@@ -85,6 +85,8 @@ class BarlomParserSpec
         where:
         fileName                 | parseResult
         "functions-loops.barlom" | "Successful parse"
+        "functions-if.barlom"    | "Successful parse"
+        "functions-match.barlom" | "Successful parse"
 
     }
 

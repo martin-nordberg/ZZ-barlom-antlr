@@ -1,0 +1,19 @@
+
+
+package mynamespace.mymodule.mypackage;
+
+function sample_if1( x ) begin
+
+  variable value = 3*x;
+
+  if value > 100 then
+    value = 100;
+  else if value > 30 then
+    value = 30;
+  else
+    value = 10;
+
+  return value;
+
+end
+
