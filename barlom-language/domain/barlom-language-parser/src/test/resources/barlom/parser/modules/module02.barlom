@@ -2,11 +2,10 @@
 module stuff.mythings( 1.2.1 )
   : "A module contains only packages"
     by( "Martin Nordberg" )
-begin
 
-  package details : public;
+  package details : public @|mythings/details.barlom|
 
-  package moredetails : private;
+  package moredetails : private @|mythings/moredetails.barlom|
 
 end
 

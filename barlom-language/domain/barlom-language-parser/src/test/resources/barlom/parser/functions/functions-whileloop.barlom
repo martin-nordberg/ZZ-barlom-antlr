@@ -1,14 +1,14 @@
 
 
-function mynamespace.mymodule.mypackage.sample_while() begin
+function mynamespace.mymodule.mypackage.sample_while()
 
-  variable x = 1;
+  variable x = 1
 
-  repeat while x < 100 begin
-    assign x = x * 2;
+  repeat while x < 100
+    assign x = x * 2
   end
 
-  return x;
+  return x
 
 end
 

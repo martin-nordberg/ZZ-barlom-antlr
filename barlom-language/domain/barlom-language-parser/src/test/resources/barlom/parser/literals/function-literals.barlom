@@ -1,15 +1,15 @@
 
-module sample.function_literals begin
+module sample.function_literals
 
-  function f = (x) -> x + 1;
+  function f = (x) -> x + 1
 
-  function g = (a,b,c) -> a*b+c;
+  function g = (a,b,c) -> a*b+c
 
-  constant h = (p,q) -> p^q;
+  constant h = (p,q) -> p^q
 
   function cubed = (x) -> begin
-    constant xsquared = x*x;
-    return xsquared * x;
+    constant xsquared = x*x
+    return xsquared * x
   end
 
 end

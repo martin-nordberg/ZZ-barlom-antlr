@@ -1,13 +1,13 @@
 
-module sample.range_literals begin
+module sample.range_literals
 
-  constant oneToTen = 1..10;
+  constant oneToTen = 1..10
 
-  constant oneToTenExclusive = 1..<10;
+  constant oneToTenExclusive = 1..<10
 
-  constant letters = 'a'..'z';
+  constant letters = 'a'..'z'
 
-  constant numbers = 1.0..<10.0;
+  constant numbers = 1.0..<10.0
 
 end
 

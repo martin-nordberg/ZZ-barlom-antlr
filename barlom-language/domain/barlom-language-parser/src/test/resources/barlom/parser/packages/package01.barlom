@@ -10,25 +10,27 @@ package stuff.specialstuff.specialstuff
     ] )
     tested
     type_checked
-begin
 
-  alias extra = lib.gunk( 2.1.1 ).extra;
+  use lib.gunk( 2.1.1 ).wonderFunction
+  use lib.gunk( 2.1.1 ).extra as more
 
-  function doStuff( x , y ) : since ( 1.2.1 ) begin
-    return x + y + extra( x, y );
+  function doStuff( x , y ) : since ( 1.2.1 )
+    return x + y + more( x, y )
   end
 
   function factorial( n : Integer32 )
     : "The factorial function is defined in recursive fragments."
       recursive
-    return n * factorial( n - 1 );
+    return n * factorial( n - 1 )
+  end
 
   function factorial( 0 )
     : "The base case"
-    return 1;
+    return 1
+  end
 
-  function doMore( a ) : since( 2.0.0 ) begin
-    return a^2;
+  function doMore( a ) : since( 2.0.0 )
+    return wonderFunction( a^2 )
   end
 
 end

@@ -1,0 +1,30 @@
+
+
+function mynamespace.mymodule.mypackage.sample_if1( x )
+
+  variable value = 3*x
+
+  check
+    assign value = 7
+
+    if value > 7
+      error NotPossible()
+    else
+      assign value = 8
+    end
+  detect e : NotPossible
+    call printGoryOutput()
+  regardless
+    assign value = 9
+  end
+
+  check
+    call doStuff()
+  regardless
+    assign value = 10
+  end
+
+  return value
+
+end
+

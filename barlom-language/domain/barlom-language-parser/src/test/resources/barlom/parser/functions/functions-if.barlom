@@ -1,17 +1,18 @@
 
 
-function mynamespace.mymodule.mypackage.sample_if1( x ) begin
+function mynamespace.mymodule.mypackage.sample_if1( x )
 
-  variable value = 3*x;
+  variable value = 3*x
 
-  if value > 100 then
-    assign value = 100;
-  else if value > 30 then
-    assign value = 30;
+  if value > 100
+    assign value = 100
+  else if value > 30
+    assign value = 30
   else
-    assign value = 10;
+    assign value = 10
+  end
 
-  return value;
+  return value
 
 end
 

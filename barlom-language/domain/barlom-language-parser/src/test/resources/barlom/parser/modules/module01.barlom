@@ -17,10 +17,11 @@ module stuff.specialstuff( 2.0.1 )
     ] )
     tested
     type_checked
-begin
 
-  function a();
+  function a()
+    @|./specialstuff/a.barlom|
 
-  package b;
+  package b
+    @|./specialstuff/b.barlom|
 
 end

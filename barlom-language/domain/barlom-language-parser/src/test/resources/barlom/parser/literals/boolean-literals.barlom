@@ -1,9 +1,9 @@
 
-module sample.boolean_literals begin
+module sample.boolean_literals
 
-  constant isGood = true;
+  constant isGood = true
 
-  constant isBad = false;
+  constant isBad = false
 
 end
 

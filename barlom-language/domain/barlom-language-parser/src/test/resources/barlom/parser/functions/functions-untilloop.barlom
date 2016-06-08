@@ -1,14 +1,14 @@
 
 
-function mynamespace.mymodule.mypackage.sample_until() begin
+function mynamespace.mymodule.mypackage.sample_until()
 
-  variable x = 1;
+  variable x = 1
 
-  repeat until x > 100 begin
-    assign x = x * 2;
+  repeat until x > 100
+    assign x = x * 2
   end
 
-  return x;
+  return x
 
 end
 

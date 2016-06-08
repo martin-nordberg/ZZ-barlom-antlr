@@ -46,7 +46,7 @@ moduleDefinition
  * Parses a module path.
  */
 modulePath
-    : ( Identifier ( DOT Identifier )* DOT )? Identifier arguments?
+    : ( Identifier ( DOT Identifier )* DOT )? Identifier argumentsNonEmpty?
     ;
 
 
@@ -55,19 +55,12 @@ modulePath
 //-------------------------------------------------------------------------------------------------
 
 /**
- * Parses the context of a package when compiling the elements of that package.
- */
-packageContext
-    : PACKAGE modulePath ( DOT Identifier arguments? )+ SEMICOLON
-    ;
-
-/**
  * Parses a language element allowed in a package.
  */
 packagedElementDeclaration
     : functionDeclaration
     | packageDeclaration
-    | aliasDeclaration
+    | useDeclaration
     // TODO: more alternatives ...
     ;
 
@@ -95,7 +88,7 @@ packagedElementNamespacedDefinition
  * Parses a sequence of elements within a package.
  */
 packagedElements
-    : BEGIN ( packagedElementDeclaration | packagedElementDefinition )+ END
+    : ( packagedElementDeclaration | packagedElementDefinition )+ END
     ;
 
 
@@ -103,7 +96,7 @@ packagedElements
  * Parses a package declaration (contents deferred).
  */
 packageDeclaration
-    : leadingAnnotations PACKAGE Identifier parameters? trailingAnnotations SEMICOLON
+    : leadingAnnotations PACKAGE Identifier parameters? trailingAnnotations LocationLiteral
     ;
 
 /**
@@ -157,14 +150,14 @@ trailingAnnotations
 
 
 //-------------------------------------------------------------------------------------------------
-// ALIASES
+// USES
 //-------------------------------------------------------------------------------------------------
 
 /**
- * Parses an alias declaration
+ * Parses a use declaration
  */
-aliasDeclaration
-    : ALIAS Identifier EQUALS qualifiedIdentifier SEMICOLON
+useDeclaration
+    : USE qualifiedIdentifier ( AS Identifier )?
     ;
 
 
@@ -176,15 +169,15 @@ aliasDeclaration
  * Parses a function declaration.
  */
 functionDeclaration
-    : leadingAnnotations FUNCTION Identifier parameters trailingAnnotations SEMICOLON
+    : leadingAnnotations FUNCTION Identifier parameters trailingAnnotations LocationLiteral
     ;
 
 /**
  * Parses a function definition.
  */
 functionDefinition
-    : leadingAnnotations FUNCTION Identifier parameters trailingAnnotations ( codeBlock | returnStatement )
-    | leadingAnnotations FUNCTION Identifier EQUALS functionExpressionLiteral SEMICOLON
+    : leadingAnnotations FUNCTION Identifier parameters trailingAnnotations statement+ END
+    | leadingAnnotations FUNCTION Identifier EQUALS functionExpressionLiteral
     | leadingAnnotations FUNCTION Identifier EQUALS functionBlockLiteral
     ;
 
@@ -192,7 +185,7 @@ functionDefinition
  * Parses a function definition when it is a whole file.
  */
 functionNamespacedDefinition
-    : leadingAnnotations FUNCTION functionPath trailingAnnotations ( codeBlock | returnStatement )
+    : leadingAnnotations FUNCTION functionPath trailingAnnotations statement+ END
     ;
 
 /**
@@ -224,7 +217,15 @@ assignmentOperator
  * Parses an assignment statement.
  */
 assignmentStatement
-    : ASSIGN Identifier assignmentOperator expression SEMICOLON
+    : ASSIGN Identifier assignmentOperator expression
+    ;
+
+callStatement
+    : CALL functionCall
+    ;
+
+checkStatement
+    : CHECK statement+ ( ( DETECT Identifier trailingAnnotations statement+ )+ ( REGARDLESS statement+ )? | ( REGARDLESS statement+ ) ) END
     ;
 
 /**
@@ -234,48 +235,55 @@ codeBlock
     : BEGIN statement+ END
     ;
 
+errorStatement
+    : ERROR expression
+    ;
+
 /**
  * Parses an if statement.
  */
 ifStatement
-    : IF expression THEN statement ( ELSE statement )?
+    : IF expression statement+ ( ELSE IF expression statement+ )* ( ELSE statement+ )? END
     ;
 
 /**
  * Parses a repeat statement.
  */
 loopStatement
-    : REPEAT FOR Identifier trailingAnnotations IN expression codeBlock
-    | REPEAT WHILE expression codeBlock
-    | REPEAT UNTIL expression codeBlock
+    : REPEAT FOR Identifier trailingAnnotations IN expression statement+ END
+    | REPEAT WHILE expression statement+ END
+    | REPEAT UNTIL expression statement+ END
     ;
 
 /**
  * Parses a match statement.
  */
 matchStatement
-    : MATCH expression WITH ( expression ( WHEN expression )? EQUAL_ARROW statement )+
+    : MATCH expression ( expression ( WHEN expression )? EQUAL_ARROW statement )+ END
     ;
 
 /**
  * Parses a return statement
  */
 returnStatement
-    : RETURN expression SEMICOLON
+    : RETURN expression
     ;
 
 /**
  * Parses a statement
  */
 statement
-    : aliasDeclaration
-    | assignmentStatement
+    : assignmentStatement
+    | callStatement
+    | checkStatement
     | constantDefinition
+    | errorStatement
     | ifStatement
     | functionDefinition
     | loopStatement
     | matchStatement
     | returnStatement
+    | useDeclaration
     | variableDefinition
     // TODO: more
     ;
@@ -296,8 +304,14 @@ argument
  * Parses the argument list of a function call.
  */
 arguments
+    : LEFT_PARENTHESIS ( argument ( COMMA argument )* )? RIGHT_PARENTHESIS
+    ;
+
+/**
+ * Parses the argument list of a module or package.
+ */
+argumentsNonEmpty
     : LEFT_PARENTHESIS argument ( COMMA argument )* RIGHT_PARENTHESIS
-    | LEFT_PARENTHESIS RIGHT_PARENTHESIS
     ;
 
 
@@ -338,8 +352,9 @@ exclusiveOrExpression
 
 equalityExpression
 	:	relationalExpression
-	|	equalityExpression EQUAL_TO relationalExpression
+	|	equalityExpression EQUALS relationalExpression
 	|	equalityExpression NOT_EQUAL_TO relationalExpression
+	|	equalityExpression IS relationalExpression
 	;
 
 relationalExpression
@@ -396,7 +411,7 @@ primaryExpression
  * Parses the declaration of a value that cannot be changed once initialized.
  */
 constantDefinition
-    : leadingAnnotations CONSTANT Identifier trailingAnnotations EQUALS expression SEMICOLON
+    : leadingAnnotations CONSTANT Identifier trailingAnnotations EQUALS expression
     ;
 
 
@@ -418,7 +433,7 @@ parameters
  * Parses the declaration of a value that can be changed after it has been initialized.
  */
 variableDefinition
-    : leadingAnnotations VARIABLE Identifier trailingAnnotations EQUALS expression SEMICOLON
+    : leadingAnnotations VARIABLE Identifier trailingAnnotations EQUALS expression
     ;
 
 
@@ -613,7 +628,7 @@ undefinedLiteral
 //-------------------------------------------------------------------------------------------------
 
 qualifiedIdentifier
-    : Identifier arguments? ( DOT Identifier arguments? )*
+    : Identifier argumentsNonEmpty? ( DOT Identifier argumentsNonEmpty? )*
     ;
 
 
@@ -627,24 +642,30 @@ qualifiedIdentifier
 // KEYWORDS
 //-------------------------------------------------------------------------------------------------
 
-ALIAS : 'alias';
 AND : 'and';
+AS : 'as';
 ASSIGN : 'assign';
 BEGIN : 'begin';
+CALL : 'call';
+CHECK : 'check';
 CONSTANT : 'constant';
+DETECT : 'detect';
 ELSE : 'else';
 END : 'end';
+ERROR : 'error';
 FALSE : 'false';
 IF : 'if';
 FOR : 'for';
 FUNCTION : 'function';
 IMPORT : 'import';
 IN : 'in';
+IS : 'is';
 MATCH : 'match';
 MODULE : 'module';
 NOT : 'not';
 OR : 'or';
 PACKAGE : 'package';
+REGARDLESS : 'regardless';
 REPEAT : 'repeat';
 RETURN : 'return';
 SELF : 'self';
@@ -652,11 +673,16 @@ THEN : 'then';
 TRUE : 'true';
 UNDEFINED : 'undefined';
 UNTIL : 'until';
+USE : 'use';
 VARIABLE : 'variable';
 WHEN : 'when';
 WHILE : 'while';
-WITH : 'with';
 XOR : 'xor';
+
+
+ERROR_RESERVED_WORD
+    : 'with'
+    ;
 
 
 //-------------------------------------------------------------------------------------------------
@@ -676,7 +702,6 @@ QUESTION : '?';
 RIGHT_BRACE : '}';
 RIGHT_BRACKET : ']';
 RIGHT_PARENTHESIS : ')';
-SEMICOLON : ';';
 TILDE_ARROW : '~>';
 
 
@@ -684,7 +709,6 @@ TILDE_ARROW : '~>';
 // COMPARISON OPERATORS
 //-------------------------------------------------------------------------------------------------
 
-EQUAL_TO : '==';
 GREATER_THAN_OR_EQUAL : '>=';
 GREATER_THAN : '>';
 LESS_THAN_OR_EQUAL : '<=';
@@ -1029,6 +1053,18 @@ RegexChar
 fragment
 RegexSuffix
     : [igm]       // i = case insensitive, g = match whole string (global), m = match multiple lines of text
+    ;
+
+
+//-------------------------------------------------------------------------------------------------
+// LOCATION LITERALS
+//-------------------------------------------------------------------------------------------------
+
+/**
+ * A location (URI) literal.  TODO: maybe recognize its innards here
+ */
+LocationLiteral
+    : '@|' ~'|'*? '|'
     ;
 
 

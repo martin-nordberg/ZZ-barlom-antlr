@@ -1,15 +1,15 @@
 
-module sample.symbol_literals begin
+module sample.symbol_literals
 
-  constant symbol1 = #sample1;
+  constant symbol1 = #sample1
 
-  constant symbol2 = #s;
+  constant symbol2 = #s
 
-  constant symbol3 = #S;
+  constant symbol3 = #S
 
-  constant symbol4 = #CYMBAL_SYMBOL;
+  constant symbol4 = #CYMBAL_SYMBOL
 
-  constant symbol5 = #_symbol';
+  constant symbol5 = #_symbol'
 
 end
 

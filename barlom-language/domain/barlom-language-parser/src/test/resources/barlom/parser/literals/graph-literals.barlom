@@ -1,11 +1,11 @@
 
-module sample.graph_literals begin
+module sample.graph_literals
 
-  constant graph0 = [%% %%];
+  constant graph0 = [%% %%]
 
   constant graph1 = [%%
     [a]
-  %%];
+  %%]
 
   constant graph2 = [%%
 
@@ -21,7 +21,7 @@ module sample.graph_literals begin
     [b]--(r)->[d],
     [c]<-(s)--[d]
 
-  %%];
+  %%]
 
 end
 

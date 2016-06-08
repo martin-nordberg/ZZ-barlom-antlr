@@ -1,37 +1,37 @@
 
-module sample.integer_literals begin
+module sample.integer_literals
 
   // Integer literals (zero)
 
-  constant zInt0 = 0;
+  constant zInt0 = 0
 
-  constant zInt1 = 0x0;
+  constant zInt1 = 0x0
 
-  constant zInt1' = 0b0;
+  constant zInt1' = 0b0
 
-  constant zInt2 = 00y;
+  constant zInt2 = 00y
 
-  constant zInt3 = 0x0000s;
+  constant zInt3 = 0x0000s
 
-  constant zInt4 = 0b0000_0000i;
+  constant zInt4 = 0b0000_0000i
 
 
   // Integer literals (non-zero)
 
-  constant int1 = 123_456;
+  constant int1 = 123_456
 
-  constant int2 = 0b1010101000011;
+  constant int2 = 0b1010101000011
 
-  constant int3 = 0xABCD_ef01;
+  constant int3 = 0xABCD_ef01
 
 
   // Integer literals (long)
 
-  constant lint1 = 123456789L;
+  constant lint1 = 123456789L
 
-  constant lint2 = 0xCAFE_BABE_1234_0000L;
+  constant lint2 = 0xCAFE_BABE_1234_0000L
 
-  constant lint3 = 2L;
+  constant lint3 = 2L
 
 end
 

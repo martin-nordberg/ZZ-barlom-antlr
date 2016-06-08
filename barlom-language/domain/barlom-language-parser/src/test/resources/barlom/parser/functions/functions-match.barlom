@@ -1,16 +1,17 @@
 
 
-function mynamespace.mymodule.mypackage.sample_match1( x, y ) begin
+function mynamespace.mymodule.mypackage.sample_match1( x, y )
 
-  variable z = 0;
+  variable z = 0
 
-  match x with
-    A => assign z = 3;
-    B => assign z = 4;
-    C when y => assign z = 5;
-    C when not y => assign z = 6;
+  match x
+    A => assign z = 3
+    B => assign z = 4
+    C when y => assign z = 5
+    C when not y => assign z = 6
+  end
 
-  return z;
+  return z
 
 end
 

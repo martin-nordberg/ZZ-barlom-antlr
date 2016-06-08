@@ -1,16 +1,16 @@
 
 
-function mynamespace.mymodule.mypackage.sample_for() begin
+function mynamespace.mymodule.mypackage.sample_for()
 
-  constant numbers = [1,2,3,4,5,6];
+  constant numbers = [1,2,3,4,5,6]
 
-  variable sum = 0;
+  variable sum = 0
 
-  repeat for i in numbers begin
-    assign sum += i;
+  repeat for i in numbers
+    assign sum += i
   end
 
-  return sum;
+  return sum
 
 end
 

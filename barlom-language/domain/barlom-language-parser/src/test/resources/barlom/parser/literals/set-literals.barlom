@@ -1,11 +1,11 @@
 
-module sample.set_literals begin
+module sample.set_literals
 
-  constant empty = {};
+  constant empty = {}
 
-  constant numbers = { 1, 2, 3 };
+  constant numbers = { 1, 2, 3 }
 
-  constant strings = { "a", "b", "c" };
+  constant strings = { "a", "b", "c" }
 
 end
 

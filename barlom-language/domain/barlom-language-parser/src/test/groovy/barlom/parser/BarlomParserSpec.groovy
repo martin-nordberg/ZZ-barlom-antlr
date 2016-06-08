@@ -65,6 +65,8 @@ class BarlomParserSpec
         fileName          | parseResult
         "module01.barlom" | "Successful parse"
         "module02.barlom" | "Successful parse"
+        "module03.barlom" | "Successful parse"
+        "module04.barlom" | "Successful parse"
 
     }
 
@@ -86,11 +88,12 @@ class BarlomParserSpec
 
         where:
         fileName                     | parseResult
+        "functions-check.barlom"     | "Successful parse"
         "functions-forloop.barlom"   | "Successful parse"
-        "functions-untilloop.barlom" | "Successful parse"
-        "functions-whileloop.barlom" | "Successful parse"
         "functions-if.barlom"        | "Successful parse"
         "functions-match.barlom"     | "Successful parse"
+        "functions-untilloop.barlom" | "Successful parse"
+        "functions-whileloop.barlom" | "Successful parse"
 
     }
 
