@@ -455,7 +455,7 @@ typeDeclaration
  * Parses an array literal.
  */
 arrayLiteral
-    : LEFT_BRACKET ( expression ( COMMA expression )* )? RIGHT_BRACKET
+    : LEFT_BRACKET ( expression ( COMMA expression )* COMMA? )? RIGHT_BRACKET
     ;
 
 /**
@@ -520,6 +520,13 @@ graphVertexDeclaration
     : LEFT_BRACKET Identifier /*TODO( COLON typeExpression )*/ structureLiteral? RIGHT_BRACKET
     ;
 
+/**
+ * Parses a linked list literal.
+ */
+listLiteral
+    : LEFT_BRACKET ( SEMICOLON | expression SEMICOLON ( expression SEMICOLON )* expression? ) RIGHT_BRACKET
+    ;
+
 
 /**
  * Parses one of many kinds of literals.
@@ -540,6 +547,7 @@ literal
     | functionBlockLiteral
     | functionExpressionLiteral
     | graphLiteral
+    | listLiteral
     | mapLiteral
     | rangeLiteral
     | selfLiteral
@@ -702,6 +710,7 @@ QUESTION : '?';
 RIGHT_BRACE : '}';
 RIGHT_BRACKET : ']';
 RIGHT_PARENTHESIS : ')';
+SEMICOLON : ';';
 TILDE_ARROW : '~>';
 
 

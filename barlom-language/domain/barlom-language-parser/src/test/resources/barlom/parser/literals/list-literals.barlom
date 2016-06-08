@@ -1,0 +1,16 @@
+
+module sample.list_literals
+
+  constant empty = [;]
+
+  constant listOfOne = [ 1; ]
+
+  constant numbers = [ 1; 2 ]
+
+  constant strings = [ "a"; "b"; "c" ]
+
+  constant trailingSemicolonOk = [ "a"; "b"; "c"; ]
+
+end
+
+

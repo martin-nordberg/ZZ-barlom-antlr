@@ -41,6 +41,7 @@ class BarlomParserSpec
         "function-literals.barlom"    | "Successful parse"
         "graph-literals.barlom"       | "Successful parse"
         "integer-literals.barlom"     | "Successful parse"
+        "list-literals.barlom"        | "Successful parse"
         "map-literals.barlom"         | "Successful parse"
         "number-literals.barlom"      | "Successful parse"
         "range-literals.barlom"       | "Successful parse"
