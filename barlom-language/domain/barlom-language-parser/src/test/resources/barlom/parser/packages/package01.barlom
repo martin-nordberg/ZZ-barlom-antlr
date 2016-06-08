@@ -1,4 +1,7 @@
 
+use lib.gunk( 2.1.1 ).wonderFunction
+use lib.gunk( 2.1.1 ).extra as more
+
 package stuff.specialstuff.specialstuff
   : contracted
     dependencies( [
@@ -10,9 +13,6 @@ package stuff.specialstuff.specialstuff
     ] )
     tested
     type_checked
-
-  use lib.gunk( 2.1.1 ).wonderFunction
-  use lib.gunk( 2.1.1 ).extra as more
 
   function doStuff( x , y ) : since ( 1.2.1 )
     return x + y + more( x, y )

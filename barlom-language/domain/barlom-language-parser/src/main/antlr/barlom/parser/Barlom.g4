@@ -26,8 +26,7 @@ parse
  * Parses an entire Barlom source file.
  */
 compilationUnit
-    : moduleDefinition EOF
-    | packagedElementNamespacedDefinition EOF
+    : useDeclaration* ( moduleDefinition | packagedElementNamespacedDefinition ) EOF
     ;
 
 
@@ -39,7 +38,7 @@ compilationUnit
  * Parses the definition of a module.
  */
 moduleDefinition
-    : leadingAnnotations MODULE modulePath parameters? trailingAnnotations packagedElements
+    : leadingAnnotations MODULE modulePath parameters? trailingAnnotations packagedElements END
     ;
 
 /**
@@ -60,7 +59,6 @@ modulePath
 packagedElementDeclaration
     : functionDeclaration
     | packageDeclaration
-    | useDeclaration
     // TODO: more alternatives ...
     ;
 
@@ -88,7 +86,7 @@ packagedElementNamespacedDefinition
  * Parses a sequence of elements within a package.
  */
 packagedElements
-    : ( packagedElementDeclaration | packagedElementDefinition )+ END
+    : ( packagedElementDeclaration | packagedElementDefinition )+
     ;
 
 
@@ -103,14 +101,14 @@ packageDeclaration
  * Parses a package declaration with its contents.
  */
 packageDefinition
-    : leadingAnnotations PACKAGE Identifier trailingAnnotations packagedElements
+    : leadingAnnotations PACKAGE Identifier trailingAnnotations packagedElements END
     ;
 
 /**
  * Parses a package declaration with its contents when the package is a whole compilation unit.
  */
 packageNamespacedDefinition
-    : leadingAnnotations PACKAGE packagePath trailingAnnotations packagedElements
+    : leadingAnnotations PACKAGE packagePath trailingAnnotations packagedElements END
     ;
 
 /**
@@ -220,10 +218,16 @@ assignmentStatement
     : ASSIGN Identifier assignmentOperator expression
     ;
 
+/**
+ * Parses a call statement - the calling of a void function or else ignoring its result.
+ */
 callStatement
     : CALL functionCall
     ;
 
+/**
+ * Parses an error handling statement.
+ */
 checkStatement
     : CHECK statement+ ( ( DETECT Identifier trailingAnnotations statement+ )+ ( REGARDLESS statement+ )? | ( REGARDLESS statement+ ) ) END
     ;
@@ -235,6 +239,9 @@ codeBlock
     : BEGIN statement+ END
     ;
 
+/**
+ * Parses a statement that triggers an error.
+ */
 errorStatement
     : ERROR expression
     ;
