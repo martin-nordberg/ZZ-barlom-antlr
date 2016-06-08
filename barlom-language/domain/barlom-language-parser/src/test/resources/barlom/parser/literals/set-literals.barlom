@@ -3,9 +3,15 @@ module sample.set_literals
 
   constant empty = {}
 
+  constant one = { 1 }
+
+  constant alsoOne = { 1, }
+
   constant numbers = { 1, 2, 3 }
 
   constant strings = { "a", "b", "c" }
+
+  constant trailingCommaOk = { "a", "b", "c", }
 
 end
 

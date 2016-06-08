@@ -510,7 +510,7 @@ graphElementDeclaration
  * Parses a literal graph.
  */
 graphLiteral
-    : GRAPH_START ( graphElementDeclaration ( COMMA graphElementDeclaration )* )? GRAPH_END
+    : GRAPH_START ( graphElementDeclaration ( COMMA graphElementDeclaration )* COMMA? )? GRAPH_END
     ;
 
 /**
@@ -570,7 +570,7 @@ mapEntry
  */
 mapLiteral
     : LEFT_BRACE TILDE_ARROW RIGHT_BRACE
-    | LEFT_BRACE mapEntry ( COMMA mapEntry )* RIGHT_BRACE
+    | LEFT_BRACE mapEntry ( COMMA mapEntry )* COMMA? RIGHT_BRACE
     ;
 
 
@@ -594,7 +594,7 @@ selfLiteral
  * Parses a set literal.
  */
 setLiteral
-    : LEFT_BRACE ( expression ( COMMA expression )* )? RIGHT_BRACE
+    : LEFT_BRACE ( expression ( COMMA expression )* COMMA? )? RIGHT_BRACE
     ;
 
 
@@ -610,7 +610,7 @@ structureEntry
  */
 structureLiteral
     : LEFT_BRACE EQUALS RIGHT_BRACE
-    | LEFT_BRACE structureEntry ( COMMA structureEntry )* RIGHT_BRACE
+    | LEFT_BRACE structureEntry ( COMMA structureEntry )* COMMA? RIGHT_BRACE
     ;
 
 

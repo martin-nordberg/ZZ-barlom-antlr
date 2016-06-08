@@ -3,9 +3,15 @@ module sample.structure_literals
 
   constant empty = {=}
 
+  constant one = { one=1 }
+
+  constant alsoOne = { one=1, }
+
   constant numbers = { one=1, two=2, three=3 }
 
   constant letters = { a = "A", b = "B", c = "C" }
+
+  constant trailingCommaOk = { a = "A", b = "B", c = "C", }
 
 end
 

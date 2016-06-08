@@ -7,6 +7,8 @@ module sample.list_literals
 
   constant numbers = [ 1; 2 ]
 
+  constant numbers2 = [ 1; 2; ]
+
   constant strings = [ "a"; "b"; "c" ]
 
   constant trailingSemicolonOk = [ "a"; "b"; "c"; ]
