@@ -1,0 +1,25 @@
+
+package sample.epackage
+
+  enumeration type Other
+    @|epackage/Other.barlom|
+
+  enumeration type Color
+
+    constant BLUE : "blue",
+    constant GREEN,
+    constant RED,
+    constant YELLOW,
+
+    function isCold() : Boolean
+      match self
+        BLUE => return true
+        GREEN => return true
+      else
+        return false
+      end
+    end
+
+  end
+
+end

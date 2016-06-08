@@ -59,6 +59,7 @@ modulePath
 packagedElementDeclaration
     : functionDeclaration
     | packageDeclaration
+    | enumerationDeclaration
     // TODO: more alternatives ...
     ;
 
@@ -70,6 +71,7 @@ packagedElementDefinition
     | variableDefinition
     | functionDefinition
     | packageDefinition
+    | enumerationDefinition
     // TODO: more alternatives ...
     ;
 
@@ -79,6 +81,7 @@ packagedElementDefinition
 packagedElementNamespacedDefinition
     : functionNamespacedDefinition
     | packageNamespacedDefinition
+    | enumerationNamespacedDefinition
     // TODO: more alternatives ...
     ;
 
@@ -116,6 +119,38 @@ packageNamespacedDefinition
  */
 packagePath
     : modulePath DOT Identifier parameters?
+    ;
+
+
+//-------------------------------------------------------------------------------------------------
+// ENUMERATIONS
+//-------------------------------------------------------------------------------------------------
+
+enumerationConstant
+    : leadingAnnotations CONSTANT Identifier trailingAnnotations
+    ;
+
+enumerationDeclaration
+    : leadingAnnotations ENUMERATION TYPE Identifier trailingAnnotations LocationLiteral
+    ;
+
+enumerationDefinition
+    : leadingAnnotations ENUMERATION TYPE Identifier trailingAnnotations
+        enumerationConstant ( COMMA enumerationConstant )+ COMMA?
+        ( functionDeclaration | functionDefinition )* END
+    ;
+
+enumerationNamespacedDefinition
+    : leadingAnnotations ENUMERATION TYPE enumerationPath trailingAnnotations
+        enumerationConstant ( COMMA enumerationConstant )+ COMMA?
+        ( functionDeclaration | functionDefinition )* END
+    ;
+
+/**
+ * Parses the namespace, module, and name of an enumeration.
+ */
+enumerationPath
+    : modulePath DOT Identifier
     ;
 
 
@@ -266,7 +301,7 @@ loopStatement
  * Parses a match statement.
  */
 matchStatement
-    : MATCH expression ( expression ( WHEN expression )? EQUAL_ARROW statement )+ END
+    : MATCH expression ( expression ( WHEN expression )? EQUAL_ARROW statement )+ ( ELSE statement+ )? END
     ;
 
 /**
@@ -667,6 +702,7 @@ CONSTANT : 'constant';
 DETECT : 'detect';
 ELSE : 'else';
 END : 'end';
+ENUMERATION : 'enumeration';
 ERROR : 'error';
 FALSE : 'false';
 IF : 'if';
@@ -686,6 +722,7 @@ RETURN : 'return';
 SELF : 'self';
 THEN : 'then';
 TRUE : 'true';
+TYPE : 'type';
 UNDEFINED : 'undefined';
 UNTIL : 'until';
 USE : 'use';
@@ -1156,7 +1193,7 @@ LINE_COMMENT
     ;
 
 ERROR_UNCLOSED_BLOCK_COMMENT
-    : '/*' .*? EOF
+    : '/*' ( '*' ~'/' | ~'*' )* EOF
     ;
 
 

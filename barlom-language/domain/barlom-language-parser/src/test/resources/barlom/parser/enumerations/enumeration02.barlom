@@ -1,0 +1,13 @@
+
+enumeration type sample.mypackage.Color
+
+  constant BLUE : cold,
+  constant GREEN : cold,
+  constant RED,
+  constant YELLOW
+
+  function isCold() : Boolean
+    return self is cold
+  end
+
+end
