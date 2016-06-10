@@ -1,0 +1,22 @@
+
+package sample.vpackage
+
+  variant type Elsewhere
+    @|epackage/Elsewhere.barlom|
+
+  variant type Peano
+
+    variant Zero,
+
+    variant Successor( n : Peano )
+
+    function plus( n ) : Boolean :
+      match self
+        Zero => return n
+        Successor( self' ) => return Successor( self'.plus( n ) )
+      end
+    end
+
+  end
+
+end

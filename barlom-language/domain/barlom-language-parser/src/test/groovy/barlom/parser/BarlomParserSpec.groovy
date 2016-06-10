@@ -98,7 +98,7 @@ class BarlomParserSpec
 
     }
 
-    def "Enumerations are parsed successfully."( String fileName, String parseResult ) {
+    def "Enumeration types are parsed successfully."( String fileName, String parseResult ) {
 
         expect:
         parse( "enumerations/" + fileName ) == parseResult
@@ -107,6 +107,18 @@ class BarlomParserSpec
         fileName               | parseResult
         "enumeration01.barlom" | "Successful parse"
         "enumeration02.barlom" | "Successful parse"
+
+    }
+
+    def "Variant types are parsed successfully."( String fileName, String parseResult ) {
+
+        expect:
+        parse( "variants/" + fileName ) == parseResult
+
+        where:
+        fileName            | parseResult
+        "variants01.barlom" | "Successful parse"
+        "variants02.barlom" | "Successful parse"
 
     }
 

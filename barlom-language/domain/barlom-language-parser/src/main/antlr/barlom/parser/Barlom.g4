@@ -59,7 +59,8 @@ modulePath
 packagedElementDeclaration
     : functionDeclaration
     | packageDeclaration
-    | enumerationDeclaration
+    | enumerationTypeDeclaration
+    | variantTypeDeclaration
     // TODO: more alternatives ...
     ;
 
@@ -71,7 +72,8 @@ packagedElementDefinition
     | variableDefinition
     | functionDefinition
     | packageDefinition
-    | enumerationDefinition
+    | enumerationTypeDefinition
+    | variantTypeDefinition
     // TODO: more alternatives ...
     ;
 
@@ -81,7 +83,8 @@ packagedElementDefinition
 packagedElementNamespacedDefinition
     : functionNamespacedDefinition
     | packageNamespacedDefinition
-    | enumerationNamespacedDefinition
+    | enumerationTypeNamespacedDefinition
+    | variantTypeNamespacedDefinition
     // TODO: more alternatives ...
     ;
 
@@ -126,23 +129,23 @@ packagePath
 // ENUMERATIONS
 //-------------------------------------------------------------------------------------------------
 
-enumerationConstant
+enumerationConstantDefinition
     : leadingAnnotations CONSTANT Identifier trailingAnnotations
     ;
 
-enumerationDeclaration
+enumerationTypeDeclaration
     : leadingAnnotations ENUMERATION TYPE Identifier trailingAnnotations LocationLiteral
     ;
 
-enumerationDefinition
+enumerationTypeDefinition
     : leadingAnnotations ENUMERATION TYPE Identifier trailingAnnotationsColon
-        enumerationConstant ( COMMA enumerationConstant )+ COMMA?
+        enumerationConstantDefinition ( COMMA enumerationConstantDefinition )+ COMMA?
         ( functionDeclaration | functionDefinition )* END
     ;
 
-enumerationNamespacedDefinition
+enumerationTypeNamespacedDefinition
     : leadingAnnotations ENUMERATION TYPE enumerationPath trailingAnnotationsColon
-        enumerationConstant ( COMMA enumerationConstant )+ COMMA?
+        enumerationConstantDefinition ( COMMA enumerationConstantDefinition )+ COMMA?
         ( functionDeclaration | functionDefinition )* END
     ;
 
@@ -151,6 +154,38 @@ enumerationNamespacedDefinition
  */
 enumerationPath
     : modulePath DOT Identifier
+    ;
+
+
+//-------------------------------------------------------------------------------------------------
+// VARIANT TYPES
+//-------------------------------------------------------------------------------------------------
+
+variantDefinition
+    : leadingAnnotations VARIANT Identifier parameters? trailingAnnotations
+    ;
+
+variantTypeDeclaration
+    : leadingAnnotations VARIANT TYPE Identifier trailingAnnotations LocationLiteral
+    ;
+
+variantTypeDefinition
+    : leadingAnnotations VARIANT TYPE Identifier trailingAnnotationsColon
+        variantDefinition ( COMMA variantDefinition )+ COMMA?
+        ( functionDeclaration | functionDefinition )* END
+    ;
+
+variantTypeNamespacedDefinition
+    : leadingAnnotations VARIANT TYPE variantTypePath trailingAnnotationsColon
+        variantDefinition ( COMMA variantDefinition )+ COMMA?
+        ( functionDeclaration | functionDefinition )* END
+    ;
+
+/**
+ * Parses the namespace, module, and name of a variant type.
+ */
+variantTypePath
+    : modulePath DOT Identifier parameters?
     ;
 
 
@@ -735,13 +770,15 @@ UNDEFINED : 'undefined';
 UNTIL : 'until';
 USE : 'use';
 VARIABLE : 'variable';
+VARIANT : 'variant';
 WHEN : 'when';
 WHILE : 'while';
 XOR : 'xor';
 
 
 ERROR_RESERVED_WORD
-    : 'with'
+    : 'data'
+    | 'with'
     ;
 
 
