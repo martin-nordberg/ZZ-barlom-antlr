@@ -1,6 +1,6 @@
 
 module org.barlom.fancy.things.module03
-  : "Non-parametric long-named module"
+  : "Non-parametric long-named module" :
 
   function f(x) @|module03/f.barlom|
 

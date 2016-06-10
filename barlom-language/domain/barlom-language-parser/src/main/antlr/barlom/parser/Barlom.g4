@@ -38,7 +38,7 @@ compilationUnit
  * Parses the definition of a module.
  */
 moduleDefinition
-    : leadingAnnotations MODULE modulePath parameters? trailingAnnotations packagedElements END
+    : leadingAnnotations MODULE modulePath parameters? trailingAnnotationsColon packagedElements END
     ;
 
 /**
@@ -104,14 +104,14 @@ packageDeclaration
  * Parses a package declaration with its contents.
  */
 packageDefinition
-    : leadingAnnotations PACKAGE Identifier trailingAnnotations packagedElements END
+    : leadingAnnotations PACKAGE Identifier trailingAnnotationsColon packagedElements END
     ;
 
 /**
  * Parses a package declaration with its contents when the package is a whole compilation unit.
  */
 packageNamespacedDefinition
-    : leadingAnnotations PACKAGE packagePath trailingAnnotations packagedElements END
+    : leadingAnnotations PACKAGE packagePath trailingAnnotationsColon packagedElements END
     ;
 
 /**
@@ -135,13 +135,13 @@ enumerationDeclaration
     ;
 
 enumerationDefinition
-    : leadingAnnotations ENUMERATION TYPE Identifier trailingAnnotations
+    : leadingAnnotations ENUMERATION TYPE Identifier trailingAnnotationsColon
         enumerationConstant ( COMMA enumerationConstant )+ COMMA?
         ( functionDeclaration | functionDefinition )* END
     ;
 
 enumerationNamespacedDefinition
-    : leadingAnnotations ENUMERATION TYPE enumerationPath trailingAnnotations
+    : leadingAnnotations ENUMERATION TYPE enumerationPath trailingAnnotationsColon
         enumerationConstant ( COMMA enumerationConstant )+ COMMA?
         ( functionDeclaration | functionDefinition )* END
     ;
@@ -181,6 +181,14 @@ trailingAnnotations
     : ( COLON annotation+ )?
     ;
 
+/**
+ * Parses a sequence of annotations following a declaration with an ending colon to separate
+ * from subsequent declarations.
+ */
+trailingAnnotationsColon
+    : ( COLON annotation+ COLON )?
+    ;
+
 
 //-------------------------------------------------------------------------------------------------
 // USES
@@ -209,7 +217,7 @@ functionDeclaration
  * Parses a function definition.
  */
 functionDefinition
-    : leadingAnnotations FUNCTION Identifier parameters trailingAnnotations statement+ END
+    : leadingAnnotations FUNCTION Identifier parameters trailingAnnotationsColon statement+ END
     | leadingAnnotations FUNCTION Identifier EQUALS functionExpressionLiteral
     | leadingAnnotations FUNCTION Identifier EQUALS functionBlockLiteral
     ;
@@ -218,7 +226,7 @@ functionDefinition
  * Parses a function definition when it is a whole file.
  */
 functionNamespacedDefinition
-    : leadingAnnotations FUNCTION functionPath trailingAnnotations statement+ END
+    : leadingAnnotations FUNCTION functionPath trailingAnnotationsColon statement+ END
     ;
 
 /**
@@ -264,7 +272,7 @@ callStatement
  * Parses an error handling statement.
  */
 checkStatement
-    : CHECK statement+ ( ( DETECT Identifier trailingAnnotations statement+ )+ ( REGARDLESS statement+ )? | ( REGARDLESS statement+ ) ) END
+    : CHECK statement+ ( ( DETECT Identifier trailingAnnotationsColon statement+ )+ ( REGARDLESS statement+ )? | ( REGARDLESS statement+ ) ) END
     ;
 
 /**

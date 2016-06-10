@@ -12,24 +12,26 @@ package stuff.specialstuff.specialstuff
       functional
     ] )
     tested
-    type_checked
+    type_checked :
 
-  function doStuff( x , y ) : since ( 1.2.1 )
+  "stuff doer"
+  public adorned
+  function doStuff( x , y ) : since ( 1.2.1 ) :
     return x + y + more( x, y )
   end
 
   function factorial( n : Integer32 )
     : "The factorial function is defined in recursive fragments."
-      recursive
+      recursive :
     return n * factorial( n - 1 )
   end
 
   function factorial( 0 )
-    : "The base case"
+    : "The base case" :
     return 1
   end
 
-  function doMore( a ) : since( 2.0.0 )
+  function doMore( a ) : since( 2.0.0 ) :
     return wonderFunction( a^2 )
   end
 

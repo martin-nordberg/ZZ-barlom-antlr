@@ -1,6 +1,6 @@
 
 module module03
-  : "Simply named module"
+  : "Simply named module" :
 
   function f(x) @|module03/f.barlom|
 

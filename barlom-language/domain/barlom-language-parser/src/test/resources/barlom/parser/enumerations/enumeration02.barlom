@@ -1,4 +1,6 @@
 
+use mytemperaturemodule.cold
+
 enumeration type sample.mypackage.Color
 
   constant BLUE : cold,
@@ -6,7 +8,7 @@ enumeration type sample.mypackage.Color
   constant RED,
   constant YELLOW
 
-  function isCold() : Boolean
+  function isCold() : Boolean :
     return self is cold
   end
 

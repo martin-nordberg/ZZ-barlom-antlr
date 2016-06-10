@@ -12,7 +12,7 @@ function mynamespace.mymodule.mypackage.sample_if1( x )
     else
       assign value = 8
     end
-  detect e : NotPossible
+  detect e : NotPossible :
     call printGoryOutput()
   regardless
     assign value = 9

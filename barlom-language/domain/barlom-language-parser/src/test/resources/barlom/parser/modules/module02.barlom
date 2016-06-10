@@ -1,7 +1,7 @@
 
 module stuff.mythings( 1.2.1 )
   : "A module contains only packages"
-    by( "Martin Nordberg" )
+    by( "Martin Nordberg" ) :
 
   package details : public @|mythings/details.barlom|
 

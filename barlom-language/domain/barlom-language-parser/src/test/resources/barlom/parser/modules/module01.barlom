@@ -16,7 +16,7 @@ module stuff.specialstuff( 2.0.1 )
       tree_oriented
     ] )
     tested
-    type_checked
+    type_checked :
 
   function a()
     @|./specialstuff/a.barlom|

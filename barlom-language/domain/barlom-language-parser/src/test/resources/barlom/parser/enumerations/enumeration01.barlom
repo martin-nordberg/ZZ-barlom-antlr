@@ -11,7 +11,7 @@ package sample.epackage
     constant RED,
     constant YELLOW,
 
-    function isCold() : Boolean
+    function isCold() : Boolean :
       match self
         BLUE => return true
         GREEN => return true
