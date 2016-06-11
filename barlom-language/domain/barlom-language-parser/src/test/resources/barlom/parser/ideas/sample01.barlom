@@ -1,10 +1,9 @@
 
-package sample.one;
 
-constant x = "example";
+Nim Ideas:
 
-function f() {
-
-}
-
-constant y = "another";
+* defer
+* raise error
+* tag tracking
+* concepts
+* bind statement inside macros

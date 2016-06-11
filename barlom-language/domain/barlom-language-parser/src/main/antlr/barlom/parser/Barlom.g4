@@ -29,7 +29,6 @@ compilationUnit
     : useDeclaration* ( moduleDefinition | packagedElementNamespacedDefinition ) EOF
     ;
 
-
 //-------------------------------------------------------------------------------------------------
 // MODULES
 //-------------------------------------------------------------------------------------------------
@@ -276,6 +275,10 @@ functionPath
 // STATEMENTS
 //-------------------------------------------------------------------------------------------------
 
+assertStatement
+    : leadingAnnotations ASSERT expression
+    ;
+
 /**
  * Parses one of the assignment operators.
  */
@@ -293,72 +296,69 @@ assignmentOperator
  * Parses an assignment statement.
  */
 assignmentStatement
-    : ASSIGN Identifier assignmentOperator expression
+    : leadingAnnotations ASSIGN Identifier assignmentOperator expression
     ;
 
 /**
  * Parses a call statement - the calling of a void function or else ignoring its result.
  */
 callStatement
-    : CALL functionCall
+    : leadingAnnotations CALL functionCall
     ;
 
 /**
  * Parses an error handling statement.
  */
 checkStatement
-    : CHECK statement+ ( ( DETECT Identifier trailingAnnotationsColon statement+ )+ ( REGARDLESS statement+ )? | ( REGARDLESS statement+ ) ) END
-    ;
-
-/**
- * Parses a sequence of statements.
- */
-codeBlock
-    : BEGIN statement+ END
+    : leadingAnnotations CHECK statement+
+      ( ( DETECT Identifier trailingAnnotationsColon statement+ )+ ( REGARDLESS statement+ )?
+      | ( REGARDLESS statement+ ) )
+      END
     ;
 
 /**
  * Parses a statement that triggers an error.
  */
 errorStatement
-    : ERROR expression
+    : leadingAnnotations ERROR expression
     ;
 
 /**
  * Parses an if statement.
  */
 ifStatement
-    : IF expression statement+ ( ELSE IF expression statement+ )* ( ELSE statement+ )? END
+    : leadingAnnotations IF expression statement+ ( ELSE IF expression statement+ )* ( ELSE statement+ )? END
     ;
 
 /**
  * Parses a repeat statement.
  */
 loopStatement
-    : REPEAT FOR Identifier trailingAnnotations IN expression statement+ END
-    | REPEAT WHILE expression statement+ END
-    | REPEAT UNTIL expression statement+ END
+    : leadingAnnotations REPEAT FOR Identifier trailingAnnotations IN expression statement+ END
+    | leadingAnnotations REPEAT WHILE expression statement+ END
+    | leadingAnnotations REPEAT UNTIL expression statement+ END
     ;
 
 /**
  * Parses a match statement.
  */
 matchStatement
-    : MATCH expression ( expression ( WHEN expression )? EQUAL_ARROW statement )+ ( ELSE statement+ )? END
+    : leadingAnnotations MATCH expression ( expression ( WHEN expression )? EQUAL_ARROW statement )+ ( ELSE statement+ )? END
     ;
 
 /**
  * Parses a return statement
  */
 returnStatement
-    : RETURN expression
+    : leadingAnnotations RETURN expression
     ;
 
 /**
  * Parses a statement
  */
 statement
-    : assignmentStatement
+    : assertStatement
+    | assignmentStatement
     | callStatement
     | checkStatement
     | constantDefinition
@@ -413,10 +413,10 @@ expression
 
 /**
  * Parses a function call optionally followed by a sequence of statements to be executed in
- * the context of the result of the function call. -- TODO: the code block is just an idea so far
+ * the context of the result of the function call.
  */
 functionCall
-    : Identifier arguments codeBlock?
+    : Identifier arguments
     ;
 
 
@@ -439,15 +439,19 @@ equalityExpression
 	:	relationalExpression
 	|	equalityExpression EQUALS relationalExpression
 	|	equalityExpression NOT_EQUAL_TO relationalExpression
-	|	equalityExpression IS relationalExpression
 	;
+
+// TODO: tree of expression types to avoid a < b is c == d
 
 relationalExpression
 	:	additiveExpression
+	|	relationalExpression COMPARE additiveExpression
 	|	relationalExpression LESS_THAN additiveExpression
 	|	relationalExpression GREATER_THAN additiveExpression
 	|	relationalExpression LESS_THAN_OR_EQUAL additiveExpression
 	|	relationalExpression GREATER_THAN_OR_EQUAL additiveExpression
+	|	relationalExpression IS additiveExpression
+	|	relationalExpression ISNOT additiveExpression
 	;
 
 additiveExpression
@@ -555,7 +559,7 @@ booleanLiteral
  * Parses a function literal with multple statements in the function definition.
  */
 functionBlockLiteral
-    : parameters ARROW codeBlock
+    : parameters ARROW BEGIN statement+ END
     ;
 
 /**
@@ -737,6 +741,7 @@ qualifiedIdentifier
 
 AND : 'and';
 AS : 'as';
+ASSERT : 'assert';
 ASSIGN : 'assign';
 BEGIN : 'begin';
 CALL : 'call';
@@ -754,6 +759,7 @@ FUNCTION : 'function';
 IMPORT : 'import';
 IN : 'in';
 IS : 'is';
+ISNOT : 'isnot';
 MATCH : 'match';
 MODULE : 'module';
 NOT : 'not';
@@ -807,6 +813,7 @@ TILDE_ARROW : '~>';
 // COMPARISON OPERATORS
 //-------------------------------------------------------------------------------------------------
 
+COMPARE : '<=>';
 GREATER_THAN_OR_EQUAL : '>=';
 GREATER_THAN : '>';
 LESS_THAN_OR_EQUAL : '<=';
