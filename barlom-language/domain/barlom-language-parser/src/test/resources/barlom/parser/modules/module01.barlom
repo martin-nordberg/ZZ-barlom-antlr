@@ -6,7 +6,7 @@ module stuff.specialstuff( 2.0.1 )
     ] )
     documented
     paradigms( [
-      algebraic,
+      adt,
       annotational,
       functional,
       graph_oriented,

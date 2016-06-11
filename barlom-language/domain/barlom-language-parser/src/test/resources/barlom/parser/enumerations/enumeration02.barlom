@@ -3,10 +3,10 @@ use mytemperaturemodule.cold
 
 enumeration type sample.mypackage.Color
 
-  constant BLUE : cold,
-  constant GREEN : cold,
-  constant RED,
-  constant YELLOW
+  symbol BLUE : cold,
+  symbol GREEN : cold,
+  symbol RED,
+  symbol YELLOW
 
   function isCold() : Boolean :
     return self is cold

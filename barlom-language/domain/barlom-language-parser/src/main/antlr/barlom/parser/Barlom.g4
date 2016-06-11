@@ -26,7 +26,21 @@ parse
  * Parses an entire Barlom source file.
  */
 compilationUnit
-    : useDeclaration* ( moduleDefinition | packagedElementNamespacedDefinition ) EOF
+    : useDeclaration* namespacedDefinition EOF
+    ;
+
+/*
+ * Parses a definition that includes the path to the element being defined.
+ */
+namespacedDefinition
+    : leadingAnnotations
+      ( algebraicDataTypeNamespacedDefinition
+      | moduleNamespacedDefinition
+      | functionNamespacedDefinition
+      | packageNamespacedDefinition
+      | enumerationTypeNamespacedDefinition
+        // TODO: more alternatives ...
+      )
     ;
 
 //-------------------------------------------------------------------------------------------------
@@ -36,8 +50,8 @@ compilationUnit
 /**
  * Parses the definition of a module.
  */
-moduleDefinition
-    : leadingAnnotations MODULE modulePath parameters? trailingAnnotationsColon packagedElements END
+moduleNamespacedDefinition
+    : MODULE modulePath parameters? trailingAnnotationsColon moduleElement+ END
     ;
 
 /**
@@ -48,72 +62,37 @@ modulePath
     ;
 
 
+// ------------------------------------------------------------------------------------------------
+// MODULE ELEMENTS
+// ------------------------------------------------------------------------------------------------
+
+moduleElement
+    : leadingAnnotations
+      ( algebraicDataTypeDefinition
+      | assertStatement
+      | assignmentStatement
+      | callStatement
+      | checkStatement
+      | constantDefinition
+      | enumerationTypeDefinition
+      | functionDefinition
+      | ifStatement
+      | loopStatement
+      | matchStatement
+      | packageDefinition
+      | variableDefinition
+      )
+    ;
+
 //-------------------------------------------------------------------------------------------------
 // PACKAGES
 //-------------------------------------------------------------------------------------------------
 
 /**
- * Parses a language element allowed in a package.
- */
-packagedElementDeclaration
-    : functionDeclaration
-    | packageDeclaration
-    | enumerationTypeDeclaration
-    | variantTypeDeclaration
-    // TODO: more alternatives ...
-    ;
-
-/**
- * Parses a language element allowed in a package.
- */
-packagedElementDefinition
-    : constantDefinition
-    | variableDefinition
-    | functionDefinition
-    | packageDefinition
-    | enumerationTypeDefinition
-    | variantTypeDefinition
-    // TODO: more alternatives ...
-    ;
-
-/**
- * Parses a language element allowed in a package when it is the whole file.
- */
-packagedElementNamespacedDefinition
-    : functionNamespacedDefinition
-    | packageNamespacedDefinition
-    | enumerationTypeNamespacedDefinition
-    | variantTypeNamespacedDefinition
-    // TODO: more alternatives ...
-    ;
-
-/**
- * Parses a sequence of elements within a package.
- */
-packagedElements
-    : ( packagedElementDeclaration | packagedElementDefinition )+
-    ;
-
-
-/**
- * Parses a package declaration (contents deferred).
- */
-packageDeclaration
-    : leadingAnnotations PACKAGE Identifier parameters? trailingAnnotations LocationLiteral
-    ;
-
-/**
- * Parses a package declaration with its contents.
- */
-packageDefinition
-    : leadingAnnotations PACKAGE Identifier trailingAnnotationsColon packagedElements END
-    ;
-
-/**
  * Parses a package declaration with its contents when the package is a whole compilation unit.
  */
 packageNamespacedDefinition
-    : leadingAnnotations PACKAGE packagePath trailingAnnotationsColon packagedElements END
+    : PACKAGE packagePath trailingAnnotationsColon packageElement+ END
     ;
 
 /**
@@ -123,29 +102,47 @@ packagePath
     : modulePath DOT Identifier parameters?
     ;
 
+/**
+ * Parses a package declaration with its contents.
+ */
+packageDefinition
+    : PACKAGE Identifier parameters? trailingAnnotationsColon
+      ( packageElement+ END | LocationLiteral )
+    ;
+
 
 //-------------------------------------------------------------------------------------------------
-// ENUMERATIONS
+// PACKAGE ELEMENTS
 //-------------------------------------------------------------------------------------------------
 
-enumerationConstantDefinition
-    : leadingAnnotations CONSTANT Identifier trailingAnnotations
+packageElement
+    : leadingAnnotations
+      ( assertStatement
+      | assignmentStatement
+      | callStatement
+      | checkStatement
+      | constantDefinition
+      | enumerationTypeDefinition
+      | functionDefinition
+      | ifStatement
+      | loopStatement
+      | matchStatement
+      | packageDefinition
+      | variableDefinition
+      | algebraicDataTypeDefinition
+      )
     ;
 
-enumerationTypeDeclaration
-    : leadingAnnotations ENUMERATION TYPE Identifier trailingAnnotations LocationLiteral
-    ;
 
-enumerationTypeDefinition
-    : leadingAnnotations ENUMERATION TYPE Identifier trailingAnnotationsColon
-        enumerationConstantDefinition ( COMMA enumerationConstantDefinition )+ COMMA?
-        ( functionDeclaration | functionDefinition )* END
-    ;
+//-------------------------------------------------------------------------------------------------
+// ENUMERATION TYPES
+//-------------------------------------------------------------------------------------------------
 
+/**
+ * Parses an enumeration type that is the one code element in a compilation unit.
+ */
 enumerationTypeNamespacedDefinition
-    : leadingAnnotations ENUMERATION TYPE enumerationPath trailingAnnotationsColon
-        enumerationConstantDefinition ( COMMA enumerationConstantDefinition )+ COMMA?
-        ( functionDeclaration | functionDefinition )* END
+    : ENUMERATION TYPE enumerationPath trailingAnnotationsColon enumerationTypeContents END
     ;
 
 /**
@@ -155,36 +152,72 @@ enumerationPath
     : modulePath DOT Identifier
     ;
 
+enumerationTypeDefinition
+    : ENUMERATION TYPE Identifier trailingAnnotationsColon
+      ( enumerationTypeContents END | LocationLiteral )
+    ;
+
 
 //-------------------------------------------------------------------------------------------------
-// VARIANT TYPES
+// ENUMERATION TYPE ELEMENTS
 //-------------------------------------------------------------------------------------------------
+
+enumerationTypeContents
+    : enumerationSymbolDefinition ( COMMA enumerationSymbolDefinition )+ COMMA?
+      enumerationElement*
+    ;
+
+enumerationSymbolDefinition
+    : leadingAnnotations SYMBOL Identifier trailingAnnotations
+    ;
+
+enumerationElement
+    : leadingAnnotations
+      ( functionDefinition
+      // TODO: maybe more
+      )
+    ;
+
+
+//-------------------------------------------------------------------------------------------------
+// ALGEBRAIC DATA TYPES
+//-------------------------------------------------------------------------------------------------
+
+algebraicDataTypeNamespacedDefinition
+    : ALGEBRAIC DATA TYPE algebraicDataTypePath trailingAnnotationsColon algebraicDataTypeContents END
+    ;
+
+/**
+ * Parses the namespace, module, and name of an algebraic data type.
+ */
+algebraicDataTypePath
+    : modulePath DOT Identifier parameters?
+    ;
+
+algebraicDataTypeDefinition
+    : ALGEBRAIC DATA TYPE Identifier trailingAnnotationsColon
+      ( algebraicDataTypeContents END | LocationLiteral )
+    ;
+
+
+//-------------------------------------------------------------------------------------------------
+// ALGEBRAIC DATA TYPE ELEMENTS
+//-------------------------------------------------------------------------------------------------
+
+algebraicDataTypeContents
+    : variantDefinition ( COMMA variantDefinition )+ COMMA?
+      variantElement*
+    ;
 
 variantDefinition
     : leadingAnnotations VARIANT Identifier parameters? trailingAnnotations
     ;
 
-variantTypeDeclaration
-    : leadingAnnotations VARIANT TYPE Identifier trailingAnnotations LocationLiteral
-    ;
-
-variantTypeDefinition
-    : leadingAnnotations VARIANT TYPE Identifier trailingAnnotationsColon
-        variantDefinition ( COMMA variantDefinition )+ COMMA?
-        ( functionDeclaration | functionDefinition )* END
-    ;
-
-variantTypeNamespacedDefinition
-    : leadingAnnotations VARIANT TYPE variantTypePath trailingAnnotationsColon
-        variantDefinition ( COMMA variantDefinition )+ COMMA?
-        ( functionDeclaration | functionDefinition )* END
-    ;
-
-/**
- * Parses the namespace, module, and name of a variant type.
- */
-variantTypePath
-    : modulePath DOT Identifier parameters?
+variantElement
+    : leadingAnnotations
+      ( functionDefinition
+      // TODO: maybe more here
+      )
     ;
 
 
@@ -241,26 +274,19 @@ useDeclaration
 //-------------------------------------------------------------------------------------------------
 
 /**
- * Parses a function declaration.
+ * Parses a function definition when it is a whole file.
  */
-functionDeclaration
-    : leadingAnnotations FUNCTION Identifier parameters trailingAnnotations LocationLiteral
+functionNamespacedDefinition
+    : FUNCTION functionPath trailingAnnotationsColon functionElement+ END
     ;
 
 /**
  * Parses a function definition.
  */
 functionDefinition
-    : leadingAnnotations FUNCTION Identifier parameters trailingAnnotationsColon statement+ END
-    | leadingAnnotations FUNCTION Identifier EQUALS functionExpressionLiteral
-    | leadingAnnotations FUNCTION Identifier EQUALS functionBlockLiteral
-    ;
-
-/**
- * Parses a function definition when it is a whole file.
- */
-functionNamespacedDefinition
-    : leadingAnnotations FUNCTION functionPath trailingAnnotationsColon statement+ END
+    : FUNCTION Identifier parameters trailingAnnotationsColon
+      ( functionElement+ END | LocationLiteral )
+    | FUNCTION Identifier EQUALS ( functionExpressionLiteral | functionBlockLiteral )
     ;
 
 /**
@@ -272,11 +298,38 @@ functionPath
 
 
 //-------------------------------------------------------------------------------------------------
+// FUNCTION ELEMENTS
+//-------------------------------------------------------------------------------------------------
+
+/**
+ * Parses a statement
+ */
+functionElement
+    : leadingAnnotations
+    ( assertStatement
+    | assignmentStatement
+    | callStatement
+    | checkStatement
+    | constantDefinition
+    | errorStatement
+    | functionDefinition
+    | ifStatement
+    | loopStatement
+    | matchStatement
+    | returnStatement
+    | useDeclaration
+    | variableDefinition
+    // TODO: more
+    )
+    ;
+
+
+//-------------------------------------------------------------------------------------------------
 // STATEMENTS
 //-------------------------------------------------------------------------------------------------
 
 assertStatement
-    : leadingAnnotations ASSERT expression
+    : ASSERT expression
     ;
 
 /**
@@ -296,21 +349,21 @@ assignmentOperator
  * Parses an assignment statement.
  */
 assignmentStatement
-    : leadingAnnotations ASSIGN Identifier assignmentOperator expression
+    : ASSIGN Identifier assignmentOperator expression
     ;
 
 /**
  * Parses a call statement - the calling of a void function or else ignoring its result.
  */
 callStatement
-    : leadingAnnotations CALL functionCall
+    : CALL functionCall
     ;
 
 /**
  * Parses an error handling statement.
  */
 checkStatement
-    : leadingAnnotations CHECK statement+
+    : CHECK statement+
       ( ( DETECT Identifier trailingAnnotationsColon statement+ )+ ( REGARDLESS statement+ )?
       | ( REGARDLESS statement+ ) )
       END
@@ -320,37 +373,37 @@ checkStatement
  * Parses a statement that triggers an error.
  */
 errorStatement
-    : leadingAnnotations ERROR expression
+    : ERROR expression
     ;
 
 /**
  * Parses an if statement.
  */
 ifStatement
-    : leadingAnnotations IF expression statement+ ( ELSE IF expression statement+ )* ( ELSE statement+ )? END
+    : IF expression statement+ ( ELSE IF expression statement+ )* ( ELSE statement+ )? END
     ;
 
 /**
  * Parses a repeat statement.
  */
 loopStatement
-    : leadingAnnotations REPEAT FOR Identifier trailingAnnotations IN expression statement+ END
-    | leadingAnnotations REPEAT WHILE expression statement+ END
-    | leadingAnnotations REPEAT UNTIL expression statement+ END
+    : REPEAT FOR Identifier trailingAnnotations IN expression statement+ END
+    | REPEAT WHILE expression statement+ END
+    | REPEAT UNTIL expression statement+ END
     ;
 
 /**
  * Parses a match statement.
  */
 matchStatement
-    : leadingAnnotations MATCH expression ( expression ( WHEN expression )? EQUAL_ARROW statement )+ ( ELSE statement+ )? END
+    : MATCH expression ( expression ( WHEN expression )? EQUAL_ARROW statement )+ ( ELSE statement+ )? END
     ;
 
 /**
  * Parses a return statement
  */
 returnStatement
-    : leadingAnnotations RETURN expression
+    : RETURN expression
     ;
 
 /**
@@ -500,7 +553,7 @@ primaryExpression
  * Parses the declaration of a value that cannot be changed once initialized.
  */
 constantDefinition
-    : leadingAnnotations CONSTANT Identifier trailingAnnotations EQUALS expression
+    : CONSTANT Identifier trailingAnnotations EQUALS expression
     ;
 
 
@@ -522,7 +575,7 @@ parameters
  * Parses the declaration of a value that can be changed after it has been initialized.
  */
 variableDefinition
-    : leadingAnnotations VARIABLE Identifier trailingAnnotations EQUALS expression
+    : VARIABLE Identifier trailingAnnotations EQUALS expression
     ;
 
 
@@ -739,6 +792,7 @@ qualifiedIdentifier
 // KEYWORDS
 //-------------------------------------------------------------------------------------------------
 
+ALGEBRAIC : 'algebraic';
 AND : 'and';
 AS : 'as';
 ASSERT : 'assert';
@@ -747,6 +801,7 @@ BEGIN : 'begin';
 CALL : 'call';
 CHECK : 'check';
 CONSTANT : 'constant';
+DATA : 'data';
 DETECT : 'detect';
 ELSE : 'else';
 END : 'end';
@@ -769,6 +824,7 @@ REGARDLESS : 'regardless';
 REPEAT : 'repeat';
 RETURN : 'return';
 SELF : 'self';
+SYMBOL : 'symbol';
 THEN : 'then';
 TRUE : 'true';
 TYPE : 'type';

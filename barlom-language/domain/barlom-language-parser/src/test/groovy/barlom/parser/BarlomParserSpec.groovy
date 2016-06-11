@@ -110,15 +110,15 @@ class BarlomParserSpec
 
     }
 
-    def "Variant types are parsed successfully."( String fileName, String parseResult ) {
+    def "Algebraic data types are parsed successfully."( String fileName, String parseResult ) {
 
         expect:
-        parse( "variants/" + fileName ) == parseResult
+        parse( "algebraicdatatypes/" + fileName ) == parseResult
 
         where:
-        fileName            | parseResult
-        "variants01.barlom" | "Successful parse"
-        "variants02.barlom" | "Successful parse"
+        fileName                      | parseResult
+        "algebraicdatatypes01.barlom" | "Successful parse"
+        "algebraicdatatypes02.barlom" | "Successful parse"
 
     }
 
