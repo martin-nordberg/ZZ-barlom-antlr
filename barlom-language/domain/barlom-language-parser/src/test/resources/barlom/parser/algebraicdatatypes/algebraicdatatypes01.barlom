@@ -6,7 +6,7 @@ package sample.vpackage
 
   algebraic data type Peano
 
-    variant Zero,
+    variant Zero
 
     variant Successor( n : Peano )
 

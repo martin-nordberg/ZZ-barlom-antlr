@@ -49,7 +49,6 @@ class BarlomParserSpec
         "self-literal.barlom"         | "Successful parse"
         "set-literals.barlom"         | "Successful parse"
         "structure-literals.barlom"   | "Successful parse"
-        "symbol-literals.barlom"      | "Successful parse"
         "template-literals.barlom"    | "Successful parse"
         "text-literals.barlom"        | "Successful parse"
         "tuple-literals.barlom"       | "Successful parse"

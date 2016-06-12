@@ -163,12 +163,13 @@ enumerationTypeDefinition
 //-------------------------------------------------------------------------------------------------
 
 enumerationTypeContents
-    : enumerationSymbolDefinition ( COMMA enumerationSymbolDefinition )+ COMMA?
+    : enumerationSymbolDefinition
+      enumerationSymbolDefinition+
       enumerationElement*
     ;
 
 enumerationSymbolDefinition
-    : leadingAnnotations SYMBOL Identifier trailingAnnotations
+    : leadingAnnotations SYMBOL Identifier trailingAnnotationsSemicolon
     ;
 
 enumerationElement
@@ -205,15 +206,16 @@ algebraicDataTypeDefinition
 //-------------------------------------------------------------------------------------------------
 
 algebraicDataTypeContents
-    : variantDefinition ( COMMA variantDefinition )+ COMMA?
-      variantElement*
+    : variantDefinition
+      variantDefinition+
+      algebraicDataTypeElement*
     ;
 
 variantDefinition
-    : leadingAnnotations VARIANT Identifier parameters? trailingAnnotations
+    : leadingAnnotations VARIANT Identifier parameters? trailingAnnotationsSemicolon
     ;
 
-variantElement
+algebraicDataTypeElement
     : leadingAnnotations
       ( functionDefinition
       // TODO: maybe more here
@@ -230,7 +232,9 @@ variantElement
  */
 annotation
     : TextLiteral
+    | TextMultilineLiteral
     | Identifier arguments?
+    | CodeLiteral
     | typeDeclaration
     ;
 
@@ -250,10 +254,18 @@ trailingAnnotations
 
 /**
  * Parses a sequence of annotations following a declaration with an ending colon to separate
- * from subsequent declarations.
+ * from subsequent contained element declarations.
  */
 trailingAnnotationsColon
     : ( COLON annotation+ COLON )?
+    ;
+
+/**
+ * Parses a sequence of annotations following a declaration with an ending semicolon to separate
+ * from subsequent peer element declarations.
+ */
+trailingAnnotationsSemicolon
+    : ( COLON annotation+ SEMICOLON )?
     ;
 
 
@@ -680,9 +692,9 @@ literal
     | IntegerLiteral
     | NumberLiteral
     | RegularExpressionLiteral
-    | SymbolLiteral
     | TemplateLiteral
     | TextLiteral
+    | TextMultilineLiteral
     | VersionLiteral
     | arrayLiteral
     | booleanLiteral
@@ -717,7 +729,7 @@ mapLiteral
 
 
 /**
- * Parses a range literal
+ * Parses a range literal.
  */
 rangeLiteral
     : ( Identifier | TextLiteral ) ( RANGE_INCLUSIVE | RANGE_EXCLUSIVE ) ( Identifier | TextLiteral )
@@ -838,11 +850,29 @@ WHILE : 'while';
 XOR : 'xor';
 
 
-ERROR_RESERVED_WORD
-    : 'data'
-    | 'with'
-    ;
-
+/** TODO: reserve these and more ...
+alias
+class
+define
+delete
+do
+expect
+interface
+intersection
+let
+namespace
+protocol
+rule
+select
+structure
+transform
+union
+unless
+update
+version
+where
+with
+**/
 
 //-------------------------------------------------------------------------------------------------
 // PUNCTUATION
@@ -933,14 +963,20 @@ EDGE_RIGHT_RPAREN : ')->';
 //-------------------------------------------------------------------------------------------------
 
 /**
- * Recognizes a text literal. Text literals are single or double quoted strings of characters that fit
- * on one line or else triple-quoted strings that can cross multiple lines and include the line feed
- * characters.
+ * Recognizes a text literal. Text literals are single or double quoted strings of characters
+ * that fit on one line.
  */
 TextLiteral
     : '"' TextCharsNotDblQuote '"'
     | '\'' TextCharsNotSnglQuote '\''
-    | '"""' TextChars '"""'
+    ;
+
+/**
+ * Recognizes a multiline text literal. Triple-quoted strings that can cross multiple lines and
+ * include the line feed characters.
+ */
+TextMultilineLiteral
+    : '"""' TextChars '"""'
     | '\'\'\'' TextChars '\'\'\''
     ;
 
@@ -1276,15 +1312,15 @@ IdentifierChar
 
 
 //-------------------------------------------------------------------------------------------------
-// SYMBOL LITERALS
+// USER-DEFINED KEYWORDS
 //-------------------------------------------------------------------------------------------------
 
 /**
- * Recognizes a symbol (sometimes called atom) - a value meant to represent a symbol in code.
- * When converted to or from text, the name and text are the same.
+ * Recognizes a user defined keyword (sometimes called atom) - a value meant to represent a
+ * symbol in code. When converted to or from text, the name and text are the same.
  */
-SymbolLiteral
-    : '#' IdentifierPrefix IdentifierBodyChar* Prime?
+UserDefinedKeyWord
+    : '#' [a-z]+
     ;
 
 

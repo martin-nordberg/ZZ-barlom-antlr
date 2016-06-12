@@ -6,10 +6,10 @@ package sample.epackage
 
   enumeration type Color
 
-    symbol BLUE : "blue",
-    symbol GREEN,
-    symbol RED,
-    symbol YELLOW,
+    symbol BLUE : "blue" ;
+    symbol GREEN
+    symbol RED
+    symbol YELLOW
 
     function isCold() : Boolean :
       match self

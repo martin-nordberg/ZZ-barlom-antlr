@@ -18,17 +18,19 @@ module sample.number_literals
 
   // Number literals (non-zero)
 
-  constant int1 = 123_456.0
+  constant num1 = 123_456.0
 
-  constant int2 = 123.456
+  constant num2 = 123.456
 
-  constant int3 = .12345
+  constant num3 = .12345
 
-  constant int4 = 123E456
+  constant num4 = 123E456
 
-  constant int5 = 123E-45
+  constant num5 = 123E-45
 
-  constant int6 = 123.456E03
+  constant num6 = 123.456E03
+
+  constant num7 = 123.456E-78
 
 end
 
