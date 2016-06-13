@@ -1,0 +1,24 @@
+
+use lib.something.BaseStructure
+
+structure instance stuff.specialstuff.TheStructure
+  : "an example of a simple structure instance"
+    extends( BaseStructure ) :
+
+  variable b : public Text = "Sole instance"
+
+  variable c : public Integer32 = 17
+
+  constant d = a^2
+
+  variable e = a * c
+
+  function f( x : Integer32 ) : Integer32 :
+    return e + c*x
+  end
+
+  function name() : Text :
+    return self.b
+  end
+
+end

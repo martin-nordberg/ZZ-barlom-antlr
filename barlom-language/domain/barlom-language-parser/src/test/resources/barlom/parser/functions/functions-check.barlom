@@ -8,7 +8,7 @@ function mynamespace.mymodule.mypackage.sample_if1( x )
     assign value = 7
 
     if value > 7
-      error NotPossible()
+      raise error NotPossible()
     else
       assign value = 8
     end

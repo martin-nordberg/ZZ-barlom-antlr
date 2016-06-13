@@ -1,10 +1,10 @@
 
 package sample.vpackage
 
-  algebraic data type Elsewhere : "very nice" :
+  variant type Elsewhere : "very nice" :
     @|epackage/Elsewhere.barlom|
 
-  algebraic data type Peano
+  variant type Peano
 
     variant Zero
 

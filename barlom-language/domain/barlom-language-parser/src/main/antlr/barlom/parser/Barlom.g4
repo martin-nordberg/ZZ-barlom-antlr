@@ -30,18 +30,23 @@ compilationUnit
     ;
 
 /*
- * Parses a definition that includes the path to the element being defined.
+ * Parses a definition that includes the namespaced path to the element being defined.
  */
 namespacedDefinition
     : leadingAnnotations
-      ( algebraicDataTypeNamespacedDefinition
-      | moduleNamespacedDefinition
+      ( enumerationTypeNamespacedDefinition
       | functionNamespacedDefinition
+      | moduleNamespacedDefinition
+      | objectInstanceNamespacedDefinition
+      | objectTypeNamespacedDefinition
       | packageNamespacedDefinition
-      | enumerationTypeNamespacedDefinition
-        // TODO: more alternatives ...
+      | structureInstanceNamespacedDefinition
+      | structureTypeNamespacedDefinition
+      | variantTypeNamespacedDefinition
+      // TODO: more alternatives ...
       )
     ;
+
 
 //-------------------------------------------------------------------------------------------------
 // MODULES
@@ -68,8 +73,7 @@ modulePath
 
 moduleElement
     : leadingAnnotations
-      ( algebraicDataTypeDefinition
-      | assertStatement
+      ( assertStatement
       | assignmentStatement
       | callStatement
       | checkStatement
@@ -79,8 +83,13 @@ moduleElement
       | ifStatement
       | loopStatement
       | matchStatement
+      | objectInstanceDefinition
+      | objectTypeDefinition
       | packageDefinition
+      | structureInstanceDefinition
+      | structureTypeDefinition
       | variableDefinition
+      | variantTypeDefinition
       )
     ;
 
@@ -127,10 +136,73 @@ packageElement
       | ifStatement
       | loopStatement
       | matchStatement
+      | objectInstanceDefinition
+      | objectTypeDefinition
       | packageDefinition
+      | structureInstanceDefinition
+      | structureTypeDefinition
       | variableDefinition
-      | algebraicDataTypeDefinition
+      | variantTypeDefinition
       )
+    ;
+
+
+//-------------------------------------------------------------------------------------------------
+// FUNCTIONS
+//-------------------------------------------------------------------------------------------------
+
+/**
+ * Parses a function definition when it is a whole file.
+ */
+functionNamespacedDefinition
+    : FUNCTION functionPath trailingAnnotationsColon functionElement+ END
+    ;
+
+/**
+ * Parses a function definition.
+ */
+functionDefinition
+    : FUNCTION Identifier parameters trailingAnnotationsColon
+      ( functionElement+ END | LocationLiteral )
+    | FUNCTION Identifier EQUALS ( functionExpressionLiteral | functionBlockLiteral )
+    ;
+
+/**
+ * Parses the path and parameters of a function definition
+ */
+functionPath
+    : packagePath DOT Identifier parameters
+    ;
+
+
+//-------------------------------------------------------------------------------------------------
+// FUNCTION ELEMENTS
+//-------------------------------------------------------------------------------------------------
+
+/**
+ * Parses a statement
+ */
+functionElement
+    : leadingAnnotations
+    ( assertStatement
+    | assignmentStatement
+    | callStatement
+    | checkStatement
+    | constantDefinition
+    | errorStatement
+    | functionDefinition
+    | ifStatement
+    | loopStatement
+    | matchStatement
+    | objectInstanceDefinition
+    | objectTypeDefinition
+    | returnStatement
+    | structureInstanceDefinition
+    | structureTypeDefinition
+    | variableDefinition
+    | variantTypeDefinition
+    // TODO: more
+    )
     ;
 
 
@@ -152,6 +224,9 @@ enumerationPath
     : modulePath DOT Identifier
     ;
 
+/**
+ * Parses an enumeration type defined inside a parent container's definition.
+ */
 enumerationTypeDefinition
     : ENUMERATION TYPE Identifier trailingAnnotationsColon
       ( enumerationTypeContents END | LocationLiteral )
@@ -162,16 +237,25 @@ enumerationTypeDefinition
 // ENUMERATION TYPE ELEMENTS
 //-------------------------------------------------------------------------------------------------
 
+/**
+ * Parses the elements inside an enumeration type (symbols and functions).
+ */
 enumerationTypeContents
     : enumerationSymbolDefinition
       enumerationSymbolDefinition+
       enumerationElement*
     ;
 
+/**
+ * Parses one symbol definition within an enumeration type.
+ */
 enumerationSymbolDefinition
     : leadingAnnotations SYMBOL Identifier trailingAnnotationsSemicolon
     ;
 
+/**
+ * Parses one element of an enumeration type (after the symbols).
+ */
 enumerationElement
     : leadingAnnotations
       ( functionDefinition
@@ -181,45 +265,194 @@ enumerationElement
 
 
 //-------------------------------------------------------------------------------------------------
-// ALGEBRAIC DATA TYPES
+// VARIANT TYPES
 //-------------------------------------------------------------------------------------------------
 
-algebraicDataTypeNamespacedDefinition
-    : ALGEBRAIC DATA TYPE algebraicDataTypePath trailingAnnotationsColon algebraicDataTypeContents END
+/**
+ * Parses a variant type that appears at the level of a whole compilation unit.
+ */
+variantTypeNamespacedDefinition
+    : VARIANT TYPE variantTypePath trailingAnnotationsColon variantTypeContents END
     ;
 
 /**
- * Parses the namespace, module, and name of an algebraic data type.
+ * Parses the namespace, module, and name of a variant type.
  */
-algebraicDataTypePath
+variantTypePath
     : modulePath DOT Identifier parameters?
     ;
 
-algebraicDataTypeDefinition
-    : ALGEBRAIC DATA TYPE Identifier trailingAnnotationsColon
-      ( algebraicDataTypeContents END | LocationLiteral )
+/**
+ * Parses a variant type that is definied inside a parent element.
+ */
+variantTypeDefinition
+    : VARIANT TYPE Identifier trailingAnnotationsColon
+      ( variantTypeContents END | LocationLiteral )
     ;
 
 
 //-------------------------------------------------------------------------------------------------
-// ALGEBRAIC DATA TYPE ELEMENTS
+// VARIANT TYPE ELEMENTS
 //-------------------------------------------------------------------------------------------------
 
-algebraicDataTypeContents
+/**
+ * Parses the elements within a variant type (variants followed by functions).
+ */
+variantTypeContents
     : variantDefinition
       variantDefinition+
-      algebraicDataTypeElement*
+      variantTypeElement*
     ;
 
+/**
+ * Parses one variant definition.
+ */
 variantDefinition
     : leadingAnnotations VARIANT Identifier parameters? trailingAnnotationsSemicolon
     ;
 
-algebraicDataTypeElement
+/**
+ * Parses one element of a variant type (after the variants).
+ */
+variantTypeElement
     : leadingAnnotations
       ( functionDefinition
       // TODO: maybe more here
       )
+    ;
+
+
+//-------------------------------------------------------------------------------------------------
+// OBJECT TYPE DEFINITIONS
+//-------------------------------------------------------------------------------------------------
+
+objectTypeNamespacedDefinition
+    : OBJECT TYPE objectTypePath trailingAnnotationsColon objectElement+ END
+    ;
+
+/**
+ * Parses the namespace, module, and name of an object type.
+ */
+objectTypePath
+    : modulePath DOT Identifier parameters?
+    ;
+
+objectTypeDefinition
+    : OBJECT TYPE Identifier parameters? trailingAnnotationsColon
+      ( objectElement+ END | LocationLiteral )
+    ;
+
+
+//-------------------------------------------------------------------------------------------------
+// OBJECT TYPE ELEMENTS
+//-------------------------------------------------------------------------------------------------
+
+objectElement
+    : leadingAnnotations
+      ( assertStatement
+      | assignmentStatement
+      | callStatement
+      | checkStatement
+      | constantDefinition
+      | enumerationTypeDefinition
+      | functionDefinition
+      | ifStatement
+      | loopStatement
+      | matchStatement
+      | packageDefinition
+      | structureInstanceDefinition
+      | structureTypeDefinition
+      | variableDefinition
+      | variantTypeDefinition
+      )
+    ;
+
+
+//-------------------------------------------------------------------------------------------------
+// OBJECT INSTANCE DEFINITIONS
+//-------------------------------------------------------------------------------------------------
+
+objectInstanceNamespacedDefinition
+    : OBJECT INSTANCE objectInstancePath trailingAnnotationsColon objectElement+ END
+    ;
+
+/**
+ * Parses the namespace, module, and name of a object instance.
+ */
+objectInstancePath
+    : modulePath DOT Identifier
+    ;
+
+objectInstanceDefinition
+    : OBJECT INSTANCE Identifier trailingAnnotationsColon
+      ( objectElement+ END | LocationLiteral )
+    ;
+
+
+//-------------------------------------------------------------------------------------------------
+// STRUCTURE TYPE DEFINITIONS
+//-------------------------------------------------------------------------------------------------
+
+structureTypeNamespacedDefinition
+    : STRUCTURE TYPE structureTypePath trailingAnnotationsColon structureElement+ END
+    ;
+
+/**
+ * Parses the namespace, module, and name of an structure type.
+ */
+structureTypePath
+    : modulePath DOT Identifier parameters?
+    ;
+
+structureTypeDefinition
+    : STRUCTURE TYPE Identifier parameters? trailingAnnotationsColon
+      ( structureElement+ END | LocationLiteral )
+    ;
+
+
+//-------------------------------------------------------------------------------------------------
+// STRUCTURE TYPE ELEMENTS
+//-------------------------------------------------------------------------------------------------
+
+structureElement
+    : leadingAnnotations
+      ( assertStatement
+      | assignmentStatement
+      | callStatement
+      | checkStatement
+      | constantDefinition
+      | enumerationTypeDefinition
+      | functionDefinition
+      | ifStatement
+      | loopStatement
+      | matchStatement
+      | packageDefinition
+      | structureInstanceDefinition
+      | structureTypeDefinition
+      | variableDefinition
+      | variantTypeDefinition
+      )
+    ;
+
+
+//-------------------------------------------------------------------------------------------------
+// STRUCTURE INSTANCE DEFINITIONS
+//-------------------------------------------------------------------------------------------------
+
+structureInstanceNamespacedDefinition
+    : STRUCTURE INSTANCE structureInstancePath trailingAnnotationsColon structureElement+ END
+    ;
+
+/**
+ * Parses the namespace, module, and name of a structure instance.
+ */
+structureInstancePath
+    : modulePath DOT Identifier
+    ;
+
+structureInstanceDefinition
+    : STRUCTURE INSTANCE Identifier trailingAnnotationsColon
+      ( structureElement+ END | LocationLiteral )
     ;
 
 
@@ -282,64 +515,12 @@ useDeclaration
 
 
 //-------------------------------------------------------------------------------------------------
-// FUNCTIONS
-//-------------------------------------------------------------------------------------------------
-
-/**
- * Parses a function definition when it is a whole file.
- */
-functionNamespacedDefinition
-    : FUNCTION functionPath trailingAnnotationsColon functionElement+ END
-    ;
-
-/**
- * Parses a function definition.
- */
-functionDefinition
-    : FUNCTION Identifier parameters trailingAnnotationsColon
-      ( functionElement+ END | LocationLiteral )
-    | FUNCTION Identifier EQUALS ( functionExpressionLiteral | functionBlockLiteral )
-    ;
-
-/**
- * Parses the path and parameters of a function definition
- */
-functionPath
-    : packagePath DOT Identifier parameters
-    ;
-
-
-//-------------------------------------------------------------------------------------------------
-// FUNCTION ELEMENTS
-//-------------------------------------------------------------------------------------------------
-
-/**
- * Parses a statement
- */
-functionElement
-    : leadingAnnotations
-    ( assertStatement
-    | assignmentStatement
-    | callStatement
-    | checkStatement
-    | constantDefinition
-    | errorStatement
-    | functionDefinition
-    | ifStatement
-    | loopStatement
-    | matchStatement
-    | returnStatement
-    | useDeclaration
-    | variableDefinition
-    // TODO: more
-    )
-    ;
-
-
-//-------------------------------------------------------------------------------------------------
 // STATEMENTS
 //-------------------------------------------------------------------------------------------------
 
+/**
+ * Parses an assert statement.
+ */
 assertStatement
     : ASSERT expression
     ;
@@ -385,7 +566,7 @@ checkStatement
  * Parses a statement that triggers an error.
  */
 errorStatement
-    : ERROR expression
+    : RAISE ERROR expression
     ;
 
 /**
@@ -433,7 +614,6 @@ statement
     | loopStatement
     | matchStatement
     | returnStatement
-    | useDeclaration
     | variableDefinition
     // TODO: more
     ;
@@ -804,7 +984,6 @@ qualifiedIdentifier
 // KEYWORDS
 //-------------------------------------------------------------------------------------------------
 
-ALGEBRAIC : 'algebraic';
 AND : 'and';
 AS : 'as';
 ASSERT : 'assert';
@@ -813,7 +992,6 @@ BEGIN : 'begin';
 CALL : 'call';
 CHECK : 'check';
 CONSTANT : 'constant';
-DATA : 'data';
 DETECT : 'detect';
 ELSE : 'else';
 END : 'end';
@@ -825,17 +1003,21 @@ FOR : 'for';
 FUNCTION : 'function';
 IMPORT : 'import';
 IN : 'in';
+INSTANCE : 'instance';
 IS : 'is';
 ISNOT : 'isnot';
 MATCH : 'match';
 MODULE : 'module';
 NOT : 'not';
+OBJECT : 'object';
 OR : 'or';
 PACKAGE : 'package';
+RAISE : 'raise';
 REGARDLESS : 'regardless';
 REPEAT : 'repeat';
 RETURN : 'return';
 SELF : 'self';
+STRUCTURE : 'structure';
 SYMBOL : 'symbol';
 THEN : 'then';
 TRUE : 'true';
@@ -851,12 +1033,20 @@ XOR : 'xor';
 
 
 /** TODO: reserve these and more ...
+after
 alias
+around
+aspect
+before
 class
+data
+default
+defer
 define
 delete
 do
 expect
+insert
 interface
 intersection
 let
@@ -864,14 +1054,15 @@ namespace
 protocol
 rule
 select
-structure
 transform
+translate
 union
 unless
 update
 version
 where
 with
+yield
 **/
 
 //-------------------------------------------------------------------------------------------------
