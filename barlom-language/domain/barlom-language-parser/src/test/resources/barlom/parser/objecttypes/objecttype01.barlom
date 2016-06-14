@@ -1,7 +1,7 @@
 
 use lib.something.BaseObject
 
-structure type stuff.specialstuff.MyObject(
+object type stuff.specialstuff.MyObject(
     a : transient Integer32,
     b : public Text,
     c : public Integer32 )

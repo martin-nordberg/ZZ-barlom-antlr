@@ -401,11 +401,11 @@ structureTypeNamespacedDefinition
  * Parses the namespace, module, and name of an structure type.
  */
 structureTypePath
-    : modulePath DOT Identifier parameters?
+    : modulePath DOT Identifier
     ;
 
 structureTypeDefinition
-    : STRUCTURE TYPE Identifier parameters? trailingAnnotationsColon
+    : STRUCTURE TYPE Identifier trailingAnnotationsColon
       ( structureElement+ END | LocationLiteral )
     ;
 
@@ -429,9 +429,17 @@ structureElement
       | packageDefinition
       | structureInstanceDefinition
       | structureTypeDefinition
+      | structureVariableDefinition
       | variableDefinition
       | variantTypeDefinition
       )
+    ;
+
+/**
+ * Parses the declaration of a value that can be changed after it has been initialized.
+ */
+structureVariableDefinition
+    : VARIABLE Identifier trailingAnnotationsSemicolon
     ;
 
 
@@ -1035,6 +1043,7 @@ XOR : 'xor';
 /** TODO: reserve these and more ...
 after
 alias
+annotation
 around
 aspect
 before
