@@ -1,7 +1,7 @@
 
 package sample.vpackage
 
-  variant type Elsewhere : "very nice" :
+  variant type Elsewhere : "very nice"
     @|epackage/Elsewhere.barlom|
 
   variant type Peano
@@ -10,7 +10,7 @@ package sample.vpackage
 
     variant Successor( n : Peano )
 
-    function plus( n ) : Boolean :
+    function plus( n ) : Boolean
       match self
         Zero => return n
         Successor( self' ) => return Successor( self'.plus( n ) )

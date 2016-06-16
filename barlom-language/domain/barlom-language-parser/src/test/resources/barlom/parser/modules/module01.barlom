@@ -1,11 +1,11 @@
 
 module stuff.specialstuff( 2.0.1 )
   : contracted
-    dependencies( [
+  : dependencies( [
       lib.gunk( 2.0.1 or 2.0.2 )
     ] )
-    documented
-    paradigms( [
+  : documented
+  : paradigms( [
       adt,
       annotational,
       functional,
@@ -15,8 +15,8 @@ module stuff.specialstuff( 2.0.1 )
       structural,
       tree_oriented
     ] )
-    tested
-    type_checked :
+  : tested
+  : type_checked
 
   function a()
     @|./specialstuff/a.barlom|

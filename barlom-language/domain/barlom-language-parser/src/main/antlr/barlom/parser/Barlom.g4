@@ -56,7 +56,7 @@ namespacedDefinition
  * Parses the definition of a module.
  */
 moduleNamespacedDefinition
-    : MODULE modulePath parameters? trailingAnnotationsColon moduleElement+ END
+    : MODULE modulePath parameters? trailingAnnotations moduleElement+ END
     ;
 
 /**
@@ -101,7 +101,7 @@ moduleElement
  * Parses a package declaration with its contents when the package is a whole compilation unit.
  */
 packageNamespacedDefinition
-    : PACKAGE packagePath trailingAnnotationsColon packageElement+ END
+    : PACKAGE packagePath trailingAnnotations packageElement+ END
     ;
 
 /**
@@ -115,7 +115,7 @@ packagePath
  * Parses a package declaration with its contents.
  */
 packageDefinition
-    : PACKAGE Identifier parameters? trailingAnnotationsColon
+    : PACKAGE Identifier parameters? trailingAnnotations
       ( packageElement+ END | LocationLiteral )
     ;
 
@@ -155,14 +155,14 @@ packageElement
  * Parses a function definition when it is a whole file.
  */
 functionNamespacedDefinition
-    : FUNCTION functionPath trailingAnnotationsColon functionElement+ END
+    : FUNCTION functionPath trailingAnnotations functionElement+ END
     ;
 
 /**
  * Parses a function definition.
  */
 functionDefinition
-    : FUNCTION Identifier parameters trailingAnnotationsColon
+    : FUNCTION Identifier parameters trailingAnnotations
       ( functionElement+ END | LocationLiteral )
     | FUNCTION Identifier EQUALS ( functionExpressionLiteral | functionBlockLiteral )
     ;
@@ -214,7 +214,7 @@ functionElement
  * Parses an enumeration type that is the one code element in a compilation unit.
  */
 enumerationTypeNamespacedDefinition
-    : ENUMERATION TYPE enumerationPath trailingAnnotationsColon enumerationTypeContents END
+    : ENUMERATION TYPE enumerationPath trailingAnnotations enumerationTypeContents END
     ;
 
 /**
@@ -228,7 +228,7 @@ enumerationPath
  * Parses an enumeration type defined inside a parent container's definition.
  */
 enumerationTypeDefinition
-    : ENUMERATION TYPE Identifier trailingAnnotationsColon
+    : ENUMERATION TYPE Identifier trailingAnnotations
       ( enumerationTypeContents END | LocationLiteral )
     ;
 
@@ -250,7 +250,7 @@ enumerationTypeContents
  * Parses one symbol definition within an enumeration type.
  */
 enumerationSymbolDefinition
-    : leadingAnnotations SYMBOL Identifier trailingAnnotationsSemicolon
+    : leadingAnnotations SYMBOL Identifier trailingAnnotations
     ;
 
 /**
@@ -272,7 +272,7 @@ enumerationElement
  * Parses a variant type that appears at the level of a whole compilation unit.
  */
 variantTypeNamespacedDefinition
-    : VARIANT TYPE variantTypePath trailingAnnotationsColon variantTypeContents END
+    : VARIANT TYPE variantTypePath trailingAnnotations variantTypeContents END
     ;
 
 /**
@@ -286,7 +286,7 @@ variantTypePath
  * Parses a variant type that is definied inside a parent element.
  */
 variantTypeDefinition
-    : VARIANT TYPE Identifier trailingAnnotationsColon
+    : VARIANT TYPE Identifier trailingAnnotations
       ( variantTypeContents END | LocationLiteral )
     ;
 
@@ -308,7 +308,7 @@ variantTypeContents
  * Parses one variant definition.
  */
 variantDefinition
-    : leadingAnnotations VARIANT Identifier parameters? trailingAnnotationsSemicolon
+    : leadingAnnotations VARIANT Identifier parameters? trailingAnnotations
     ;
 
 /**
@@ -327,7 +327,7 @@ variantTypeElement
 //-------------------------------------------------------------------------------------------------
 
 objectTypeNamespacedDefinition
-    : OBJECT TYPE objectTypePath trailingAnnotationsColon objectElement+ END
+    : OBJECT TYPE objectTypePath trailingAnnotations objectElement+ END
     ;
 
 /**
@@ -338,7 +338,7 @@ objectTypePath
     ;
 
 objectTypeDefinition
-    : OBJECT TYPE Identifier parameters? trailingAnnotationsColon
+    : OBJECT TYPE Identifier parameters? trailingAnnotations
       ( objectElement+ END | LocationLiteral )
     ;
 
@@ -373,7 +373,7 @@ objectElement
 //-------------------------------------------------------------------------------------------------
 
 objectInstanceNamespacedDefinition
-    : OBJECT INSTANCE objectInstancePath trailingAnnotationsColon objectElement+ END
+    : OBJECT INSTANCE objectInstancePath trailingAnnotations objectElement+ END
     ;
 
 /**
@@ -384,7 +384,7 @@ objectInstancePath
     ;
 
 objectInstanceDefinition
-    : OBJECT INSTANCE Identifier trailingAnnotationsColon
+    : OBJECT INSTANCE Identifier trailingAnnotations
       ( objectElement+ END | LocationLiteral )
     ;
 
@@ -394,7 +394,7 @@ objectInstanceDefinition
 //-------------------------------------------------------------------------------------------------
 
 structureTypeNamespacedDefinition
-    : STRUCTURE TYPE structureTypePath trailingAnnotationsColon structureElement+ END
+    : STRUCTURE TYPE structureTypePath trailingAnnotations structureElement+ END
     ;
 
 /**
@@ -405,7 +405,7 @@ structureTypePath
     ;
 
 structureTypeDefinition
-    : STRUCTURE TYPE Identifier trailingAnnotationsColon
+    : STRUCTURE TYPE Identifier trailingAnnotations
       ( structureElement+ END | LocationLiteral )
     ;
 
@@ -439,7 +439,7 @@ structureElement
  * Parses the declaration of a value that can be changed after it has been initialized.
  */
 structureVariableDefinition
-    : VARIABLE Identifier trailingAnnotationsSemicolon
+    : VARIABLE Identifier trailingAnnotations
     ;
 
 
@@ -448,7 +448,7 @@ structureVariableDefinition
 //-------------------------------------------------------------------------------------------------
 
 structureInstanceNamespacedDefinition
-    : STRUCTURE INSTANCE structureInstancePath trailingAnnotationsColon structureElement+ END
+    : STRUCTURE INSTANCE structureInstancePath trailingAnnotations structureElement+ END
     ;
 
 /**
@@ -459,7 +459,7 @@ structureInstancePath
     ;
 
 structureInstanceDefinition
-    : STRUCTURE INSTANCE Identifier trailingAnnotationsColon
+    : STRUCTURE INSTANCE Identifier trailingAnnotations
       ( structureElement+ END | LocationLiteral )
     ;
 
@@ -490,23 +490,7 @@ leadingAnnotations
  * Parses a sequence of annotations following a declaration.
  */
 trailingAnnotations
-    : ( COLON annotation+ )?
-    ;
-
-/**
- * Parses a sequence of annotations following a declaration with an ending colon to separate
- * from subsequent contained element declarations.
- */
-trailingAnnotationsColon
-    : ( COLON annotation+ COLON )?
-    ;
-
-/**
- * Parses a sequence of annotations following a declaration with an ending semicolon to separate
- * from subsequent peer element declarations.
- */
-trailingAnnotationsSemicolon
-    : ( COLON annotation+ SEMICOLON )?
+    : ( COLON annotation )*
     ;
 
 
@@ -565,7 +549,7 @@ callStatement
  */
 checkStatement
     : CHECK statement+
-      ( ( DETECT Identifier trailingAnnotationsColon statement+ )+ ( REGARDLESS statement+ )?
+      ( ( DETECT Identifier trailingAnnotations statement+ )+ ( REGARDLESS statement+ )?
       | ( REGARDLESS statement+ ) )
       END
     ;

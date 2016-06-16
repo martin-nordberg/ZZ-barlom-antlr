@@ -4,35 +4,47 @@ use lib.gunk( 2.1.1 ).extra as more
 
 package stuff.specialstuff.specialstuff
   : contracted
-    dependencies( [
+  : dependencies( [
       widgets.otherpackage
     ] )
-    documented
-    paradigms( [
+  : documented
+  : paradigms( [
       functional
     ] )
-    tested
-    type_checked :
+  : tested
+  : type_checked
 
   "stuff doer"
   public adorned
-  function doStuff( x , y ) : since ( 1.2.1 ) :
+  function doStuff( x , y ) : since ( 1.2.1 )
     return x + y + more( x, y )
   end
 
   function factorial( n : Integer32 )
     : "The factorial function is defined in recursive fragments."
-      recursive :
+    : recursive
     return n * factorial( n - 1 )
   end
 
   function factorial( 0 )
-    : "The base case" :
+    : "The base case"
     return 1
   end
 
-  function doMore( a ) : since( 2.0.0 ) :
+  function doMore( a ) : since( 2.0.0 )
     return wonderFunction( a^2 )
   end
+
+  variable value : Number : "the value" = 3*x
+
+  variable widget
+    : Integer32
+    : "A widget is a variable that has an especially long description."
+    : `assign x = widget`
+    = 3 * x
+
+  "A widget is a variable that has an especially long description."
+  `assign x = widget`
+  variable widget : Integer32 = 3*x
 
 end

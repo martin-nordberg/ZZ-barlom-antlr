@@ -5,14 +5,14 @@ variant type sample.mypackage.List( T )
 
   variant Cons( head : T, tail : List(T) )
 
-  function head() : T :
+  function head() : T
     match self
       Nil => return Nil
       Cons( head, tail ) => return head
     end
   end
 
-  function tail() : List(T) :
+  function tail() : List(T)
     match self
       Nil => return Nil
       Cons( head, tail ) => return tail

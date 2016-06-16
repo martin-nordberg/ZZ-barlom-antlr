@@ -3,23 +3,23 @@ use lib.something.BaseStructure
 
 structure type stuff.specialstuff.MyStructure
   : "an example of a simple structure type"
-    extends( BaseStructure ) :
+  : extends( BaseStructure )
 
-  variable a : Integer32 ;
+  variable a : Integer32
 
-  variable b : Text ;
+  variable b : Text
 
-  variable c : Integer32 ;
+  variable c : Integer32
 
   constant d = 27
 
   variable e = 3
 
-  function f( x : Integer32 ) : Integer32 :
+  function f( x : Integer32 ) : Integer32
     return e + c*x
   end
 
-  function name() : Text :
+  function name() : Text
     return self.b
   end
 
