@@ -1,0 +1,93 @@
+
+
+specification x.y.z.MyClassBehavior
+
+  constant meaningfulValue = 42
+
+  variable x = nothing
+
+  function checkResults( a, b ) : Integer32
+    return a + b
+  end
+
+  "Initialize things before every test case"
+  setup
+    assign self.x = 0
+  end
+
+  "Free resources after every test case"
+  cleanup
+    assign self.x = nothing
+  end
+
+  'BDD Style Scenario'
+  scenario a : covering( z.y.z.MyClass )
+
+    given
+      constant a = 3
+    when
+      constant y = self.x + checkResults( self.x, a )
+      constant z = self.x + checkResults( y, a )
+    then
+      y = 3 and
+      z = 6
+
+  end
+
+  'Given phrase is optional'
+  scenario b : covering( z.y.z.MyClass )
+
+    when
+      constant y = self.x + checkResults( self.x, 3 )
+      constant z = self.x + checkResults( y, 3 )
+    then
+      y = 3 and
+      z = 6
+
+  end
+
+  'Data-driven test by example'
+  sampling c( a, b, c )
+
+    expect
+      checkResults( a, b ) = c
+
+    with
+      [ (1,1,2),
+        (2,2,4),
+        (1,2,3) ]
+
+  end
+
+  'Data-driven test by example with given phrase'
+  sampling c( a, b, c )
+
+    given
+      constant zero = 0
+
+    expect
+      checkResults( a, b ) = c + zero
+
+    with
+      [ (1,1,2),
+        (2,2,4),
+        (1,2,3) ]
+
+  end
+
+  'Traditional assertion style test'
+  test e : covering( z.y.z.MyClass )
+
+    constant a = 3
+
+    constant y = self.x + checkResults( self.x, a )
+    constant z = self.x + checkResults( y, a )
+
+    assert y = 3
+    assert z = 6
+
+    call releaseTheResource()
+
+  end
+
+end

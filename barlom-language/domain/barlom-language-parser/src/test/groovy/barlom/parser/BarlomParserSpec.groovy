@@ -115,7 +115,7 @@ class BarlomParserSpec
         parse( "varianttypes/" + fileName ) == parseResult
 
         where:
-        fileName                      | parseResult
+        fileName                | parseResult
         "varianttypes01.barlom" | "Successful parse"
         "varianttypes02.barlom" | "Successful parse"
 
@@ -139,9 +139,20 @@ class BarlomParserSpec
         parse( "objecttypes/" + fileName ) == parseResult
 
         where:
-        fileName                     | parseResult
+        fileName                  | parseResult
         "objectinstance01.barlom" | "Successful parse"
         "objecttype01.barlom"     | "Successful parse"
+
+    }
+
+    def "Specifications are parsed successfully."( String fileName, String parseResult ) {
+
+        expect:
+        parse( "specifications/" + fileName ) == parseResult
+
+        where:
+        fileName                 | parseResult
+        "specification01.barlom" | "Successful parse"
 
     }
 

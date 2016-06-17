@@ -40,6 +40,7 @@ namespacedDefinition
       | objectInstanceNamespacedDefinition
       | objectTypeNamespacedDefinition
       | packageNamespacedDefinition
+      | specificationNamespacedDefinition
       | structureInstanceNamespacedDefinition
       | structureTypeNamespacedDefinition
       | variantTypeNamespacedDefinition
@@ -86,6 +87,7 @@ moduleElement
       | objectInstanceDefinition
       | objectTypeDefinition
       | packageDefinition
+      | specificationDefinition
       | structureInstanceDefinition
       | structureTypeDefinition
       | variableDefinition
@@ -139,6 +141,7 @@ packageElement
       | objectInstanceDefinition
       | objectTypeDefinition
       | packageDefinition
+      | specificationDefinition
       | structureInstanceDefinition
       | structureTypeDefinition
       | variableDefinition
@@ -465,6 +468,92 @@ structureInstanceDefinition
 
 
 //-------------------------------------------------------------------------------------------------
+// SPECIFICATIONS
+//-------------------------------------------------------------------------------------------------
+
+/**
+ * Parses a specification definition when it is a whole file.
+ */
+specificationNamespacedDefinition
+    : SPECIFICATION specificationPath trailingAnnotations specificationElement+ END
+    ;
+
+/**
+ * Parses a specification definition.
+ */
+specificationDefinition
+    : SPECIFICATION Identifier parameters? trailingAnnotations
+      ( specificationElement+ END | LocationLiteral )
+    ;
+
+/**
+ * Parses the path and parameters of a specification definition
+ */
+specificationPath
+    : packagePath DOT Identifier parameters?
+    ;
+
+
+//-------------------------------------------------------------------------------------------------
+// SPECIFICATION ELEMENTS
+//-------------------------------------------------------------------------------------------------
+
+/**
+ * Parses a statement
+ */
+specificationElement
+    : leadingAnnotations
+    ( cleanupDefinition
+    | constantDefinition
+    | enumerationTypeDefinition
+    | functionDefinition
+    | objectInstanceDefinition
+    | objectTypeDefinition
+    | samplingDefinition
+    | scenarioDefinition
+    | setupDefinition
+    | structureInstanceDefinition
+    | structureTypeDefinition
+    | testDefinition
+    | variableDefinition
+    | variantTypeDefinition
+    // TODO: more
+    )
+    ;
+
+cleanupDefinition
+    : CLEANUP trailingAnnotations ( functionElement+ END | LocationLiteral )
+    ;
+
+setupDefinition
+    : SETUP trailingAnnotations ( functionElement+ END | LocationLiteral )
+    ;
+
+samplingDefinition
+    : SAMPLING Identifier parameters trailingAnnotations
+      ( ( GIVEN functionElement+ )?
+        EXPECT expression
+        WITH arrayLiteral
+        END
+      | LocationLiteral
+      )
+    ;
+
+scenarioDefinition
+    : SCENARIO Identifier trailingAnnotations
+      ( ( GIVEN functionElement+ )?
+        WHEN functionElement+
+        THEN expression
+        END
+      | LocationLiteral
+      )
+    ;
+
+testDefinition
+    : TEST Identifier trailingAnnotations ( functionElement+ END | LocationLiteral )
+    ;
+
+//-------------------------------------------------------------------------------------------------
 // ANNOTATIONS
 //-------------------------------------------------------------------------------------------------
 
@@ -534,7 +623,7 @@ assignmentOperator
  * Parses an assignment statement.
  */
 assignmentStatement
-    : ASSIGN Identifier assignmentOperator expression
+    : ASSIGN expression assignmentOperator expression
     ;
 
 /**
@@ -983,13 +1072,16 @@ ASSIGN : 'assign';
 BEGIN : 'begin';
 CALL : 'call';
 CHECK : 'check';
+CLEANUP : 'cleanup';
 CONSTANT : 'constant';
 DETECT : 'detect';
 ELSE : 'else';
 END : 'end';
 ENUMERATION : 'enumeration';
 ERROR : 'error';
+EXPECT : 'expect';
 FALSE : 'false';
+GIVEN : 'given';
 IF : 'if';
 FOR : 'for';
 FUNCTION : 'function';
@@ -1008,9 +1100,14 @@ RAISE : 'raise';
 REGARDLESS : 'regardless';
 REPEAT : 'repeat';
 RETURN : 'return';
+SAMPLING : 'sampling';
+SCENARIO : 'scenario';
 SELF : 'self';
+SETUP : 'setup';
+SPECIFICATION : 'specification';
 STRUCTURE : 'structure';
 SYMBOL : 'symbol';
+TEST : 'test';
 THEN : 'then';
 TRUE : 'true';
 TYPE : 'type';
@@ -1021,6 +1118,7 @@ VARIABLE : 'variable';
 VARIANT : 'variant';
 WHEN : 'when';
 WHILE : 'while';
+WITH : 'with';
 XOR : 'xor';
 
 
@@ -1031,6 +1129,7 @@ annotation
 around
 aspect
 before
+case
 class
 data
 default
@@ -1038,7 +1137,6 @@ defer
 define
 delete
 do
-expect
 insert
 interface
 intersection
