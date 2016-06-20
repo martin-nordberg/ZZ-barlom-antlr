@@ -156,4 +156,15 @@ class BarlomParserSpec
 
     }
 
+    def "Graph types are parsed successfully."( String fileName, String parseResult ) {
+
+        expect:
+        parse( "graphs/" + fileName ) == parseResult
+
+        where:
+        fileName         | parseResult
+        "graph01.barlom" | "Successful parse"
+
+    }
+
 }

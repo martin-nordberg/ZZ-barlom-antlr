@@ -1,0 +1,51 @@
+
+
+graph type mypkg.MyGraph
+  : "an example of a simple graph type"
+
+  vertex type V1
+    : "first vertex type"
+    variable x: Integer32
+    variable y: Text
+    variable z: Integer32
+
+    function v()
+      return self.x + self.z
+    end
+  end
+
+  vertex type V2
+    : "vertex type without attributes"
+  end
+
+  edge type E1
+    : "an edge type"
+    : directed
+    : from( V1 )
+    : to( V1 or V2 )
+
+    variable a : Boolean
+    variable b : Integer32
+
+    function e()
+      if self.a
+        return self.b
+      end
+      return 0
+    end
+  end
+
+  edge type E2
+    : "another edge type"
+    : undirected
+    : connecting( V1 )
+  end
+
+  edge type E3
+    : "a third edge type"
+    : undirected
+    : connecting( V1 or V2 )
+  end
+
+end
+

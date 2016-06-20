@@ -36,6 +36,7 @@ namespacedDefinition
     : leadingAnnotations
       ( enumerationTypeNamespacedDefinition
       | functionNamespacedDefinition
+      | graphTypeNamespacedDefinition
       | moduleNamespacedDefinition
       | objectInstanceNamespacedDefinition
       | objectTypeNamespacedDefinition
@@ -81,6 +82,7 @@ moduleElement
       | constantDefinition
       | enumerationTypeDefinition
       | functionDefinition
+      | graphTypeDefinition
       | ifStatement
       | loopStatement
       | matchStatement
@@ -362,7 +364,6 @@ objectElement
       | ifStatement
       | loopStatement
       | matchStatement
-      | packageDefinition
       | structureInstanceDefinition
       | structureTypeDefinition
       | variableDefinition
@@ -401,7 +402,7 @@ structureTypeNamespacedDefinition
     ;
 
 /**
- * Parses the namespace, module, and name of an structure type.
+ * Parses the namespace, module, and name of a structure type.
  */
 structureTypePath
     : modulePath DOT Identifier
@@ -429,7 +430,6 @@ structureElement
       | ifStatement
       | loopStatement
       | matchStatement
-      | packageDefinition
       | structureInstanceDefinition
       | structureTypeDefinition
       | structureVariableDefinition
@@ -466,6 +466,75 @@ structureInstanceDefinition
       ( structureElement+ END | LocationLiteral )
     ;
 
+
+//-------------------------------------------------------------------------------------------------
+// GRAPH TYPE DEFINITIONS
+//-------------------------------------------------------------------------------------------------
+
+graphTypeNamespacedDefinition
+    : GRAPH TYPE graphTypePath trailingAnnotations graphElement+ END
+    ;
+
+/**
+ * Parses the namespace, module, and name of a graph type.
+ */
+graphTypePath
+    : modulePath DOT Identifier
+    ;
+
+graphTypeDefinition
+    : GRAPH TYPE Identifier trailingAnnotations
+      ( graphElement+ END | LocationLiteral )
+    ;
+
+
+//-------------------------------------------------------------------------------------------------
+// STRUCTURE TYPE ELEMENTS
+//-------------------------------------------------------------------------------------------------
+
+graphElement
+    : leadingAnnotations
+      ( constantDefinition
+      | edgeTypeDefinition
+      | enumerationTypeDefinition
+      | functionDefinition
+      | structureTypeDefinition
+      | variableDefinition
+      | variantTypeDefinition
+      | vertexTypeDefinition
+      )
+    ;
+
+/**
+ * Parses the declaration of a vertex type.
+ */
+vertexTypeDefinition
+    : VERTEX TYPE Identifier trailingAnnotations
+      ( vertexElement* END | LocationLiteral )
+    ;
+
+vertexElement
+    : leadingAnnotations
+      ( constantDefinition
+      | functionDefinition
+      | structureVariableDefinition
+      | variableDefinition
+      )
+    ;
+
+edgeTypeDefinition
+    : EDGE TYPE Identifier trailingAnnotations
+      ( edgeElement* END | LocationLiteral )
+    ;
+
+edgeElement
+    : leadingAnnotations
+      ( constantDefinition
+      | functionDefinition
+      | structureVariableDefinition
+      | variableDefinition
+      )
+    ;
 
 //-------------------------------------------------------------------------------------------------
 // SPECIFICATIONS
@@ -906,7 +975,7 @@ graphEdgeDeclaration
  * Parses the arrow portion of an edge declaration.
  */
 graphEdgeArrowDeclaration
-    : EDGE
+    : EDGE_PLAIN
     | EDGE_LPAREN Identifier EDGE_RPAREN
     | EDGE_LEFT
     | EDGE_LEFT_LPAREN Identifier EDGE_RPAREN
@@ -1075,6 +1144,7 @@ CHECK : 'check';
 CLEANUP : 'cleanup';
 CONSTANT : 'constant';
 DETECT : 'detect';
+EDGE : 'edge';
 ELSE : 'else';
 END : 'end';
 ENUMERATION : 'enumeration';
@@ -1082,6 +1152,7 @@ ERROR : 'error';
 EXPECT : 'expect';
 FALSE : 'false';
 GIVEN : 'given';
+GRAPH : 'graph';
 IF : 'if';
 FOR : 'for';
 FUNCTION : 'function';
@@ -1116,6 +1187,7 @@ UNTIL : 'until';
 USE : 'use';
 VARIABLE : 'variable';
 VARIANT : 'variant';
+VERTEX : 'vertex';
 WHEN : 'when';
 WHILE : 'while';
 WITH : 'with';
@@ -1229,7 +1301,7 @@ RANGE_EXCLUSIVE : '..<';
 GRAPH_START : '[%%';
 GRAPH_END : '%%]';
 
-EDGE : '---';
+EDGE_PLAIN : '---';
 EDGE_LPAREN : '--(';
 EDGE_RPAREN : ')--';
 
