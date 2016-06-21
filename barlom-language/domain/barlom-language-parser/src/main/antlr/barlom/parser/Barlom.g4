@@ -58,7 +58,7 @@ namespacedDefinition
  * Parses the definition of a module.
  */
 moduleNamespacedDefinition
-    : MODULE modulePath parameters? trailingAnnotations moduleElement+ END
+    : MODULE modulePath parameters? trailingAnnotations packageElement+ END
     ;
 
 /**
@@ -68,34 +68,6 @@ modulePath
     : ( Identifier ( DOT Identifier )* DOT )? Identifier argumentsNonEmpty?
     ;
 
-
-// ------------------------------------------------------------------------------------------------
-// MODULE ELEMENTS
-// ------------------------------------------------------------------------------------------------
-
-moduleElement
-    : leadingAnnotations
-      ( assertStatement
-      | assignmentStatement
-      | callStatement
-      | checkStatement
-      | constantDefinition
-      | enumerationTypeDefinition
-      | functionDefinition
-      | graphTypeDefinition
-      | ifStatement
-      | loopStatement
-      | matchStatement
-      | objectInstanceDefinition
-      | objectTypeDefinition
-      | packageDefinition
-      | specificationDefinition
-      | structureInstanceDefinition
-      | structureTypeDefinition
-      | variableDefinition
-      | variantTypeDefinition
-      )
-    ;
 
 //-------------------------------------------------------------------------------------------------
 // PACKAGES
@@ -739,7 +711,7 @@ loopStatement
  * Parses a match statement.
  */
 matchStatement
-    : MATCH expression ( expression ( WHEN expression )? EQUAL_ARROW statement )+ ( ELSE statement+ )? END
+    : MATCH expression ( expression ( WHERE expression )? EQUAL_ARROW statement )+ ( ELSE statement+ )? END
     ;
 
 /**
@@ -1156,7 +1128,6 @@ GRAPH : 'graph';
 IF : 'if';
 FOR : 'for';
 FUNCTION : 'function';
-IMPORT : 'import';
 IN : 'in';
 INSTANCE : 'instance';
 IS : 'is';
@@ -1189,6 +1160,7 @@ VARIABLE : 'variable';
 VARIANT : 'variant';
 VERTEX : 'vertex';
 WHEN : 'when';
+WHERE : 'where';
 WHILE : 'while';
 WITH : 'with';
 XOR : 'xor';
@@ -1209,6 +1181,7 @@ defer
 define
 delete
 do
+import
 insert
 interface
 intersection
