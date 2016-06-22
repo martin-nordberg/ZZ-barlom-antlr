@@ -1,0 +1,12 @@
+
+
+function mynamespace.mymodule.mypackage.sample_if1( x )
+
+  unless x > 0
+    return 0
+  end
+
+  return x*x - x
+
+end
+

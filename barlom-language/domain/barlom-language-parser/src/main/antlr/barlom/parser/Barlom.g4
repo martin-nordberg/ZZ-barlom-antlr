@@ -102,27 +102,22 @@ packageDefinition
 
 packageElement
     : leadingAnnotations
-      ( assertStatement
-      | assignmentStatement
-      | callStatement
-      | checkStatement
-      | constantDefinition
-      | enumerationTypeDefinition
+      ( actionStatement
+      | dataDefinition
       | functionDefinition
-      | ifStatement
-      | loopStatement
-      | matchStatement
-      | objectInstanceDefinition
-      | objectTypeDefinition
       | packageDefinition
       | specificationDefinition
-      | structureInstanceDefinition
-      | structureTypeDefinition
-      | variableDefinition
-      | variantTypeDefinition
+      | typeDefinition
       )
     ;
 
+typeDefinition
+    : enumerationTypeDefinition
+    | graphTypeDefinition
+    | objectTypeDefinition
+    | structureTypeDefinition
+    | variantTypeDefinition
+    ;
 
 //-------------------------------------------------------------------------------------------------
 // FUNCTIONS
@@ -161,25 +156,11 @@ functionPath
  */
 functionElement
     : leadingAnnotations
-    ( assertStatement
-    | assignmentStatement
-    | callStatement
-    | checkStatement
-    | constantDefinition
-    | errorStatement
-    | functionDefinition
-    | ifStatement
-    | loopStatement
-    | matchStatement
-    | objectInstanceDefinition
-    | objectTypeDefinition
-    | returnStatement
-    | structureInstanceDefinition
-    | structureTypeDefinition
-    | variableDefinition
-    | variantTypeDefinition
-    // TODO: more
-    )
+      ( actionStatement
+      | dataDefinition
+      | functionDefinition
+      // TODO: more
+      )
     ;
 
 
@@ -326,20 +307,10 @@ objectTypeDefinition
 
 objectElement
     : leadingAnnotations
-      ( assertStatement
-      | assignmentStatement
-      | callStatement
-      | checkStatement
-      | constantDefinition
-      | enumerationTypeDefinition
+      ( actionStatement
+      | dataDefinition
       | functionDefinition
-      | ifStatement
-      | loopStatement
-      | matchStatement
-      | structureInstanceDefinition
-      | structureTypeDefinition
-      | variableDefinition
-      | variantTypeDefinition
+      | typeDefinition
       )
     ;
 
@@ -392,29 +363,10 @@ structureTypeDefinition
 
 structureElement
     : leadingAnnotations
-      ( assertStatement
-      | assignmentStatement
-      | callStatement
-      | checkStatement
-      | constantDefinition
-      | enumerationTypeDefinition
+      ( actionStatement
+      | dataDefinition
       | functionDefinition
-      | ifStatement
-      | loopStatement
-      | matchStatement
-      | structureInstanceDefinition
-      | structureTypeDefinition
-      | structureVariableDefinition
-      | variableDefinition
-      | variantTypeDefinition
       )
-    ;
-
-/**
- * Parses the declaration of a value that can be changed after it has been initialized.
- */
-structureVariableDefinition
-    : VARIABLE Identifier trailingAnnotations
     ;
 
 
@@ -466,13 +418,11 @@ graphTypeDefinition
 
 graphElement
     : leadingAnnotations
-      ( constantDefinition
+      ( actionStatement
+      | dataDefinition
       | edgeTypeDefinition
-      | enumerationTypeDefinition
       | functionDefinition
-      | structureTypeDefinition
-      | variableDefinition
-      | variantTypeDefinition
+      | typeDefinition
       | vertexTypeDefinition
       )
     ;
@@ -487,10 +437,9 @@ vertexTypeDefinition
 
 vertexElement
     : leadingAnnotations
-      ( constantDefinition
+      ( actionStatement
+      | dataDefinition
       | functionDefinition
-      | structureVariableDefinition
-      | variableDefinition
       )
     ;
 
@@ -501,10 +450,9 @@ edgeTypeDefinition
 
 edgeElement
     : leadingAnnotations
-      ( constantDefinition
+      ( actionStatement
+      | dataDefinition
       | functionDefinition
-      | structureVariableDefinition
-      | variableDefinition
       )
     ;
 
@@ -540,26 +488,20 @@ specificationPath
 //-------------------------------------------------------------------------------------------------
 
 /**
- * Parses a statement
+ * Parses a specification element
  */
 specificationElement
     : leadingAnnotations
-    ( cleanupDefinition
-    | constantDefinition
-    | enumerationTypeDefinition
-    | functionDefinition
-    | objectInstanceDefinition
-    | objectTypeDefinition
-    | samplingDefinition
-    | scenarioDefinition
-    | setupDefinition
-    | structureInstanceDefinition
-    | structureTypeDefinition
-    | testDefinition
-    | variableDefinition
-    | variantTypeDefinition
-    // TODO: more
-    )
+      ( cleanupDefinition
+      | dataDefinition
+      | functionDefinition
+      | samplingDefinition
+      | scenarioDefinition
+      | setupDefinition
+      | testDefinition
+      | typeDefinition
+      // TODO: more
+      )
     ;
 
 cleanupDefinition
@@ -639,6 +581,30 @@ useDeclaration
 //-------------------------------------------------------------------------------------------------
 // STATEMENTS
 //-------------------------------------------------------------------------------------------------
+
+/**
+ * Parses a statement
+ */
+statement
+    : leadingAnnotations
+      ( actionStatement
+      | dataDefinition
+      | functionDefinition
+      );
+
+actionStatement
+    : assertStatement
+    | assignmentStatement
+    | callStatement
+    | checkStatement
+    | errorStatement
+    | ifStatement
+    | loopStatement
+    | matchStatement
+    | returnStatement
+    | unlessStatement
+    // TODO: more
+    ;
 
 /**
  * Parses an assert statement.
@@ -722,24 +688,11 @@ returnStatement
     ;
 
 /**
- * Parses a statement
+ * Parses an unless statement.
  */
-statement
-    : assertStatement
-    | assignmentStatement
-    | callStatement
-    | checkStatement
-    | constantDefinition
-    | errorStatement
-    | ifStatement
-    | functionDefinition
-    | loopStatement
-    | matchStatement
-    | returnStatement
-    | variableDefinition
-    // TODO: more
+unlessStatement
+    : UNLESS expression statement+ END
     ;
-
 
 //-------------------------------------------------------------------------------------------------
 // EXPRESSIONS
@@ -863,6 +816,14 @@ primaryExpression
 // VARIABLES
 //-------------------------------------------------------------------------------------------------
 
+dataDefinition
+    : constantDefinition
+    | variableDefinition
+    | objectInstanceDefinition
+    | structureInstanceDefinition
+    // TODO: more
+    ;
+
 /**
  * Parses the declaration of a value that cannot be changed once initialized.
  */
@@ -889,7 +850,7 @@ parameters
  * Parses the declaration of a value that can be changed after it has been initialized.
  */
 variableDefinition
-    : VARIABLE Identifier trailingAnnotations EQUALS expression
+    : VARIABLE Identifier trailingAnnotations ( EQUALS expression )?
     ;
 
 
@@ -1154,6 +1115,7 @@ THEN : 'then';
 TRUE : 'true';
 TYPE : 'type';
 UNDEFINED : 'undefined';
+UNLESS : 'unless';
 UNTIL : 'until';
 USE : 'use';
 VARIABLE : 'variable';
@@ -1193,7 +1155,6 @@ select
 transform
 translate
 union
-unless
 update
 version
 where
