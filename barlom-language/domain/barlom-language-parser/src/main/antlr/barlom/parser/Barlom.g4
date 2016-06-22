@@ -1,4 +1,13 @@
 //-------------------------------------------------------------------------------------------------
+//
+// (C) Copyright 2015 Martin E. Nordberg III
+// Apache 2.0 License
+//
+//-------------------------------------------------------------------------------------------------
+//
+// Grammar for the Barlom language.
+//
+//-------------------------------------------------------------------------------------------------
 
 grammar Barlom;
 
@@ -27,6 +36,13 @@ parse
  */
 compilationUnit
     : useDeclaration* namespacedDefinition EOF
+    ;
+
+/**
+ * Parses a use declaration
+ */
+useDeclaration
+    : USE pathWithOptionalArguments ( AS Identifier )?
     ;
 
 /*
@@ -61,13 +77,6 @@ moduleNamespacedDefinition
     : MODULE modulePath parameters? trailingAnnotations packageElement+ END
     ;
 
-/**
- * Parses a module path.
- */
-modulePath
-    : ( Identifier ( DOT Identifier )* DOT )? Identifier argumentsNonEmpty?
-    ;
-
 
 //-------------------------------------------------------------------------------------------------
 // PACKAGES
@@ -77,21 +86,14 @@ modulePath
  * Parses a package declaration with its contents when the package is a whole compilation unit.
  */
 packageNamespacedDefinition
-    : PACKAGE packagePath trailingAnnotations packageElement+ END
-    ;
-
-/**
- * Parses the namespace, module, name, and optional parameters of a package.
- */
-packagePath
-    : modulePath DOT Identifier parameters?
+    : PACKAGE pathWithOptionalParameters trailingAnnotations packageElement+ END
     ;
 
 /**
  * Parses a package declaration with its contents.
  */
 packageDefinition
-    : PACKAGE Identifier parameters? trailingAnnotations
+    : PACKAGE nameWithOptionalParameters trailingAnnotations
       ( packageElement+ END | LocationLiteral )
     ;
 
@@ -120,6 +122,59 @@ typeDefinition
     ;
 
 //-------------------------------------------------------------------------------------------------
+// PATHS
+//-------------------------------------------------------------------------------------------------
+
+/**
+ * Parses a module path.
+ */
+modulePath
+    : ( Identifier ( DOT Identifier )* DOT )? nameWithOptionalArguments
+    ;
+
+/**
+ * Parses the namespace, module, optional parent package(s), name, and optional parameters of a
+ * package or type.
+ */
+pathWithOptionalParameters
+    : pathWithOptionalArguments DOT nameWithOptionalParameters
+    ;
+
+pathWithoutParameters
+    : pathWithOptionalArguments DOT nameWithoutParameters
+    ;
+
+pathWithParameters
+    : pathWithOptionalArguments DOT nameWithParameters
+    ;
+
+pathWithOptionalArguments
+    : modulePath ( DOT nameWithOptionalArguments )*
+    ;
+
+
+//-------------------------------------------------------------------------------------------------
+// NAMES
+//-------------------------------------------------------------------------------------------------
+
+nameWithOptionalArguments
+    : Identifier argumentsNonEmpty?
+    ;
+
+nameWithOptionalParameters
+    : Identifier parametersNonEmpty?
+    ;
+
+nameWithoutParameters
+    : Identifier
+    ;
+
+nameWithParameters
+    : Identifier parameters
+    ;
+
+
+//-------------------------------------------------------------------------------------------------
 // FUNCTIONS
 //-------------------------------------------------------------------------------------------------
 
@@ -127,23 +182,16 @@ typeDefinition
  * Parses a function definition when it is a whole file.
  */
 functionNamespacedDefinition
-    : FUNCTION functionPath trailingAnnotations functionElement+ END
+    : FUNCTION pathWithParameters trailingAnnotations functionElement+ END
     ;
 
 /**
  * Parses a function definition.
  */
 functionDefinition
-    : FUNCTION Identifier parameters trailingAnnotations
+    : FUNCTION nameWithParameters trailingAnnotations
       ( functionElement+ END | LocationLiteral )
-    | FUNCTION Identifier EQUALS ( functionExpressionLiteral | functionBlockLiteral )
-    ;
-
-/**
- * Parses the path and parameters of a function definition
- */
-functionPath
-    : packagePath DOT Identifier parameters
+    | FUNCTION nameWithoutParameters EQUALS ( functionExpressionLiteral | functionBlockLiteral )
     ;
 
 
@@ -159,7 +207,6 @@ functionElement
       ( actionStatement
       | dataDefinition
       | functionDefinition
-      // TODO: more
       )
     ;
 
@@ -172,21 +219,14 @@ functionElement
  * Parses an enumeration type that is the one code element in a compilation unit.
  */
 enumerationTypeNamespacedDefinition
-    : ENUMERATION TYPE enumerationPath trailingAnnotations enumerationTypeContents END
-    ;
-
-/**
- * Parses the namespace, module, and name of an enumeration.
- */
-enumerationPath
-    : modulePath DOT Identifier
+    : ENUMERATION TYPE pathWithOptionalParameters trailingAnnotations enumerationTypeContents END
     ;
 
 /**
  * Parses an enumeration type defined inside a parent container's definition.
  */
 enumerationTypeDefinition
-    : ENUMERATION TYPE Identifier trailingAnnotations
+    : ENUMERATION TYPE nameWithOptionalParameters trailingAnnotations
       ( enumerationTypeContents END | LocationLiteral )
     ;
 
@@ -208,7 +248,7 @@ enumerationTypeContents
  * Parses one symbol definition within an enumeration type.
  */
 enumerationSymbolDefinition
-    : leadingAnnotations SYMBOL Identifier trailingAnnotations
+    : leadingAnnotations SYMBOL nameWithoutParameters trailingAnnotations
     ;
 
 /**
@@ -230,21 +270,14 @@ enumerationElement
  * Parses a variant type that appears at the level of a whole compilation unit.
  */
 variantTypeNamespacedDefinition
-    : VARIANT TYPE variantTypePath trailingAnnotations variantTypeContents END
-    ;
-
-/**
- * Parses the namespace, module, and name of a variant type.
- */
-variantTypePath
-    : modulePath DOT Identifier parameters?
+    : VARIANT TYPE pathWithOptionalParameters trailingAnnotations variantTypeContents END
     ;
 
 /**
  * Parses a variant type that is definied inside a parent element.
  */
 variantTypeDefinition
-    : VARIANT TYPE Identifier trailingAnnotations
+    : VARIANT TYPE nameWithOptionalParameters trailingAnnotations
       ( variantTypeContents END | LocationLiteral )
     ;
 
@@ -266,7 +299,7 @@ variantTypeContents
  * Parses one variant definition.
  */
 variantDefinition
-    : leadingAnnotations VARIANT Identifier parameters? trailingAnnotations
+    : leadingAnnotations VARIANT nameWithOptionalParameters trailingAnnotations
     ;
 
 /**
@@ -285,18 +318,11 @@ variantTypeElement
 //-------------------------------------------------------------------------------------------------
 
 objectTypeNamespacedDefinition
-    : OBJECT TYPE objectTypePath trailingAnnotations objectElement+ END
-    ;
-
-/**
- * Parses the namespace, module, and name of an object type.
- */
-objectTypePath
-    : modulePath DOT Identifier parameters?
+    : OBJECT TYPE pathWithOptionalParameters trailingAnnotations objectElement+ END
     ;
 
 objectTypeDefinition
-    : OBJECT TYPE Identifier parameters? trailingAnnotations
+    : OBJECT TYPE nameWithOptionalParameters trailingAnnotations
       ( objectElement+ END | LocationLiteral )
     ;
 
@@ -320,18 +346,11 @@ objectElement
 //-------------------------------------------------------------------------------------------------
 
 objectInstanceNamespacedDefinition
-    : OBJECT INSTANCE objectInstancePath trailingAnnotations objectElement+ END
-    ;
-
-/**
- * Parses the namespace, module, and name of a object instance.
- */
-objectInstancePath
-    : modulePath DOT Identifier
+    : OBJECT INSTANCE pathWithoutParameters trailingAnnotations objectElement+ END
     ;
 
 objectInstanceDefinition
-    : OBJECT INSTANCE Identifier trailingAnnotations
+    : OBJECT INSTANCE nameWithoutParameters trailingAnnotations
       ( objectElement+ END | LocationLiteral )
     ;
 
@@ -341,18 +360,11 @@ objectInstanceDefinition
 //-------------------------------------------------------------------------------------------------
 
 structureTypeNamespacedDefinition
-    : STRUCTURE TYPE structureTypePath trailingAnnotations structureElement+ END
-    ;
-
-/**
- * Parses the namespace, module, and name of a structure type.
- */
-structureTypePath
-    : modulePath DOT Identifier
+    : STRUCTURE TYPE pathWithOptionalParameters trailingAnnotations structureElement+ END
     ;
 
 structureTypeDefinition
-    : STRUCTURE TYPE Identifier trailingAnnotations
+    : STRUCTURE TYPE nameWithOptionalParameters trailingAnnotations
       ( structureElement+ END | LocationLiteral )
     ;
 
@@ -366,6 +378,7 @@ structureElement
       ( actionStatement
       | dataDefinition
       | functionDefinition
+      | typeDefinition
       )
     ;
 
@@ -375,18 +388,11 @@ structureElement
 //-------------------------------------------------------------------------------------------------
 
 structureInstanceNamespacedDefinition
-    : STRUCTURE INSTANCE structureInstancePath trailingAnnotations structureElement+ END
-    ;
-
-/**
- * Parses the namespace, module, and name of a structure instance.
- */
-structureInstancePath
-    : modulePath DOT Identifier
+    : STRUCTURE INSTANCE pathWithoutParameters trailingAnnotations structureElement+ END
     ;
 
 structureInstanceDefinition
-    : STRUCTURE INSTANCE Identifier trailingAnnotations
+    : STRUCTURE INSTANCE nameWithoutParameters trailingAnnotations
       ( structureElement+ END | LocationLiteral )
     ;
 
@@ -396,18 +402,11 @@ structureInstanceDefinition
 //-------------------------------------------------------------------------------------------------
 
 graphTypeNamespacedDefinition
-    : GRAPH TYPE graphTypePath trailingAnnotations graphElement+ END
-    ;
-
-/**
- * Parses the namespace, module, and name of a graph type.
- */
-graphTypePath
-    : modulePath DOT Identifier
+    : GRAPH TYPE pathWithOptionalParameters trailingAnnotations graphElement+ END
     ;
 
 graphTypeDefinition
-    : GRAPH TYPE Identifier trailingAnnotations
+    : GRAPH TYPE nameWithOptionalParameters trailingAnnotations
       ( graphElement+ END | LocationLiteral )
     ;
 
@@ -431,7 +430,7 @@ graphElement
  * Parses the declaration of a vertex type.
  */
 vertexTypeDefinition
-    : VERTEX TYPE Identifier trailingAnnotations
+    : VERTEX TYPE nameWithoutParameters trailingAnnotations
       ( vertexElement* END | LocationLiteral )
     ;
 
@@ -444,7 +443,7 @@ vertexElement
     ;
 
 edgeTypeDefinition
-    : EDGE TYPE Identifier trailingAnnotations
+    : EDGE TYPE nameWithoutParameters trailingAnnotations
       ( edgeElement* END | LocationLiteral )
     ;
 
@@ -456,6 +455,7 @@ edgeElement
       )
     ;
 
+
 //-------------------------------------------------------------------------------------------------
 // SPECIFICATIONS
 //-------------------------------------------------------------------------------------------------
@@ -464,22 +464,15 @@ edgeElement
  * Parses a specification definition when it is a whole file.
  */
 specificationNamespacedDefinition
-    : SPECIFICATION specificationPath trailingAnnotations specificationElement+ END
+    : SPECIFICATION pathWithOptionalParameters trailingAnnotations specificationElement+ END
     ;
 
 /**
  * Parses a specification definition.
  */
 specificationDefinition
-    : SPECIFICATION Identifier parameters? trailingAnnotations
+    : SPECIFICATION nameWithOptionalParameters trailingAnnotations
       ( specificationElement+ END | LocationLiteral )
-    ;
-
-/**
- * Parses the path and parameters of a specification definition
- */
-specificationPath
-    : packagePath DOT Identifier parameters?
     ;
 
 
@@ -500,7 +493,6 @@ specificationElement
       | setupDefinition
       | testDefinition
       | typeDefinition
-      // TODO: more
       )
     ;
 
@@ -513,7 +505,7 @@ setupDefinition
     ;
 
 samplingDefinition
-    : SAMPLING Identifier parameters trailingAnnotations
+    : SAMPLING nameWithParameters trailingAnnotations
       ( ( GIVEN functionElement+ )?
         EXPECT expression
         WITH arrayLiteral
@@ -523,7 +515,7 @@ samplingDefinition
     ;
 
 scenarioDefinition
-    : SCENARIO Identifier trailingAnnotations
+    : SCENARIO nameWithoutParameters trailingAnnotations
       ( ( GIVEN functionElement+ )?
         WHEN functionElement+
         THEN expression
@@ -533,8 +525,9 @@ scenarioDefinition
     ;
 
 testDefinition
-    : TEST Identifier trailingAnnotations ( functionElement+ END | LocationLiteral )
+    : TEST nameWithoutParameters trailingAnnotations ( functionElement+ END | LocationLiteral )
     ;
+
 
 //-------------------------------------------------------------------------------------------------
 // ANNOTATIONS
@@ -548,7 +541,7 @@ annotation
     | TextMultilineLiteral
     | Identifier arguments?
     | CodeLiteral
-    | typeDeclaration
+    | typeAnnotation
     ;
 
 /**
@@ -563,18 +556,6 @@ leadingAnnotations
  */
 trailingAnnotations
     : ( COLON annotation )*
-    ;
-
-
-//-------------------------------------------------------------------------------------------------
-// USES
-//-------------------------------------------------------------------------------------------------
-
-/**
- * Parses a use declaration
- */
-useDeclaration
-    : USE qualifiedIdentifier ( AS Identifier )?
     ;
 
 
@@ -603,7 +584,6 @@ actionStatement
     | matchStatement
     | returnStatement
     | unlessStatement
-    // TODO: more
     ;
 
 /**
@@ -693,6 +673,7 @@ returnStatement
 unlessStatement
     : UNLESS expression statement+ END
     ;
+
 
 //-------------------------------------------------------------------------------------------------
 // EXPRESSIONS
@@ -821,14 +802,13 @@ dataDefinition
     | variableDefinition
     | objectInstanceDefinition
     | structureInstanceDefinition
-    // TODO: more
     ;
 
 /**
  * Parses the declaration of a value that cannot be changed once initialized.
  */
 constantDefinition
-    : CONSTANT Identifier trailingAnnotations EQUALS expression
+    : CONSTANT nameWithoutParameters trailingAnnotations EQUALS expression
     ;
 
 
@@ -836,8 +816,9 @@ constantDefinition
  * Parses the declaration of a function parameter.
  */
 parameter
-    : Identifier trailingAnnotations
+    : nameWithoutParameters trailingAnnotations
     | expression
+    | typeAnnotation
     ;
 
 parameters
@@ -845,22 +826,40 @@ parameters
     | LEFT_PARENTHESIS RIGHT_PARENTHESIS
     ;
 
+parametersNonEmpty
+    : LEFT_PARENTHESIS parameter ( COMMA parameter )* RIGHT_PARENTHESIS
+    ;
+
 
 /**
  * Parses the declaration of a value that can be changed after it has been initialized.
  */
 variableDefinition
-    : VARIABLE Identifier trailingAnnotations ( EQUALS expression )?
+    : VARIABLE nameWithoutParameters trailingAnnotations ( EQUALS expression )?
     ;
 
 
 //-------------------------------------------------------------------------------------------------
-// TYPE DECLARATIONS
+// TYPE ANNOTATIONS
 //-------------------------------------------------------------------------------------------------
 
-typeDeclaration
-    : Identifier arguments? QUESTION?
-    // TODO: closure-like generics
+typeAnnotation
+    : Identifier typeArguments? QUESTION?
+    ;
+
+/**
+ * Parses one argument of a function call.
+ */
+typeArgument
+    : expression
+    | typeAnnotation
+    ;
+
+/**
+ * Parses the argument list of a function call.
+ */
+typeArguments
+    : LEFT_PARENTHESIS ( typeArgument ( COMMA typeArgument )* )? RIGHT_PARENTHESIS
     ;
 
 
@@ -909,11 +908,11 @@ graphEdgeDeclaration
  */
 graphEdgeArrowDeclaration
     : EDGE_PLAIN
-    | EDGE_LPAREN Identifier EDGE_RPAREN
     | EDGE_LEFT
-    | EDGE_LEFT_LPAREN Identifier EDGE_RPAREN
     | EDGE_RIGHT
-    | EDGE_LPAREN Identifier EDGE_RIGHT_RPAREN
+    | EDGE_LPAREN Identifier trailingAnnotations EDGE_RPAREN
+    | EDGE_LEFT_LPAREN Identifier trailingAnnotations EDGE_RPAREN
+    | EDGE_LPAREN Identifier trailingAnnotations EDGE_RIGHT_RPAREN
     ;
 
 /**
@@ -934,7 +933,7 @@ graphLiteral
  * Parses a vertex declaration within a graph literal
  */
 graphVertexDeclaration
-    : LEFT_BRACKET Identifier /*TODO( COLON typeExpression )*/ structureLiteral? RIGHT_BRACKET
+    : LEFT_BRACKET Identifier trailingAnnotations structureLiteral? RIGHT_BRACKET
     ;
 
 /**
@@ -1045,15 +1044,6 @@ tupleLiteral
  */
 undefinedLiteral
     : UNDEFINED
-    ;
-
-
-//-------------------------------------------------------------------------------------------------
-// BASICS
-//-------------------------------------------------------------------------------------------------
-
-qualifiedIdentifier
-    : Identifier argumentsNonEmpty? ( DOT Identifier argumentsNonEmpty? )*
     ;
 
 
@@ -1332,6 +1322,7 @@ TextCharNotBackTick
 ERROR_UNCLOSED_CODE
     : '`' TextCharNotBackTick* EOF
     ;
+
 
 //-------------------------------------------------------------------------------------------------
 // TEMPLATE LITERALS
