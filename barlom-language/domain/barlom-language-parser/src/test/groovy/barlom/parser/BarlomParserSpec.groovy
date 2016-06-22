@@ -168,4 +168,15 @@ class BarlomParserSpec
 
     }
 
+    def "Annotation types are parsed successfully."( String fileName, String parseResult ) {
+
+        expect:
+        parse( "annotations/" + fileName ) == parseResult
+
+        where:
+        fileName         | parseResult
+        "annotation01.barlom" | "Successful parse"
+
+    }
+
 }

@@ -1,6 +1,6 @@
 //-------------------------------------------------------------------------------------------------
 //
-// (C) Copyright 2015 Martin E. Nordberg III
+// (C) Copyright 2016 Martin E. Nordberg III
 // Apache 2.0 License
 //
 //-------------------------------------------------------------------------------------------------
@@ -50,7 +50,8 @@ useDeclaration
  */
 namespacedDefinition
     : leadingAnnotations
-      ( enumerationTypeNamespacedDefinition
+      ( annotationTypeNamespacedDefinition
+      | enumerationTypeNamespacedDefinition
       | functionNamespacedDefinition
       | graphTypeNamespacedDefinition
       | moduleNamespacedDefinition
@@ -105,6 +106,7 @@ packageDefinition
 packageElement
     : leadingAnnotations
       ( actionStatement
+      | annotationTypeDefinition
       | dataDefinition
       | functionDefinition
       | packageDefinition
@@ -530,6 +532,34 @@ testDefinition
 
 
 //-------------------------------------------------------------------------------------------------
+// ANNOTATION TYPE DEFINITIONS
+//-------------------------------------------------------------------------------------------------
+
+annotationTypeNamespacedDefinition
+    : ANNOTATION TYPE pathWithOptionalParameters trailingAnnotations annotationElement+ END
+    ;
+
+annotationTypeDefinition
+    : ANNOTATION TYPE nameWithOptionalParameters trailingAnnotations
+      ( annotationElement+ END | LocationLiteral )
+    ;
+
+
+//-------------------------------------------------------------------------------------------------
+// ANNOTATION TYPE ELEMENTS
+//-------------------------------------------------------------------------------------------------
+
+annotationElement
+    : leadingAnnotations
+      ( actionStatement
+      | dataDefinition
+      | functionDefinition
+      | typeDefinition
+      )
+    ;
+
+
+//-------------------------------------------------------------------------------------------------
 // ANNOTATIONS
 //-------------------------------------------------------------------------------------------------
 
@@ -617,7 +647,7 @@ assignmentStatement
  * Parses a call statement - the calling of a void function or else ignoring its result.
  */
 callStatement
-    : CALL functionCall
+    : CALL ( primaryExpression DOT )? functionCall
     ;
 
 /**
@@ -705,72 +735,61 @@ argumentsNonEmpty
  * Parses an expression.
  */
 expression
-    : expression DOT functionCall
-    | expression DOT Identifier
-    | conditionalOrExpression
+    : conditionalOrExpression
     // TODO: more alternatives ...
     ;
 
 
-/**
- * Parses a function call optionally followed by a sequence of statements to be executed in
- * the context of the result of the function call.
- */
-functionCall
-    : Identifier arguments
+conditionalOrExpression
+    : conditionalAndExpression
+    | conditionalOrExpression OR conditionalAndExpression
     ;
 
-
-conditionalOrExpression
-	:	conditionalAndExpression
-	|	conditionalOrExpression OR conditionalAndExpression
-	;
-
 conditionalAndExpression
-	:	exclusiveOrExpression
-	|	conditionalAndExpression AND exclusiveOrExpression
-	;
+    : exclusiveOrExpression
+    | conditionalAndExpression AND exclusiveOrExpression
+    ;
 
 exclusiveOrExpression
-	:	equalityExpression
-	|	exclusiveOrExpression XOR equalityExpression
-	;
+    : equalityExpression
+    | exclusiveOrExpression XOR equalityExpression
+    ;
 
 equalityExpression
-	:	relationalExpression
-	|	equalityExpression EQUALS relationalExpression
-	|	equalityExpression NOT_EQUAL_TO relationalExpression
-	;
+    : relationalExpression
+    | equalityExpression EQUALS relationalExpression
+    | equalityExpression NOT_EQUAL_TO relationalExpression
+    ;
 
 // TODO: tree of expression types to avoid a < b is c == d
 
 relationalExpression
-	:	additiveExpression
-	|	relationalExpression COMPARE additiveExpression
-	|	relationalExpression LESS_THAN additiveExpression
-	|	relationalExpression GREATER_THAN additiveExpression
-	|	relationalExpression LESS_THAN_OR_EQUAL additiveExpression
-	|	relationalExpression GREATER_THAN_OR_EQUAL additiveExpression
-	|	relationalExpression IS additiveExpression
-	|	relationalExpression ISNOT additiveExpression
-	;
+    : additiveExpression
+    | relationalExpression COMPARE additiveExpression
+    | relationalExpression LESS_THAN additiveExpression
+    | relationalExpression GREATER_THAN additiveExpression
+    | relationalExpression LESS_THAN_OR_EQUAL additiveExpression
+    | relationalExpression GREATER_THAN_OR_EQUAL additiveExpression
+    | relationalExpression IS additiveExpression
+    | relationalExpression ISNOT additiveExpression
+    ;
 
 additiveExpression
-	:	multiplicativeExpression
-	|	additiveExpression PLUS multiplicativeExpression
-	|	additiveExpression MINUS multiplicativeExpression
-	;
+    : multiplicativeExpression
+    | additiveExpression PLUS multiplicativeExpression
+    | additiveExpression MINUS multiplicativeExpression
+    ;
 
 multiplicativeExpression
-	:	exponentialExpression
-	|	multiplicativeExpression TIMES exponentialExpression
-	|	multiplicativeExpression DIVIDED_BY exponentialExpression
-	|	multiplicativeExpression MODULO exponentialExpression
-	;
+    : exponentialExpression
+    | multiplicativeExpression TIMES exponentialExpression
+    | multiplicativeExpression DIVIDED_BY exponentialExpression
+    | multiplicativeExpression MODULO exponentialExpression
+    ;
 
 exponentialExpression
-	: unaryExpression ( POWER exponentialExpression )?
-	;
+    : unaryExpression ( POWER exponentialExpression )?
+    ;
 
 unaryExpression
     : primaryExpression
@@ -790,6 +809,15 @@ primaryExpression
     | primaryExpression DOT Identifier
     | primaryExpression DOT functionCall
     // TODO: more alternatives ...
+    ;
+
+
+/**
+ * Parses a function call optionally followed by a sequence of statements to be executed in
+ * the context of the result of the function call.
+ */
+functionCall
+    : Identifier arguments
     ;
 
 
@@ -1058,6 +1086,7 @@ undefinedLiteral
 //-------------------------------------------------------------------------------------------------
 
 AND : 'and';
+ANNOTATION : 'annotation';
 AS : 'as';
 ASSERT : 'assert';
 ASSIGN : 'assign';
@@ -1121,7 +1150,6 @@ XOR : 'xor';
 /** TODO: reserve these and more ...
 after
 alias
-annotation
 around
 aspect
 before

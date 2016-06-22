@@ -1,0 +1,26 @@
+
+
+use mystuff.AnAnnotation
+
+annotation type mod.pkg.AnotherAnnotation( value : Text )
+  : extends( AnAnnotation )
+  : appliesTo( 'object type' )
+
+  constant trimmedValue = value.trim()
+
+  function apply( context )
+    call context.addVariable( 'state', 'draft' )
+  end
+
+// TODO - IDEAS:
+//  rule
+//    if not target.name.contains( "q" )
+//      raise error RuleViolation( "Name must contain the letter 'q'."
+//    end
+//  end
+//
+//  transform
+//    target.name += "ByGolly"
+//  end
+
+end
