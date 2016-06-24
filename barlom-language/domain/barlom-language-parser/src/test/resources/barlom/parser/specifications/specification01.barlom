@@ -12,12 +12,12 @@ specification x.y.z.MyClassBehavior
 
   "Initialize things before every test case"
   setup
-    assign self.x = 0
+    let self.x = 0
   end
 
   "Free resources after every test case"
   cleanup
-    assign self.x = nothing
+    let self.x = nothing
   end
 
   'BDD Style Scenario'

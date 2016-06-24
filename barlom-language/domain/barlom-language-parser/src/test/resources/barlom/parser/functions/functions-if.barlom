@@ -2,17 +2,17 @@
 
 function mynamespace.mymodule.mypackage.sample_if1( x )
 
-  variable value = 3*x
+  variable val = 3*x
 
-  if value > 100
-    assign value = 100
-  else if value > 30
-    assign value = 30
+  if val > 100
+    let val = 100
+  else if val > 30
+    let val = 30
   else
-    assign value = 10
+    let val = 10
   end
 
-  return value
+  return val
 
 end
 

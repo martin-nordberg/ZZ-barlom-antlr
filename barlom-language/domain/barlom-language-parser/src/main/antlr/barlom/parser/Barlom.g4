@@ -640,7 +640,7 @@ assignmentOperator
  * Parses an assignment statement.
  */
 assignmentStatement
-    : ASSIGN expression assignmentOperator expression
+    : LET expression assignmentOperator expression
     ;
 
 /**
@@ -827,13 +827,14 @@ functionCall
 
 dataDefinition
     : constantDefinition
+    | valueDefinition
     | variableDefinition
     | objectInstanceDefinition
     | structureInstanceDefinition
     ;
 
 /**
- * Parses the declaration of a value that cannot be changed once initialized.
+ * Parses the declaration of a value that can be computed at compile time.
  */
 constantDefinition
     : CONSTANT nameWithoutParameters trailingAnnotations EQUALS expression
@@ -856,6 +857,14 @@ parameters
 
 parametersNonEmpty
     : LEFT_PARENTHESIS parameter ( COMMA parameter )* RIGHT_PARENTHESIS
+    ;
+
+
+/**
+ * Parses the declaration of a value that cannot be changed once initialized.
+ */
+valueDefinition
+    : VALUE nameWithoutParameters trailingAnnotations EQUALS expression
     ;
 
 
@@ -1089,7 +1098,6 @@ AND : 'and';
 ANNOTATION : 'annotation';
 AS : 'as';
 ASSERT : 'assert';
-ASSIGN : 'assign';
 BEGIN : 'begin';
 CALL : 'call';
 CHECK : 'check';
@@ -1112,6 +1120,7 @@ IN : 'in';
 INSTANCE : 'instance';
 IS : 'is';
 ISNOT : 'isnot';
+LET : 'let';
 MATCH : 'match';
 MODULE : 'module';
 NOT : 'not';
@@ -1137,6 +1146,7 @@ UNDEFINED : 'undefined';
 UNLESS : 'unless';
 UNTIL : 'until';
 USE : 'use';
+VALUE : 'value';
 VARIABLE : 'variable';
 VARIANT : 'variant';
 VERTEX : 'vertex';
@@ -1165,7 +1175,6 @@ import
 insert
 interface
 intersection
-let
 namespace
 protocol
 rule

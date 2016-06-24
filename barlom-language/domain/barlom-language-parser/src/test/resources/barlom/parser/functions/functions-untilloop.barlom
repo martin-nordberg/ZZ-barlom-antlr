@@ -5,7 +5,7 @@ function mynamespace.mymodule.mypackage.sample_until()
   variable x = 1
 
   repeat until x > 100
-    assign x = x * 2
+    let x = x * 2
   end
 
   return x

@@ -7,7 +7,7 @@ function mynamespace.mymodule.mypackage.sample_for()
   variable sum = 0
 
   repeat for i in numbers
-    assign sum += i
+    let sum += i
   end
 
   return sum

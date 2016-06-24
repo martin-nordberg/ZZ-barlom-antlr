@@ -35,16 +35,16 @@ package stuff.specialstuff.specialstuff
     return wonderFunction( a^2 )
   end
 
-  variable value : Number : "the value" = 3*x
+  value aValue : Number : "the value" = 3*x
 
   variable widget
     : Integer32
     : "A widget is a variable that has an especially long description."
-    : `assign x = widget`
+    : `let x = widget`
     = 3 * x
 
   "A widget is a variable that has an especially long description."
-  `assign x = widget`
+  `let x = widget`
   variable widget : Integer32 = 3*x
 
 end

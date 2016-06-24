@@ -2,27 +2,27 @@
 
 function mynamespace.mymodule.mypackage.sample_if1( x )
 
-  check
-    assign value = 7
+  variable val = 7
 
-    if value > 7
+  check
+    if val > 7
       raise error NotPossible()
     else
-      assign value = 8
+      let val = 8
     end
   detect e : NotPossible
     call printGoryOutput()
   regardless
-    assign value = 9
+    let val = 9
   end
 
   check
     call doStuff()
   regardless
-    assign value = 10
+    let val = 10
   end
 
-  return value
+  return val
 
 end
 

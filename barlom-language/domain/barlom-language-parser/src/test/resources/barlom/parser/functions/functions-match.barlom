@@ -5,10 +5,10 @@ function mynamespace.mymodule.mypackage.sample_match1( x, y )
   variable z = 0
 
   match x
-    A => assign z = 3
-    B => assign z = 4
-    C where y => assign z = 5
-    C where not y => assign z = 6
+    A => let z = 3
+    B => let z = 4
+    C where y => let z = 5
+    C where not y => let z = 6
   end
 
   return z

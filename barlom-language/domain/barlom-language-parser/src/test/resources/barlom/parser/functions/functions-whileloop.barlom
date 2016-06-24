@@ -5,7 +5,7 @@ function mynamespace.mymodule.mypackage.sample_while()
   variable x = 1
 
   repeat while x < 100
-    assign x = x * 2
+    let x = x * 2
   end
 
   return x
