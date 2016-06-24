@@ -128,10 +128,18 @@ typeDefinition
 //-------------------------------------------------------------------------------------------------
 
 /**
- * Parses a module path.
+ * Parses a module path - an optional dot-delimited namespace, followed by the module name,
+ * optionally followed by an argument list giving the module version.
  */
 modulePath
     : ( Identifier ( DOT Identifier )* DOT )? nameWithOptionalArguments
+    ;
+
+/**
+ * Parses the path of an element that sometimes takes arguments.
+ */
+pathWithOptionalArguments
+    : modulePath ( DOT nameWithOptionalArguments )*
     ;
 
 /**
@@ -142,16 +150,18 @@ pathWithOptionalParameters
     : pathWithOptionalArguments DOT nameWithOptionalParameters
     ;
 
+/**
+ * Parses the path of an element that never takes parameters.
+ */
 pathWithoutParameters
     : pathWithOptionalArguments DOT nameWithoutParameters
     ;
 
+/**
+ * Parses the path of an element that always takes parameters.
+ */
 pathWithParameters
     : pathWithOptionalArguments DOT nameWithParameters
-    ;
-
-pathWithOptionalArguments
-    : modulePath ( DOT nameWithOptionalArguments )*
     ;
 
 
@@ -243,7 +253,7 @@ enumerationTypeDefinition
 enumerationTypeContents
     : enumerationSymbolDefinition
       enumerationSymbolDefinition+
-      enumerationElement*
+      enumerationTypeElement*
     ;
 
 /**
@@ -256,7 +266,7 @@ enumerationSymbolDefinition
 /**
  * Parses one element of an enumeration type (after the symbols).
  */
-enumerationElement
+enumerationTypeElement
     : leadingAnnotations
       ( functionDefinition
       // TODO: maybe more
@@ -319,13 +329,20 @@ variantTypeElement
 // OBJECT TYPE DEFINITIONS
 //-------------------------------------------------------------------------------------------------
 
+/**
+ * Parses an object type definition when it is the entire compilation unit and hence includes its
+ * path.
+ */
 objectTypeNamespacedDefinition
-    : OBJECT TYPE pathWithOptionalParameters trailingAnnotations objectElement+ END
+    : OBJECT TYPE pathWithOptionalParameters trailingAnnotations objectTypeElement+ END
     ;
 
+/**
+ * Parses an object type definition occuring inside a larger package or type definition.
+ */
 objectTypeDefinition
     : OBJECT TYPE nameWithOptionalParameters trailingAnnotations
-      ( objectElement+ END | LocationLiteral )
+      ( objectTypeElement+ END | LocationLiteral )
     ;
 
 
@@ -333,7 +350,10 @@ objectTypeDefinition
 // OBJECT TYPE ELEMENTS
 //-------------------------------------------------------------------------------------------------
 
-objectElement
+/**
+ * Parses an element of an object type.
+ */
+objectTypeElement
     : leadingAnnotations
       ( actionStatement
       | dataDefinition
@@ -347,13 +367,21 @@ objectElement
 // OBJECT INSTANCE DEFINITIONS
 //-------------------------------------------------------------------------------------------------
 
+/**
+ * Parses an object instance definition when it is the entire compilation unit and hence includes its
+ * path.
+ */
 objectInstanceNamespacedDefinition
-    : OBJECT INSTANCE pathWithoutParameters trailingAnnotations objectElement+ END
+    : OBJECT INSTANCE pathWithoutParameters trailingAnnotations objectTypeElement+ END
     ;
 
+/**
+ * Parses an object instance definition occuring inside a larger package, type, or function
+ * definition.
+ */
 objectInstanceDefinition
     : OBJECT INSTANCE nameWithoutParameters trailingAnnotations
-      ( objectElement+ END | LocationLiteral )
+      ( objectTypeElement+ END | LocationLiteral )
     ;
 
 
@@ -361,13 +389,20 @@ objectInstanceDefinition
 // STRUCTURE TYPE DEFINITIONS
 //-------------------------------------------------------------------------------------------------
 
+/**
+ * Parses a structure type definition when it is the entire compilation unit and hence includes its
+ * path.
+ */
 structureTypeNamespacedDefinition
-    : STRUCTURE TYPE pathWithOptionalParameters trailingAnnotations structureElement+ END
+    : STRUCTURE TYPE pathWithOptionalParameters trailingAnnotations structureTypeElement+ END
     ;
 
+/**
+ * Parses a structure type definition occuring inside a larger package or type definition.
+ */
 structureTypeDefinition
     : STRUCTURE TYPE nameWithOptionalParameters trailingAnnotations
-      ( structureElement+ END | LocationLiteral )
+      ( structureTypeElement+ END | LocationLiteral )
     ;
 
 
@@ -375,7 +410,10 @@ structureTypeDefinition
 // STRUCTURE TYPE ELEMENTS
 //-------------------------------------------------------------------------------------------------
 
-structureElement
+/**
+ * Parses an element of a structure type.
+ */
+structureTypeElement
     : leadingAnnotations
       ( actionStatement
       | dataDefinition
@@ -389,13 +427,21 @@ structureElement
 // STRUCTURE INSTANCE DEFINITIONS
 //-------------------------------------------------------------------------------------------------
 
+/**
+ * Parses a structure instance definition when it is the entire compilation unit and hence includes its
+ * path.
+ */
 structureInstanceNamespacedDefinition
-    : STRUCTURE INSTANCE pathWithoutParameters trailingAnnotations structureElement+ END
+    : STRUCTURE INSTANCE pathWithoutParameters trailingAnnotations structureTypeElement+ END
     ;
 
+/**
+ * Parses a structure instance definition occuring inside a larger package, type, or function
+ * definition.
+ */
 structureInstanceDefinition
     : STRUCTURE INSTANCE nameWithoutParameters trailingAnnotations
-      ( structureElement+ END | LocationLiteral )
+      ( structureTypeElement+ END | LocationLiteral )
     ;
 
 
@@ -403,21 +449,30 @@ structureInstanceDefinition
 // GRAPH TYPE DEFINITIONS
 //-------------------------------------------------------------------------------------------------
 
+/**
+ * Parses a graph type definition occurring at the top level of a comoilation unit.
+ */
 graphTypeNamespacedDefinition
-    : GRAPH TYPE pathWithOptionalParameters trailingAnnotations graphElement+ END
+    : GRAPH TYPE pathWithOptionalParameters trailingAnnotations graphTypeElement+ END
     ;
 
+/**
+ * Parses a grpah type definition occuring inside a containing package or type definition.
+ */
 graphTypeDefinition
     : GRAPH TYPE nameWithOptionalParameters trailingAnnotations
-      ( graphElement+ END | LocationLiteral )
+      ( graphTypeElement+ END | LocationLiteral )
     ;
 
 
 //-------------------------------------------------------------------------------------------------
-// STRUCTURE TYPE ELEMENTS
+// GRAPH TYPE ELEMENTS
 //-------------------------------------------------------------------------------------------------
 
-graphElement
+/**
+ * Parses an element of a graph type.
+ */
+graphTypeElement
     : leadingAnnotations
       ( actionStatement
       | dataDefinition
@@ -433,10 +488,10 @@ graphElement
  */
 vertexTypeDefinition
     : VERTEX TYPE nameWithoutParameters trailingAnnotations
-      ( vertexElement* END | LocationLiteral )
+      ( vertexTypeElement* END | LocationLiteral )
     ;
 
-vertexElement
+vertexTypeElement
     : leadingAnnotations
       ( actionStatement
       | dataDefinition
@@ -446,10 +501,10 @@ vertexElement
 
 edgeTypeDefinition
     : EDGE TYPE nameWithoutParameters trailingAnnotations
-      ( edgeElement* END | LocationLiteral )
+      ( edgeTypeElement* END | LocationLiteral )
     ;
 
-edgeElement
+edgeTypeElement
     : leadingAnnotations
       ( actionStatement
       | dataDefinition
@@ -498,14 +553,23 @@ specificationElement
       )
     ;
 
+/**
+ * Parses a cleanup definition - actions to be executed after each test in a specification.
+ */
 cleanupDefinition
     : CLEANUP trailingAnnotations ( functionElement+ END | LocationLiteral )
     ;
 
+/**
+ * Parses a setup definition - actions to be executed before each test in a specification.
+ */
 setupDefinition
     : SETUP trailingAnnotations ( functionElement+ END | LocationLiteral )
     ;
 
+/**
+ * Parses a sampling definition - a test that is driven by a table of data.
+ */
 samplingDefinition
     : SAMPLING nameWithParameters trailingAnnotations
       ( ( GIVEN functionElement+ )?
@@ -516,6 +580,9 @@ samplingDefinition
       )
     ;
 
+/**
+ * Parses a BDD-style given/when/then scenario.
+ */
 scenarioDefinition
     : SCENARIO nameWithoutParameters trailingAnnotations
       ( ( GIVEN functionElement+ )?
@@ -526,6 +593,9 @@ scenarioDefinition
       )
     ;
 
+/**
+ * Parses a traditional imperative unit test.
+ */
 testDefinition
     : TEST nameWithoutParameters trailingAnnotations ( functionElement+ END | LocationLiteral )
     ;
@@ -535,13 +605,19 @@ testDefinition
 // ANNOTATION TYPE DEFINITIONS
 //-------------------------------------------------------------------------------------------------
 
+/**
+ * Parses an annotation type occuring at top level (whole compilation unit.
+ */
 annotationTypeNamespacedDefinition
-    : ANNOTATION TYPE pathWithOptionalParameters trailingAnnotations annotationElement+ END
+    : ANNOTATION TYPE pathWithOptionalParameters trailingAnnotations annotationTypeElement+ END
     ;
 
+/**
+ * Parses an annotation type when it occurs inside a containing package.
+ */
 annotationTypeDefinition
     : ANNOTATION TYPE nameWithOptionalParameters trailingAnnotations
-      ( annotationElement+ END | LocationLiteral )
+      ( annotationTypeElement+ END | LocationLiteral )
     ;
 
 
@@ -549,7 +625,10 @@ annotationTypeDefinition
 // ANNOTATION TYPE ELEMENTS
 //-------------------------------------------------------------------------------------------------
 
-annotationElement
+/**
+ * Parses oneelement of an annotation type.
+ */
+annotationTypeElement
     : leadingAnnotations
       ( actionStatement
       | dataDefinition
@@ -825,6 +904,9 @@ functionCall
 // VARIABLES
 //-------------------------------------------------------------------------------------------------
 
+/**
+ * Parses a definition for one named element of data.
+ */
 dataDefinition
     : constantDefinition
     | valueDefinition
@@ -880,6 +962,9 @@ variableDefinition
 // TYPE ANNOTATIONS
 //-------------------------------------------------------------------------------------------------
 
+/**
+ * Parses an annotation that gives the type of the element annotated.
+ */
 typeAnnotation
     : Identifier typeArguments? QUESTION?
     ;
