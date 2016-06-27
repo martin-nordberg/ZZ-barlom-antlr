@@ -56,6 +56,7 @@ namespacedDefinition
       | graphTypeNamespacedDefinition
       | moduleNamespacedDefinition
       | objectInstanceNamespacedDefinition
+      | objectInterfaceNamespacedDefinition
       | objectTypeNamespacedDefinition
       | packageNamespacedDefinition
       | specificationNamespacedDefinition
@@ -118,6 +119,7 @@ packageElement
 typeDefinition
     : enumerationTypeDefinition
     | graphTypeDefinition
+    | objectInterfaceDefinition
     | objectTypeDefinition
     | structureTypeDefinition
     | variantTypeDefinition
@@ -204,6 +206,13 @@ functionDefinition
     : FUNCTION nameWithParameters trailingAnnotations
       ( functionElement+ END | LocationLiteral )
     | FUNCTION nameWithoutParameters EQUALS ( functionExpressionLiteral | functionBlockLiteral )
+    ;
+
+/**
+ * Parses a behavior (abstract function) definition.
+ */
+behaviorDefinition
+    : BEHAVIOR nameWithParameters trailingAnnotations
     ;
 
 
@@ -356,6 +365,7 @@ objectTypeDefinition
 objectTypeElement
     : leadingAnnotations
       ( actionStatement
+      | behaviorDefinition
       | dataDefinition
       | functionDefinition
       | typeDefinition
@@ -382,6 +392,44 @@ objectInstanceNamespacedDefinition
 objectInstanceDefinition
     : OBJECT INSTANCE nameWithoutParameters trailingAnnotations
       ( objectTypeElement+ END | LocationLiteral )
+    ;
+
+
+//-------------------------------------------------------------------------------------------------
+// OBJECT INTERFACE DEFINITIONS
+//-------------------------------------------------------------------------------------------------
+
+/**
+ * Parses an object interface definition when it is the entire compilation unit and hence includes its
+ * path.
+ */
+objectInterfaceNamespacedDefinition
+    : OBJECT INTERFACE pathWithoutParameters trailingAnnotations objectInterfaceElement+ END
+    ;
+
+/**
+ * Parses an object interface definition occuring inside a larger package or type definition.
+ */
+objectInterfaceDefinition
+    : OBJECT INTERFACE nameWithoutParameters trailingAnnotations
+      ( objectInterfaceElement+ END | LocationLiteral )
+    ;
+
+
+//-------------------------------------------------------------------------------------------------
+// OBJECT INTERFACE ELEMENTS
+//-------------------------------------------------------------------------------------------------
+
+/**
+ * Parses an element of an object interface.
+ */
+objectInterfaceElement
+    : leadingAnnotations
+      ( behaviorDefinition
+      | constantDefinition
+      | functionDefinition
+      | typeDefinition
+      )
     ;
 
 
@@ -713,6 +761,7 @@ assignmentOperator
     | PLUS_EQUALS
     | POWER_EQUALS
     | TIMES_EQUALS
+    | CONCAT_EQUALS
     ;
 
 /**
@@ -827,6 +876,7 @@ conditionalOrExpression
 conditionalAndExpression
     : exclusiveOrExpression
     | conditionalAndExpression AND exclusiveOrExpression
+    | conditionalAndExpression CONCAT exclusiveOrExpression
     ;
 
 exclusiveOrExpression
@@ -1184,6 +1234,7 @@ ANNOTATION : 'annotation';
 AS : 'as';
 ASSERT : 'assert';
 BEGIN : 'begin';
+BEHAVIOR : 'behavior';
 CALL : 'call';
 CHECK : 'check';
 CLEANUP : 'cleanup';
@@ -1203,6 +1254,7 @@ FOR : 'for';
 FUNCTION : 'function';
 IN : 'in';
 INSTANCE : 'instance';
+INTERFACE : 'interface';
 IS : 'is';
 ISNOT : 'isnot';
 LET : 'let';
@@ -1258,7 +1310,6 @@ delete
 do
 import
 insert
-interface
 intersection
 namespace
 protocol
@@ -1320,6 +1371,13 @@ TIMES : '*';
 
 
 //-------------------------------------------------------------------------------------------------
+// STRING OPERATORS
+//-------------------------------------------------------------------------------------------------
+
+CONCAT : '&';
+
+
+//-------------------------------------------------------------------------------------------------
 // ASSIGNMENT OPERATORS
 //-------------------------------------------------------------------------------------------------
 
@@ -1330,6 +1388,8 @@ MODULO_EQUALS : '%=';
 PLUS_EQUALS : '+=';
 POWER_EQUALS : '^=';
 TIMES_EQUALS : '*=';
+
+CONCAT_EQUALS : '&=';
 
 
 //-------------------------------------------------------------------------------------------------
@@ -1763,3 +1823,4 @@ ERROR_UNEXPECTED_CHARACTER : .;
 
 
 //-------------------------------------------------------------------------------------------------
+nim

@@ -140,9 +140,10 @@ class BarlomParserSpec
         parse( "objecttypes/" + fileName ) == parseResult
 
         where:
-        fileName                  | parseResult
-        "objectinstance01.barlom" | "Successful parse"
-        "objecttype01.barlom"     | "Successful parse"
+        fileName                   | parseResult
+        "objectinstance01.barlom"  | "Successful parse"
+        "objectinterface01.barlom" | "Successful parse"
+        "objecttype01.barlom"      | "Successful parse"
 
     }
 

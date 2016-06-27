@@ -8,7 +8,7 @@ object type stuff.specialstuff.MyObject(
   : "an example of a simple object type"
   : extends( BaseObject )
 
-  constant d = a^2
+  value d = a^2
 
   variable e = a * c
 

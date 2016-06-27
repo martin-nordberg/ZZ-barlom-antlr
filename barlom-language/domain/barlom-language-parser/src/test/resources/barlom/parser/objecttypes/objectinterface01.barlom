@@ -1,0 +1,18 @@
+
+use lib.something.BaseObject
+
+object interface stuff.specialstuff.MyObject
+  : "an example of a simple object interface"
+  : extends( BaseObject )
+
+  constant q = 23
+
+  behavior firstName() : Text
+
+  behavior lastName() : Text
+
+  function fullName() : Text
+    return firstName() & " " & lastName()
+  end
+
+end
